@@ -1,0 +1,207 @@
+{
+  "name": "devskill",
+  "version": "1.0.0",
+  "description": "Deterministic industry-grade engineering skill library and decision engine for AI agents and senior developers.",
+  "root_documents": [
+    {
+      "id": "skill-manifest",
+      "path": "SKILL.md",
+      "summary": "Agent skill specification, operational flow, and prime directives."
+    },
+    {
+      "id": "specifications",
+      "path": "specs.md",
+      "summary": "Full architectural specification, taxonomy, file schemas, and design philosophy."
+    },
+    {
+      "id": "universal-rules",
+      "path": "RULES.md",
+      "summary": "Universal non-negotiable engineering laws: architecture, code quality, testing, hygiene."
+    },
+    {
+      "id": "security-standard",
+      "path": "security.md",
+      "summary": "Production security baseline: OWASP Top 10 mitigation, auth, secrets, encryption."
+    },
+    {
+      "id": "agent-protocols",
+      "path": "agents.md",
+      "summary": "Autonomous agent personas, sandboxing boundaries, execution loop, error recovery."
+    },
+    {
+      "id": "decision-matrix",
+      "path": "decisions.md",
+      "summary": "Decision trees for architectures, databases, APIs, state management, and brokers."
+    }
+  ],
+  "categories": {
+    "frameworks": [
+      {
+        "id": "fw-nextjs",
+        "title": "Next.js Production Guide",
+        "path": "frameworks/frontend/nextjs.md",
+        "tags": ["react", "nextjs", "app-router", "rsc", "server-actions", "ssr", "fullstack"]
+      },
+      {
+        "id": "fw-react",
+        "title": "React Production Guide",
+        "path": "frameworks/frontend/react.md",
+        "tags": ["react", "concurrency", "hooks", "memoization", "error-boundary", "ui"]
+      },
+      {
+        "id": "fw-fastapi",
+        "title": "FastAPI Production Guide",
+        "path": "frameworks/backend/fastapi.md",
+        "tags": ["python", "fastapi", "asyncio", "pydantic", "sqlalchemy", "api"]
+      },
+      {
+        "id": "fw-nestjs",
+        "title": "NestJS Enterprise Guide",
+        "path": "frameworks/backend/nestjs.md",
+        "tags": ["typescript", "nodejs", "nestjs", "hexagonal", "dependency-injection", "guards"]
+      },
+      {
+        "id": "fw-react-native",
+        "title": "React Native & Expo Guide",
+        "path": "frameworks/mobile/react-native-expo.md",
+        "tags": ["mobile", "react-native", "expo", "ios", "android", "hermes"]
+      }
+    ],
+    "sections": [
+      {
+        "id": "sec-api-design",
+        "title": "API Design Standards",
+        "path": "sections/backend/api-design.md",
+        "tags": ["rest", "api", "idempotency", "pagination", "rfc-9457", "status-codes"]
+      },
+      {
+        "id": "sec-caching",
+        "title": "Caching Strategies & Redis",
+        "path": "sections/backend/caching-strategies.md",
+        "tags": ["cache", "redis", "valkey", "cache-aside", "cache-stampede", "ttl"]
+      },
+      {
+        "id": "sec-postgresql",
+        "title": "PostgreSQL Mastery",
+        "path": "sections/database/postgresql-mastery.md",
+        "tags": ["database", "sql", "postgresql", "indexing", "explain-analyze", "pgbouncer"]
+      },
+      {
+        "id": "sec-docker",
+        "title": "Docker Container Standards",
+        "path": "sections/devops-infrastructure/docker-containers.md",
+        "tags": ["docker", "containers", "multi-stage", "rootless", "distroless", "security"]
+      },
+      {
+        "id": "sec-observability",
+        "title": "Observability & Telemetry",
+        "path": "sections/devops-infrastructure/observability-telemetry.md",
+        "tags": ["opentelemetry", "tracing", "prometheus", "logging", "json-logs", "red-method"]
+      },
+      {
+        "id": "sec-state-management",
+        "title": "Frontend State Management",
+        "path": "sections/frontend/state-management.md",
+        "tags": ["state", "tanstack-query", "zustand", "server-state", "client-state"]
+      },
+      {
+        "id": "sec-test-pyramid",
+        "title": "Test Pyramid & QA Strategy",
+        "path": "sections/testing-qa/test-pyramid.md",
+        "tags": ["testing", "unit-tests", "integration-tests", "testcontainers", "playwright", "qa"]
+      }
+    ],
+    "languages": [
+      {
+        "id": "lang-typescript",
+        "title": "TypeScript Production Standard",
+        "path": "languages/typescript.md",
+        "tags": ["typescript", "strict-mode", "zod", "discriminated-unions", "typing"]
+      },
+      {
+        "id": "lang-python",
+        "title": "Python Production Standard",
+        "path": "languages/python.md",
+        "tags": ["python", "type-hints", "ruff", "mypy", "asyncio", "dataclasses"]
+      },
+      {
+        "id": "lang-golang",
+        "title": "Go Production Standard",
+        "path": "languages/golang.md",
+        "tags": ["golang", "go", "concurrency", "goroutines", "error-wrapping", "interfaces"]
+      },
+      {
+        "id": "lang-rust",
+        "title": "Rust Production Standard",
+        "path": "languages/rust.md",
+        "tags": ["rust", "ownership", "tokio", "thiserror", "anyhow", "safety"]
+      },
+      {
+        "id": "lang-sql",
+        "title": "SQL Mastery & Optimization",
+        "path": "languages/sql.md",
+        "tags": ["sql", "sargable", "indexes", "window-functions", "cte", "queries"]
+      }
+    ],
+    "workflows": [
+      {
+        "id": "wf-git-pr",
+        "title": "Git Branching & PR Standards",
+        "path": "workflows/git-branching-pr.md",
+        "tags": ["git", "trunk-based", "conventional-commits", "pull-requests"]
+      },
+      {
+        "id": "wf-code-review",
+        "title": "Code Review Standards & Rubric",
+        "path": "workflows/code-review-standards.md",
+        "tags": ["code-review", "rubric", "feedback-prefixes", "quality-gates"]
+      },
+      {
+        "id": "wf-release",
+        "title": "Release & Semantic Versioning",
+        "path": "workflows/release-versioning.md",
+        "tags": ["semver", "releases", "changelog", "tags"]
+      },
+      {
+        "id": "wf-incident",
+        "title": "Incident Response & Post-Mortems",
+        "path": "workflows/incident-response.md",
+        "tags": ["incident", "sre", "on-call", "post-mortem", "sla"]
+      }
+    ],
+    "pipelines": [
+      {
+        "id": "pipe-github-actions",
+        "title": "GitHub Actions CI/CD",
+        "path": "pipelines/github-actions.md",
+        "tags": ["ci-cd", "github-actions", "automation", "build", "deploy"]
+      },
+      {
+        "id": "pipe-security-sast",
+        "title": "Security Scanning SAST/DAST",
+        "path": "pipelines/security-scanning-sast.md",
+        "tags": ["sast", "dast", "gitleaks", "trivy", "snyk", "security-gates"]
+      },
+      {
+        "id": "pipe-deploy-strat",
+        "title": "Deployment Strategies",
+        "path": "pipelines/deployment-strategies.md",
+        "tags": ["deployments", "canary", "blue-green", "rolling", "gitops"]
+      }
+    ],
+    "scaffolding": [
+      {
+        "id": "scaff-fullstack",
+        "title": "Fullstack Next.js + FastAPI",
+        "path": "scaffolding/templates/fullstack-nextjs-fastapi.md",
+        "tags": ["template", "fullstack", "nextjs", "fastapi", "monorepo"]
+      },
+      {
+        "id": "scaff-modular-monolith",
+        "title": "Enterprise Modular Monolith",
+        "path": "scaffolding/templates/enterprise-modular-monolith.md",
+        "tags": ["template", "modular-monolith", "hexagonal", "clean-architecture"]
+      }
+    ]
+  }
+}
