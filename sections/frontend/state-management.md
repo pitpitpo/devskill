@@ -1,76 +1,144 @@
-# 🔄 Frontend State Management Standards (`state-management.md`)
+# 🌐 Modern Frontend State Management Architecture
 
-> **Classification**: Frontend Architecture & State Taxonomy  
-> **Core Philosophy**: "Server State Belongs in the Cache; Client State Belongs in URL or Minimal Stores."
-
----
-
-## 1. The State Taxonomy
-
-```
-                              APPLICATION STATE
-                                      │
-                 ┌────────────────────┴────────────────────┐
-                 ▼                                         ▼
-           SERVER STATE                              CLIENT STATE
-     (Asynchronous, Remote, Cache)            (Synchronous, Local, Ephemeral)
-                 │                                         │
-        TanStack Query / SWR                  ┌────────────┴────────────┐
-                 │                            ▼                         ▼
-      - Automatic caching               URL SEARCH PARAMS         UI STORES
-      - Background revalidation        (Shareable state)        (Zustand / Jotai)
-      - Deduping requests               - Pagination             - Sidebar open/closed
-      - Optimistic updates              - Active filters         - Modal visibility
-                                        - Sort order             - Local drafts
-```
+> **Standard Identifier**: `SEC-FRONTEND-STATE-001`  
+> **Status**: Active / Production Standard  
+> **Target Audience**: Frontend Architects, React / Next.js Engineers  
+> **Classification**: Level 4 Frontend Engineering Guide  
 
 ---
 
-## 2. TanStack Query Standards
+## 1. Executive Summary & Core Philosophy
+
+> **Golden Rule**: *Distinguish rigorously between Server State and Client State. Server State is an asynchronous, remotely owned cache requiring deduplication and invalidation (TanStack Query). Client State is ephemeral, local, user-interface state (Zustand / Jotai). Never store remote API responses in global client stores.*
+
+Legacy web applications stored everything in monolithic Redux stores, resulting in thousands of lines of boilerplate reducers, missing cache invalidation, out-of-date data, and complex synchronization bugs. Modern frontend engineering partitions state strictly by origin and lifecycle.
+
+---
+
+## 2. Frontend State Taxonomy
+
+```
+                   ┌────────────────────────────────────────────────────────┐
+                   │                 FRONTEND STATE TAXONOMY                │
+                   └──────────────────────────┬─────────────────────────────┘
+                                              │
+         ┌────────────────────────────────────┴────────────────────────────────────┐
+         ▼                                                                         ▼
+  ┌──────────────┐                                                          ┌──────────────┐
+  │ SERVER STATE │                                                          │ CLIENT STATE │
+  │ (Remote/Async│                                                          │ (Local/Sync) │
+  ├──────────────┤                                                          ├──────────────┤
+  │ Owned by DB  │                                                          │ Owned by UI  │
+  │ • Stale-time │                                                          │ • Modal open │
+  │ • Cache tags │                                                          │ • Form draft │
+  │ • Retries    │                                                          │ • Dark mode  │
+  ├──────────────┤                                                          ├──────────────┤
+  │ Standard:    │                                                          │ Standard:    │
+  │ TanStack Qry │                                                          │ Zustand      │
+  └──────────────┘                                                          └──────────────┘
+```
+
+---
+
+## 3. Server State Architecture: TanStack Query (React Query)
+
+### 3.1 Query Key Factory Pattern
+Query keys must be deterministic and centralized to prevent cache collisions and accidental invalidations:
 
 ```typescript
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchUserProjects, createProject } from '@/api/projects';
-
-// Query Keys must be structured as hierarchical tuples
-export const projectKeys = {
-  all: ['projects'] as const,
-  lists: () => [...projectKeys.all, 'list'] as const,
-  list: (filters: { status?: string }) => [...projectKeys.lists(), { filters }] as const,
-  details: () => [...projectKeys.all, 'detail'] as const,
-  detail: (id: string) => [...projectKeys.details(), id] as const,
+// features/orders/keys.ts
+export const orderKeys = {
+  all: ["orders"] as const,
+  lists: () => [...orderKeys.all, "list"] as const,
+  list: (filters: OrderFilters) => [...orderKeys.lists(), filters] as const,
+  details: () => [...orderKeys.all, "detail"] as const,
+  detail: (id: string) => [...orderKeys.details(), id] as const,
 };
+```
 
-export function useProjects(status?: string) {
-  return useQuery({
-    queryKey: projectKeys.list({ status }),
-    queryFn: () => fetchUserProjects(status),
-    staleTime: 1000 * 60 * 5, // Data fresh for 5 minutes (no background refetch)
-    gcTime: 1000 * 60 * 30,    // Keep unused data in garbage collector for 30 min
+### 3.2 Optimistic Updates Implementation
+```typescript
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { orderKeys } from "./keys";
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      });
+      return res.json();
+    },
+    // Optimistic Update: Modify cache immediately before network completes
+    onMutate: async ({ orderId, status }) => {
+      await queryClient.cancelQueries({ queryKey: orderKeys.detail(orderId) });
+      const previousOrder = queryClient.getQueryData(orderKeys.detail(orderId));
+
+      queryClient.setQueryData(orderKeys.detail(orderId), (old: any) => ({
+        ...old,
+        status,
+      }));
+
+      return { previousOrder, orderId };
+    },
+    // Rollback if network fails
+    onError: (err, newTodo, context) => {
+      if (context?.previousOrder) {
+        queryClient.setQueryData(
+          orderKeys.detail(context.orderId),
+          context.previousOrder
+        );
+      }
+    },
+    // Invalidate to guarantee synchronization with DB
+    onSettled: (data, error, variables) => {
+      queryClient.invalidateQueries({ queryKey: orderKeys.detail(variables.orderId) });
+    },
   });
 }
 ```
 
 ---
 
-## 3. Zustand for Client-Only UI State
+## 4. Global Client State Architecture: Zustand
+
+When state is strictly ephemeral and shared across multiple UI components (e.g., active modal state, user preferences, sidebar collapse):
 
 ```typescript
-import { create } from 'zustand';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
 interface UIState {
   isSidebarOpen: boolean;
-  activeModal: string | null;
+  theme: "light" | "dark" | "system";
   toggleSidebar: () => void;
-  openModal: (modalId: string) => void;
-  closeModal: () => void;
+  setTheme: (theme: "light" | "dark" | "system") => void;
 }
 
-export const useUIStore = create<UIState>((set) => ({
-  isSidebarOpen: true,
-  activeModal: null,
-  toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-  openModal: (modalId) => set({ activeModal: modalId }),
-  closeModal: () => set({ activeModal: null }),
-}));
+export const useUIStore = create<UIState>()(
+  devtools(
+    persist(
+      (set) => ({
+        isSidebarOpen: true,
+        theme: "system",
+        toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+        setTheme: (theme) => set({ theme }),
+      }),
+      { name: "ui-preferences-storage" }
+    )
+  )
+);
 ```
+
+---
+
+## 5. Verification Checklist & Production Audit
+
+- [ ] All remote server data is managed via TanStack Query; no API data stored in Redux/Zustand.
+- [ ] Query keys use the centralized Query Key Factory pattern.
+- [ ] Mutations with user-visible effects employ optimistic updates with rollback guards.
+- [ ] Global client stores (Zustand) contain zero duplicated server records.
+- [ ] State selector hooks (`useUIStore(state => state.isSidebarOpen)`) prevent unnecessary re-renders.

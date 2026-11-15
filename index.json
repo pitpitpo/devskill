@@ -85,7 +85,7 @@
       {
         "path": "frameworks/README.md",
         "title": "\ud83d\ude80 Frameworks Directory (`frameworks/`)",
-        "lines": 14
+        "lines": 19
       },
       {
         "path": "frameworks/backend/django.md",
@@ -124,8 +124,8 @@
       },
       {
         "path": "frameworks/frontend/nextjs.md",
-        "title": "\ud83c\udf10 Next.js Production Guide (`nextjs.md`)",
-        "lines": 145
+        "title": "\u26a1 Production Next.js 15 App Router & React Server Components Mastery",
+        "lines": 174
       },
       {
         "path": "frameworks/frontend/react.md",
@@ -154,8 +154,8 @@
       },
       {
         "path": "frameworks/mobile/react-native-expo.md",
-        "title": "\ud83d\udcf1 React Native & Expo Production Guide (`react-native-expo.md`)",
-        "lines": 57
+        "title": "\ud83d\udcf1 Enterprise React Native & Expo Production Engineering Standards",
+        "lines": 221
       }
     ],
     "languages": [
@@ -208,8 +208,8 @@
       },
       {
         "path": "pipelines/github-actions.md",
-        "title": "\u2699\ufe0f Production GitHub Actions CI/CD Pipeline (`github-actions.md`)",
-        "lines": 144
+        "title": "\u26a1 Production GitHub Actions CI/CD Pipeline Architecture",
+        "lines": 152
       },
       {
         "path": "pipelines/gitlab-ci.md",
@@ -292,8 +292,8 @@
       },
       {
         "path": "sections/database/postgresql-mastery.md",
-        "title": "\ud83d\udc18 PostgreSQL Production Mastery (`postgresql-mastery.md`)",
-        "lines": 71
+        "title": "\ud83d\udc18 Enterprise PostgreSQL Mastery: Internals, Indexing & Query Tuning",
+        "lines": 114
       },
       {
         "path": "sections/database/schema-migrations.md",
@@ -302,8 +302,8 @@
       },
       {
         "path": "sections/devops-infrastructure/docker-containers.md",
-        "title": "\ud83d\udc33 Production Docker & Container Standards (`docker-containers.md`)",
-        "lines": 68
+        "title": "\ud83d\udc33 Production Docker Containerization & Security Hardening",
+        "lines": 138
       },
       {
         "path": "sections/devops-infrastructure/kubernetes-cloud.md",
@@ -312,8 +312,8 @@
       },
       {
         "path": "sections/devops-infrastructure/observability-telemetry.md",
-        "title": "\ud83d\udcc8 Observability & Telemetry Standards (`observability-telemetry.md`)",
-        "lines": 71
+        "title": "\ud83d\udcca Distributed Observability: OpenTelemetry, Prometheus & Distributed Tracing",
+        "lines": 118
       },
       {
         "path": "sections/devops-infrastructure/terraform-iac.md",
@@ -327,8 +327,8 @@
       },
       {
         "path": "sections/frontend/state-management.md",
-        "title": "\ud83d\udd04 Frontend State Management Standards (`state-management.md`)",
-        "lines": 76
+        "title": "\ud83c\udf10 Modern Frontend State Management Architecture",
+        "lines": 144
       },
       {
         "path": "sections/frontend/web-performance.md",
@@ -347,8 +347,8 @@
       },
       {
         "path": "sections/testing-qa/test-pyramid.md",
-        "title": "\ud83e\uddea The Production Test Pyramid & QA Strategy (`test-pyramid.md`)",
-        "lines": 90
+        "title": "\ud83e\uddea The Industrial Test Pyramid: Unit, Integration, Contract & E2E Strategies",
+        "lines": 145
       }
     ],
     "workflows": [
@@ -374,8 +374,8 @@
       },
       {
         "path": "workflows/git-branching-pr.md",
-        "title": "\ud83c\udf3f Git Branching & Pull Request Standards (`git-branching-pr.md`)",
-        "lines": 64
+        "title": "\ud83c\udf3f Trunk-Based Development, Git Branching & PR Hygiene",
+        "lines": 103
       },
       {
         "path": "workflows/incident-response.md",

@@ -1,90 +1,145 @@
-# 🧪 The Production Test Pyramid & QA Strategy (`test-pyramid.md`)
+# 🧪 The Industrial Test Pyramid: Unit, Integration, Contract & E2E Strategies
 
-> **Classification**: Software Quality Assurance & Verification Standard  
-> **Target**: QA Engineers, Developers, Autonomous Agent Verifiers  
-> **Core Philosophy**: "Test Behaviors, Not Implementations; Fast Feedback Loops; Zero Flakes."
-
----
-
-## 1. The Production Test Distribution
-
-```
-                   /\
-                  /  \        10% END-TO-END (Playwright)
-                 / E2E\       - Critical business paths (Checkout, Signup)
-                /------\      - Real browser execution in CI
-               /        \
-              / INTEGRAT.\    20% INTEGRATION (Testcontainers)
-             /   TESTS    \   - Real DB (PostgreSQL) + Real Cache (Redis)
-            /--------------\  - API endpoint contracts & migrations
-           /                \
-          /   UNIT  TESTS    \ 70% UNIT TESTS (Vitest, pytest, Go test)
-         /                    \ - Pure domain logic, validators, calculations
-        /----------------------\- Execution time < 5 seconds for entire suite
-```
+> **Standard Identifier**: `SEC-TESTING-PYRAMID-001`  
+> **Status**: Active / Production Standard  
+> **Target Audience**: QA Architects, Software Engineers, Tech Leads  
+> **Classification**: Level 4 Testing & Quality Assurance Guide  
 
 ---
 
-## 2. Integration Testing with Ephemeral Containers (Testcontainers)
+## 1. Executive Summary & Core Philosophy
 
-Never test database queries against SQLite when your production database is PostgreSQL. Use Testcontainers:
+> **Golden Rule**: *Structure your test suite according to the Test Pyramid: 70% Unit, 20% Integration, 10% End-to-End. High test coverage with brittle, slow E2E tests creates a flaky deployment pipeline. Test business logic in pure unit tests, verify boundaries with real Testcontainers in integration tests, and reserve E2E tests for critical smoke paths.*
 
-```python
-import pytest
-from testcontainers.postgres import PostgresContainer
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-
-@pytest.fixture(scope="session")
-def postgres():
-    with PostgresContainer("postgres:16-alpine") as pg:
-        yield pg
-
-@pytest.fixture
-async def db_session(postgres):
-    engine = create_async_engine(postgres.get_connection_url().replace("psycopg2", "asyncpg"))
-    # Run migrations, yield session, rollback after test
-    async with AsyncSession(engine) as session:
-        yield session
-        await session.rollback()
-```
+Flaky tests erode engineer confidence and slow down release velocity. Adhering to the Test Pyramid ensures fast local feedback loops (< 5 seconds for unit tests) while guaranteeing realistic environment parity during CI.
 
 ---
 
-## 3. Playwright E2E Best Practices (Page Object Model)
+## 2. The Testing Pyramid Architecture
+
+```
+                               ┌─────────────┐
+                               │     E2E     │  ~10% (Critical journeys, Playwright)
+                               │   (Slow)    │
+                               ├─────────────┤
+                               │ INTEGRATION │  ~20% (Testcontainers, Real DB/Redis)
+                               │  (Medium)   │
+                               ├─────────────┤
+                               │    UNIT     │  ~70% (Domain logic, pure functions,
+                               │   (Fast)    │        fast, deterministic)
+                               └─────────────┘
+```
+
+| Layer | Proportion | Execution Time | Environment Parity | Primary Focus | Tooling |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Unit** | ~70% | Milliseconds | Isolated / In-Memory | Pure domain logic, edge cases, algorithms | Vitest, Jest, Pytest, Go Test |
+| **Integration** | ~20% | Seconds | High (Real containers) | Repositories, DB transactions, external APIs | Testcontainers, Supertest |
+| **E2E** | ~10% | Minutes | Full production-like | Checkout flows, auth flows, critical user journeys | Playwright, Cypress |
+
+---
+
+## 3. Test Double Taxonomy: When to Mock vs Real
+
+| Test Double | Definition | Usage Guideline |
+| :--- | :--- | :--- |
+| **Dummy** | Passed around but never actually used (e.g. empty string parameter) | Fill required method arguments |
+| **Stub** | Provides canned answers to calls made during test | Unit tests needing static mock data |
+| **Spy** | Records information about how it was called (arguments, count) | Verifying side effects (e.g., logger called) |
+| **Mock** | Pre-programmed with expectations which form a specification | Strict protocol verification |
+| **Fake** | Working implementation with a shortcut (e.g., in-memory repository) | Fast local integration tests |
+
+> [!WARNING]
+> Never mock the database in integration tests using in-memory SQLite when the production database is PostgreSQL. Differences in JSONB operators, concurrency locking, and dialect syntax create silent production bugs. Always use real PostgreSQL instances via **Testcontainers**.
+
+---
+
+## 4. Production Integration Test with Testcontainers (Node / TypeScript)
 
 ```typescript
-// tests/e2e/pages/login.page.ts
-import { Page, Locator } from '@playwright/test';
+import { test, beforeAll, afterAll, expect } from "vitest";
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
+import { Pool } from "pg";
 
-export class LoginPage {
-  readonly page: Page;
-  readonly emailInput: Locator;
-  readonly passwordInput: Locator;
-  readonly submitButton: Locator;
+let container: StartedPostgreSqlContainer;
+let pool: Pool;
 
-  constructor(page: Page) {
-    this.page = page;
-    this.emailInput = page.getByLabel('Email Address');
-    this.passwordInput = page.getByLabel('Password');
-    this.submitButton = page.getByRole('button', { name: 'Sign In' });
-  }
+beforeAll(async () => {
+  // Spins up an ephemeral, real Docker container on-the-fly
+  container = await new PostgreSqlContainer("postgres:16-alpine").start();
 
-  async goto() {
-    await this.page.goto('/login');
-  }
+  pool = new Pool({
+    connectionString: container.getConnectionUri(),
+  });
 
-  async login(email: string, pass: string) {
-    await this.emailInput.fill(email);
-    await this.passwordInput.fill(pass);
-    await this.submitButton.click();
-  }
-}
+  // Apply real migrations
+  await pool.query(`
+    CREATE TABLE accounts (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      balance NUMERIC(10, 2) NOT NULL CHECK (balance >= 0)
+    );
+  `);
+}, 30000);
+
+afterAll(async () => {
+  await pool?.end();
+  await container?.stop();
+});
+
+test("enforces atomic balance transfer without race conditions", async () => {
+  const { rows } = await pool.query(
+    "INSERT INTO accounts (balance) VALUES (100.00) RETURNING id"
+  );
+  const accountId = rows[0].id;
+
+  // Attempt to deduct balance concurrently
+  const deduct = async (amount: number) => {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const res = await client.query(
+        "SELECT balance FROM accounts WHERE id = $1 FOR UPDATE",
+        [accountId]
+      );
+      const current = parseFloat(res.rows[0].balance);
+      if (current >= amount) {
+        await client.query(
+          "UPDATE accounts SET balance = balance - $1 WHERE id = $2",
+          [amount, accountId]
+        );
+        await client.query("COMMIT");
+        return true;
+      }
+      await client.query("ROLLBACK");
+      return false;
+    } finally {
+      client.release();
+    }
+  };
+
+  const [res1, res2] = await Promise.all([deduct(70.00), deduct(70.00)]);
+
+  // Exactly one must succeed, one must fail due to insufficient balance
+  expect(res1 !== res2).toBe(true);
+
+  const finalRes = await pool.query("SELECT balance FROM accounts WHERE id = $1", [accountId]);
+  expect(parseFloat(finalRes.rows[0].balance)).toBe(30.00);
+});
 ```
 
 ---
 
-## 4. Flakiness Prevention Rules
+## 5. Mutation Testing: Quality Beyond Line Coverage
 
-1. **Zero Hardcoded Sleeps**: Never write `await sleep(3000)`. Always await deterministic events (`expect(element).toBeVisible()`).
-2. **Hermetic Test Isolation**: Every test must set up its own state and clean up after execution. Tests must be order-independent.
-3. **Mock Third-Party Networks**: Use Mock Service Worker (MSW) or WireMock for third-party billing/email APIs.
+High line coverage ($> 90\%$) often masks poor assertions where assertions are missing entirely. Employ **Stryker Mutator** (TypeScript) or **Mutmut** (Python) to inject intentional bugs ("mutants") into your code:
+- If tests fail, the mutant is **killed** (good test suite).
+- If tests pass despite the injected bug, the mutant **survived** (defective test suite).
+
+---
+
+## 6. Verification Checklist & Production Audit
+
+- [ ] Unit test suite executes locally in $< 10$ seconds.
+- [ ] Database integration tests run against real PostgreSQL containers via Testcontainers.
+- [ ] Mocks are strictly forbidden for database and external queue boundaries in integration tests.
+- [ ] E2E tests in Playwright are restricted to critical path smoke tests ($\le 20$ scenarios).
+- [ ] CI pipeline fails if overall mutation score drops below 75%.

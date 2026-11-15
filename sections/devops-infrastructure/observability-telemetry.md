@@ -1,71 +1,118 @@
-# 📈 Observability & Telemetry Standards (`observability-telemetry.md`)
+# 📊 Distributed Observability: OpenTelemetry, Prometheus & Distributed Tracing
 
-> **Classification**: Production Telemetry & Site Reliability Engineering  
-> **Standards**: OpenTelemetry (OTel), Prometheus, W3C TraceContext
-
----
-
-## 1. The Three Pillars of Modern Observability
-
-```
-                       ┌─────────────────────────┐
-                       │   CORRELATION CONTEXT   │
-                       │ Trace ID + Span ID + Env│
-                       └────────────┬────────────┘
-                                    │
-           ┌────────────────────────┼────────────────────────┐
-           ▼                        ▼                        ▼
-     ┌───────────┐            ┌───────────┐            ┌───────────┐
-     │   LOGS    │            │  METRICS  │            │  TRACES   │
-     │Structured │            │Prometheus │            │OpenTelem. │
-     │JSON events│            │Rate,Error,│            │End-to-End │
-     │with context            │Duration   │            │Spans      │
-     └───────────┘            └───────────┘            └───────────┘
-```
+> **Standard Identifier**: `SEC-DEVOPS-OTEL-001`  
+> **Status**: Active / Production Standard  
+> **Target Audience**: SREs, Platform Architects, Backend Engineers  
+> **Classification**: Level 4 Infrastructure Engineering Guide  
 
 ---
 
-## 2. Distributed Tracing & W3C TraceContext
+## 1. Executive Summary & Core Philosophy
 
-When Service A calls Service B over HTTP or gRPC, it MUST propagate the `traceparent` header:
-```http
+> **Golden Rule**: *Observability is the ability to infer the internal state of a distributed system from its external outputs. Standardize on the Three Pillars (Metrics, Logs, Traces) unified via the vendor-neutral OpenTelemetry (OTel) specification. Always propagate W3C Trace Context across process and network boundaries.*
+
+Scattered stdout logs without correlation IDs are useless in microservice architectures. When a user request spans 5 distinct services, engineers require end-to-end distributed trace spans with span context, structured JSON logs containing `trace_id`, and actionable Prometheus metrics.
+
+---
+
+## 2. OpenTelemetry Architecture & The Three Pillars
+
+```
+       HTTP Request (Contains W3C Header: traceparent: 00-4bf92f35...-00)
+            │
+            ▼
+   ┌─────────────────────────────────────────────────────────┐
+   │             OPENTELEMETRY SDK (IN-PROCESS)              │
+   ├────────────────────────────┬────────────────────────────┤
+   │ 1. Traces (Spans)          │ TracerProvider             │
+   │ 2. Metrics (Counters/Gauges│ MeterProvider              │
+   │ 3. Structured Logs         │ LoggerProvider             │
+   └────────────────────────────┴────────────────────────────┘
+                                │ OTLP Protocol (gRPC / HTTP)
+                                ▼
+   ┌─────────────────────────────────────────────────────────┐
+   │                 OPENTELEMETRY COLLECTOR                 │
+   │           Receives -> Batches -> Exports to:            │
+   └────────┬───────────────────┬───────────────────┬────────┘
+            │                   │                   │
+            ▼                   ▼                   ▼
+     ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+     │ JAEGER / TEMPO│   │  PROMETHEUS  │    │ LOKI / ES    │
+     │ (Traces)     │    │  (Metrics)   │    │ (Logs)       │
+     └──────────────┘    └──────────────┘    └──────────────┘
+```
+
+---
+
+## 3. Distributed Context Propagation (W3C Standard)
+
+Every HTTP request and message queue payload passing between services must carry the standard **W3C Trace Context** header:
+
+```
 traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
-              │  └───────────────┬──────────────┘ └───────┬──────┘ └─ Flags
-           Version            Trace ID                 Span ID
+              │  └───────────────┬───────────────┘ └───────┬────────┘ └─ Sampled flag
+              │                  │                         │
+           Version            Trace ID                  Span ID
 ```
-
-This enables end-to-end flame graphs across distributed systems in Jaeger, Honeycomb, or Datadog.
 
 ---
 
-## 3. The RED Method for API Metrics
+## 4. Production OpenTelemetry Implementation: TypeScript
 
-Monitor all web services and microservices using the **RED** method:
-1. **Rate**: Requests received per second (`http_requests_total`).
-2. **Errors**: Failed requests per second (`http_requests_errors_total` with status >= 500).
-3. **Duration**: Time taken per request in milliseconds (`http_request_duration_seconds_bucket` histogram - p50, p95, p99).
+```typescript
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-grpc";
+import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
+import { Resource } from "@opentelemetry/resources";
+import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
+
+export const otelSdk = new NodeSDK({
+  resource: new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: process.env.SERVICE_NAME || "order-api",
+    [SemanticResourceAttributes.SERVICE_VERSION]: "1.0.0",
+    [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: process.env.NODE_ENV || "production",
+  }),
+  traceExporter: new OTLPTraceExporter({
+    url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "http://otel-collector:4317",
+  }),
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({
+      url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "http://otel-collector:4317",
+    }),
+    exportIntervalMillis: 15000,
+  }),
+  instrumentations: [getNodeAutoInstrumentations()],
+});
+
+otelSdk.start();
+
+process.on("SIGTERM", () => {
+  otelSdk.shutdown().finally(() => process.exit(0));
+});
+```
 
 ---
 
-## 4. Structured JSON Logging Schema
+## 5. Metrics Standards: RED & USE Methodologies
 
-```json
-{
-  "@timestamp": "2026-11-13T21:40:00.123Z",
-  "level": "ERROR",
-  "service": "billing-service",
-  "environment": "production",
-  "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
-  "span_id": "00f067aa0ba902b7",
-  "message": "Payment processing failed due to upstream gateway timeout",
-  "error": {
-    "type": "GatewayTimeoutError",
-    "message": "Stripe API did not respond within 3000ms"
-  },
-  "context": {
-    "customer_id": "cus_99812",
-    "order_id": "ord_5521",
-    "retry_attempt": 2
-  }
-}
-```
+### 5.1 The RED Method (Request-Oriented / Services)
+- **Rate**: Requests processed per second (`sum(rate(http_requests_total[1m]))`).
+- **Errors**: Number of failed requests (`sum(rate(http_requests_total{status=~"5.*"}[1m]))`).
+- **Duration**: Latency distributions (P50, P95, P99 via Prometheus histograms).
+
+### 5.2 The USE Method (Resource-Oriented / Infrastructure)
+- **Utilization**: Time resource is busy (CPU %, Memory %).
+- **Saturation**: Degree to which work is queued (run-queue length, thread pool backlog).
+- **Errors**: Hardware and kernel fault counts.
+
+---
+
+## 6. Verification Checklist & Production Audit
+
+- [ ] All services import and initialize OTel SDK before loading application dependencies.
+- [ ] W3C `traceparent` headers are injected and extracted across HTTP calls and message queues.
+- [ ] Application logs are formatted as structured JSON with injected `trace_id` and `span_id`.
+- [ ] RED metrics are configured with standard Grafana alert rules (p99 latency > 500ms, 5xx error rate > 0.5%).
+- [ ] Collector buffers traces and metrics locally to prevent application pauses during monitoring outages.
