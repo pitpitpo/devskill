@@ -2,7 +2,8 @@
 
 > **Classification**: Core Engineering Lifecycle Standard  
 > **Applicability**: Autonomous AI Agents, Coding Copilots, and Engineering Teams  
-> **Enforcement**: Mandatory phase progression; no phase may be bypassed without documented justification.
+> **Enforcement**: Mandatory phase progression; no phase may be bypassed without documented justification.  
+> **Core Philosophy**: "Deterministic Engineering Lifecycle: Never jump straight to code. Understand the problem, inspect real dependencies, plan surgically, verify with automated tests, and enforce the Definition of Done."
 
 ---
 

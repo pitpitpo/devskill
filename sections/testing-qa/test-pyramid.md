@@ -136,6 +136,27 @@ High line coverage ($> 90\%$) often masks poor assertions where assertions are m
 
 ---
 
+
+---
+
+## 5. Security & Performance Considerations
+
+| Dimension | Focus | Standard Protocol |
+| :--- | :--- | :--- |
+| **Test Secret Hygiene** | Credential Exposure | Never hardcode production API credentials in fixtures; use mocked keys |
+| **Parallel Execution** | Pipeline Speed | Shard test suites across CI worker containers using Vitest/Playwright sharding |
+| **Deterministic Isolation** | Flakiness | Ensure each test run utilizes isolated database schemas or transactions that roll back |
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Testing Implementation Details** | Asserting private class methods or state | Brittle tests that break on refactoring even when behavior is unchanged | Test public interface contracts and observable behavior |
+| **In-Memory SQLite for Postgres** | Using SQLite in tests while running Postgres in prod | Misses dialect-specific query bugs, JSONB errors, and locking anomalies | Use real PostgreSQL containers via Testcontainers |
+| **Excessive Mocking** | Mocking every collaborator in integration tests | Tests pass with 100% coverage, yet real system fails on deployment | Mock only external third-party network boundaries (e.g. Stripe, Twilio) |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] Unit test suite executes locally in $< 10$ seconds.

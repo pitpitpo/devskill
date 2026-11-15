@@ -91,6 +91,70 @@ When an urgent production regression occurs:
 
 ---
 
+
+---
+
+
+---
+
+## 4. Concrete Release Automation Configuration
+
+```json
+// .changeset/config.json
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "changelog": "@changesets/cli/changelog-github",
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
+```
+
+```yaml
+# .github/workflows/release.yml
+name: Release & Publish Packages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - name: Create Release Pull Request or Publish
+        uses: changesets/action@v1
+        with:
+          publish: npm run release:publish
+          version: npm run release:version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+```
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Manual Version Bumping** | Editing `package.json` version manually | Version conflicts, missing git tags, unrecorded changelogs | Automate releases via Changesets or semantic-release in CI |
+| **Breaking Changes in Minor Releases** | Introducing breaking API changes under SemVer MINOR | Breaks downstream consumers unexpectedly | Breaking changes mandate a SemVer MAJOR increment |
+| **Untracked Release Commits** | Pushing directly to release branches | Inability to reproduce exact production binaries | Every release must correspond to an immutable signed git tag |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] All commits on main follow Conventional Commits standard.

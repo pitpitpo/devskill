@@ -169,6 +169,27 @@ Integrate **Lighthouse CI (LHCI)** into GitHub Actions to fail PRs that regress 
 
 ---
 
+
+---
+
+## 5. Security & Performance Considerations
+
+| Area | Risk / Focus | Standard Guideline |
+| :--- | :--- | :--- |
+| **Third-Party Script Bloat** | Tag Manager / Analytics | Load non-critical analytics with `next/script` `strategy="lazyOnload"` |
+| **Font Blocking** | Render Delay | Preload subsetted web fonts (`woff2`) with `font-display: swap` |
+| **CSP Restrictions** | Script Injection | Enforce strict Content Security Policy with nonces; ban `unsafe-inline` |
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Unsized Media Elements** | Missing `width`/`height` on `<img>` | Massive layout shifts (CLS > 0.25) when image loads | Always declare explicit dimensions or CSS `aspect-ratio` |
+| **Monolithic JS Bundles** | Importing heavy libraries at root | High TBT and INP; users on mobile devices experience unresponsive UI | Use dynamic imports (`next/dynamic`) to lazy load heavy components |
+| **Lazy Loading Hero Image** | Setting `loading="lazy"` on above-the-fold hero | Severely regresses LCP score (> 3.5s) | Set `fetchpriority="high"` and `loading="eager"` on hero image |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] LCP target ($\le 2.5\text{s}$) verified on simulated mobile 4G network via Chrome DevTools.

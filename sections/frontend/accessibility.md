@@ -1,6 +1,17 @@
 # Accessibility (a11y) — Production Guide
 
-> Building inclusive applications that work for everyone. WCAG 2.2 AA compliance as the baseline.
+> Building inclusive applications that work for everyone. WCAG 2.2 AA compliance as the baseline.  
+> **Core Philosophy**: "Web Accessibility (WCAG 2.2 AA) is non-negotiable human inclusion and legal compliance. Semantic HTML first, ARIA only when semantics fall short, and test every interaction via keyboard alone."
+
+---
+
+## Security & Performance Considerations
+
+| Area | Focus | Standard Protocol |
+| :--- | :--- | :--- |
+| **Focus Hijacking & Trap Attacks** | Security | Modal dialogs must trap focus securely; closing the modal must restore focus to the trigger element without executing arbitrary script |
+| **DOM Tree Bloat** | Performance | Deep nested trees degrade screen reader virtual navigation; maintain shallow semantic hierarchies |
+| **Dynamic Announcement Saturation** | UX & Screen Reader Performance | Use `aria-live="polite"` for non-critical status updates to prevent interrupting assistive technology audio streams |
 
 ---
 
@@ -927,3 +938,15 @@ function DropdownMenu({ trigger, items }: DropdownMenuProps) {
 - [Inclusive Components](https://inclusive-components.design/)
 - [A11y Project Checklist](https://www.a11yproject.com/checklist/)
 - [Axe-core Rules](https://dequeuniversity.com/rules/axe/)
+
+
+---
+
+## 7. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Clickable Divs Without ARIA** | `<div onClick={...}>` instead of `<button>` | Inaccessible via keyboard navigation (Tab/Enter) and invisible to screen readers | Always use semantic HTML `<button>` or add `role="button"` and `tabIndex={0}` |
+| **Missing Form Input Labels** | Relying solely on `placeholder="..."` | Screen readers cannot announce field purpose when input contains text | Provide an explicit `<label htmlFor="id">` or `aria-label` |
+| **Outline None Without Custom Focus Ring** | `outline: none` in CSS | Keyboard users lose all visual focus indicator while tabbing | Use Tailwind `focus-visible:ring-2 focus-visible:ring-primary` |
+| **Color as Sole Information Channel** | Indicating error states only with red text | Inaccessible to colorblind users | Pair color with text labels, icons, and `aria-invalid="true"` |

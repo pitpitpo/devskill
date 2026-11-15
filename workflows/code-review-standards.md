@@ -80,6 +80,48 @@ Reviewers must prefix comments with conventional labels to indicate severity and
 
 ---
 
+
+---
+
+
+---
+
+## 4. Concrete Code Examples: High-Impact Review Patterns
+
+### 4.1 Flagging SQL Vulnerabilities (Blocking Issue)
+```markdown
+<!-- ✅ Conventional Comment Example -->
+**issue (security, blocking)**: Parameter interpolation flaw detected.
+Raw string concatenation in SQL queries permits injection bypass.
+Use parameterized binds:
+```typescript
+// ❌ BAD: SQL Injection risk
+const user = await db.query(`SELECT * FROM users WHERE email = '${input.email}'`);
+
+// ✅ GOOD: Parameterized prepared statement
+const user = await db.query('SELECT * FROM users WHERE email = $1', [input.email]);
+```
+
+### 4.2 Recommending O(1) Data Structures (Suggestion)
+```markdown
+<!-- ✅ Conventional Comment Example -->
+**suggestion (performance, non-blocking)**: 
+Array `.includes()` inside `.filter()` results in $O(N 	imes M)$ runtime complexity.
+Constructing a `Set` before iteration reduces lookup to $O(1)$ amortized:
+```typescript
+// ✅ GOOD: Optimized Set lookup
+const allowedIdSet = new Set(allowedIds);
+return items.filter(item => allowedIdSet.has(item.id));
+```
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Monolithic Mega-PRs** | Submitting > 1,000 lines of diff in a single PR | Review fatigue; bugs approved without proper inspection | Break into Stacked PRs (< 400 lines each) |
+| **Subjective Style Debates** | Debating formatting or import orders in review comments | Wastes senior engineering hours; delays delivery | Automate formatting and linting via CI tools (Prettier, Ruff) |
+| **Silent LGTM Approvals** | Rubber-stamping PRs without inspecting logic or tests | Production outages from uninspected edge cases | Enforce mandatory review checklists on critical paths |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] Automated linters and formatters pass in CI before review begins.

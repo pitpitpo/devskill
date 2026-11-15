@@ -170,13 +170,37 @@ impl Repository for PostgresUserRepo {
     type Error = sqlx::Error;
 
     fn find_by_id(&self, id: &str) -> Result<User, sqlx::Error> {
-        // implementation
-        todo!()
+        let user_id = id.to_string();
+        // In synchronous trait definition, block or query directly via runtime handle
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                sqlx::query_as!(
+                    User,
+                    "SELECT id, username, email FROM users WHERE id = $1",
+                    user_id
+                )
+                .fetch_one(&self.pool)
+                .await
+            })
+        })
     }
 
     fn save(&self, item: &User) -> Result<(), sqlx::Error> {
-        // implementation
-        todo!()
+        let user = item.clone();
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                sqlx::query!(
+                    "INSERT INTO users (id, username, email) VALUES ($1, $2, $3)
+                     ON CONFLICT (id) DO UPDATE SET username = EXCLUDED.username, email = EXCLUDED.email",
+                    user.id,
+                    user.username,
+                    user.email
+                )
+                .execute(&self.pool)
+                .await
+                .map(|_| ())
+            })
+        })
     }
 }
 ```

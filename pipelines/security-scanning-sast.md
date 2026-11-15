@@ -142,6 +142,17 @@ jobs:
 
 ---
 
+
+---
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Non-Blocking Security Scans** | Running scans with `continue-on-error: true` | Critical vulnerabilities merge to main unaddressed | Configure scanners with `exit-code: 1` on High/Critical findings |
+| **Ignoring Transitive Dependencies** | Scanning only direct dependencies in `package.json` | Deep supply-chain vulnerabilities slip through undetected | Always scan full lockfiles (`package-lock.json`, `poetry.lock`) |
+| **Scanning Without Secret Detection** | Relying only on SAST and omitting secret scanners | API keys and private certs leaked into public git history | Mandate Gitleaks or TruffleHog in pre-commit and CI |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] Secret detection (Gitleaks) runs on all branches and pre-commit hooks.

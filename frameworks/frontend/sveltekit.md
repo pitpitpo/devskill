@@ -156,3 +156,25 @@ export const actions: Actions = {
 - [ ] Component reactivity uses standard Svelte 5 Runes (`$state`, `$derived`, `$props`).
 - [ ] Production adapter is properly selected (`@sveltejs/adapter-node` or `@sveltejs/adapter-cloudflare`).
 - [ ] Secret credentials and environment variables are strictly restricted to `$env/static/private`.
+
+
+---
+
+## 4. Security & Performance Considerations
+
+| Dimension | Risk / Vector | Mitigation Protocol |
+| :--- | :--- | :--- |
+| **Secret Exposure** | Leaking private API keys to browser | Import secrets strictly from `$env/static/private` or `$env/dynamic/private` |
+| **Action CSRF** | Cross-Site Request Forgery | SvelteKit enables origin verification by default; never disable `csrf.checkOrigin` |
+| **Hydration Latency** | Heavy client JavaScript execution | Utilize Svelte 5 fine-grained Runes; avoid unnecessary stores |
+| **Server-Side Memory Leaks** | Module-level state shared across incoming requests | Never store user session data in file-scoped global variables |
+
+---
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Shared Global State on Server** | Declaring `let user = ...` in `+page.server.ts` | Data leakage between concurrent users (Critical Security P0) | Store request-specific state strictly inside `event.locals` |
+| **Bypassing Form Actions** | Using raw `fetch` inside `onMount` for mutations | Disables progressive enhancement; breaks when JS is disabled | Standardize on HTML `<form method="POST">` with `use:enhance` |
+| **Catch-All Error Masking** | Catching errors in `load` and returning empty object | Fails to trigger SvelteKit `+error.svelte` boundary | Call SvelteKit `error(status, message)` helper explicitly |

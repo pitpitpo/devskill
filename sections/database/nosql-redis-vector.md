@@ -138,6 +138,17 @@ PFCOUNT daily_visitors:2026-11-15
 
 ---
 
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Blocking Commands on Redis** | Running `KEYS *` or `FLUSHALL` in production | Freezes single-threaded Redis event loop; cascades timeouts | Use `SCAN` with bounded `COUNT` parameters |
+| **Unindexed Vector Columns** | Executing semantic search without HNSW/IVFFlat | High query latency (> 500ms) on datasets > 50,000 vectors | Create an HNSW index with calibrated `m` and `ef_construction` |
+| **Dual-Write Drift** | Writing to Postgres and Vector DB without outbox | Eventual inconsistency between relational truth and vector index | Use the Transactional Outbox pattern or CDC pipeline |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] Pgvector tables use HNSW indexes for high recall in latency-sensitive search paths.

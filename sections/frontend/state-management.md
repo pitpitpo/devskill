@@ -135,6 +135,27 @@ export const useUIStore = create<UIState>()(
 
 ---
 
+
+---
+
+## 5. Security & Performance Considerations
+
+| Area | Focus | Standard Guideline |
+| :--- | :--- | :--- |
+| **Sensitive State Storage** | Token Protection | Never persist authentication tokens or PII in unencrypted localStorage |
+| **Selector Subscriptions** | Render Performance | Always pass atomic selector functions (`useStore(s => s.item)`) to prevent full-tree re-renders |
+| **Query Deduplication** | Network Saturation | Configure `staleTime: 60000` to prevent redundant network fetches on tab focus |
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Duplicating Server Data in Client Store** | Copying TanStack Query data into Zustand | Out-of-sync state, double rendering, cache invalidation bugs | Read directly from TanStack Query cache; use client store only for UI state |
+| **Missing Selector Optimization** | Calling `const store = useStore()` | Component re-renders on ANY store update, even unrelated fields | Use precise selectors: `const isSidebarOpen = useStore(s => s.isSidebarOpen)` |
+| **Zero Stale-Time Default** | Leaving `staleTime: 0` in React Query | Unnecessary network requests triggered on every window focus | Set default `staleTime` to at least 30-60 seconds for general resources |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] All remote server data is managed via TanStack Query; no API data stored in Redux/Zustand.

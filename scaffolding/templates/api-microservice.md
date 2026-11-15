@@ -448,6 +448,17 @@ spec:
 
 ---
 
+
+---
+
+## 7. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Monolithic Shared Database** | Multiple microservices sharing a single database schema | Tightly couples services, preventing independent deployment and schema migrations | Database-per-service pattern; communicate via APIs or asynchronous event streams |
+| **Distributed Synchronous Cascades** | Service A calls B, which calls C, which calls D synchronously | Latency stacks up; single failure crashes the entire request chain | Use asynchronous messaging (Kafka/RabbitMQ) and Circuit Breakers |
+| **Missing Distributed Correlation** | Omitting W3C `traceparent` headers across service boundaries | Impossible to trace transactions across services in production logs | Propagate OpenTelemetry trace context on all outgoing HTTP and message calls |
+
 ## 9. Verification Checklist
 
 - [ ] Health endpoints (`/health/live`, `/health/ready`, `/health/startup`) respond correctly

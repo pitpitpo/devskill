@@ -96,6 +96,90 @@ Every P0/P1 incident requires a documented post-mortem within 48 hours focusing 
 
 ---
 
+
+---
+
+
+---
+
+## 2. Incident Command Architecture
+
+```
+                  ┌────────────────────────────────────────────────────────┐
+                  │                 INCIDENT COMMANDER (IC)                │
+                  │             Directs Strategy, Ownership & Cadence      │
+                  └──────────┬───────────────────────────────────┬─────────┘
+                             │                                   │
+                             ▼                                   ▼
+                  ┌────────────────────┐               ┌────────────────────┐
+                  │   TECHNICAL LEAD   │               │ COMMUNICATIONS     │
+                  │ Coordinates triage │               │ Public status page │
+                  │ & system rollbacks │               │ & executive briefs │
+                  └──────────┬─────────┘               └────────────────────┘
+                             │
+                             ▼
+                  ┌────────────────────┐
+                  │  SUBJECT EXPERTS   │
+                  │ SREs / DBAs / Devs │
+                  └────────────────────┘
+```
+
+---
+
+## 4. Concrete Mitigation Code: Automated Circuit Breakers & Fallbacks
+
+```typescript
+// lib/circuit-breaker.ts
+export class CircuitBreaker {
+  private failureCount = 0;
+  private state: "CLOSED" | "OPEN" | "HALF_OPEN" = "CLOSED";
+  private nextAttempt = Date.now();
+
+  constructor(
+    private readonly threshold = 5,
+    private readonly resetTimeoutMs = 30000
+  ) {}
+
+  async execute<T>(action: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {
+    if (this.state === "OPEN") {
+      if (Date.now() > this.nextAttempt) {
+        this.state = "HALF_OPEN";
+      } else {
+        // Fail fast: execute degraded fallback without overloading downstream
+        return fallback();
+      }
+    }
+
+    try {
+      const result = await action();
+      this.reset();
+      return result;
+    } catch (err) {
+      this.failureCount++;
+      if (this.failureCount >= this.threshold) {
+        this.state = "OPEN";
+        this.nextAttempt = Date.now() + this.resetTimeoutMs;
+        console.error(`[CIRCUIT BREAKER] Tripped OPEN for target service`);
+      }
+      return fallback();
+    }
+  }
+
+  private reset() {
+    this.failureCount = 0;
+    this.state = "CLOSED";
+  }
+}
+```
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Debugging Before Mitigating** | Trying to diagnose root cause while users are down | Prolongs MTTR; maximizes business and customer damage | Mitigate first (rollback, scale, divert); diagnose second |
+| **Blaming Individuals** | Finger-pointing in post-mortems | Silences transparency; engineers hide mistakes | Strictly blameless culture focusing on systemic safeguards |
+| **Unassigned Post-Mortem Actions** | Action items created without owners or due dates | Same failure reoccurs within 3 months | Every action item must be a SMART ticket assigned to a sprint |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] On-call rotation is staffed with automated PagerDuty/Opsgenie paging schedules.

@@ -104,6 +104,54 @@ autovacuum_vacuum_cost_delay = 2ms
 
 ---
 
+
+---
+
+
+---
+
+## 2. PostgreSQL Storage Engine & Process Architecture
+
+```
+                  ┌────────────────────────────────────────────────────────┐
+                  │                 POSTGRESQL POSTMASTER                  │
+                  │             (Main Coordinator Process)                 │
+                  └──────────────────────────┬─────────────────────────────┘
+                                             │ Forks per client connection
+                                             ▼
+                  ┌────────────────────────────────────────────────────────┐
+                  │            BACKEND WORKER PROCESSES (RAM)              │
+                  │  work_mem • maintenance_work_mem • temp_buffers        │
+                  └──────────────────────────┬─────────────────────────────┘
+                                             │ Reads / Writes
+                                             ▼
+                  ┌────────────────────────────────────────────────────────┐
+                  │                  SHARED BUFFERS (RAM)                  │
+                  │             Buffer Table • Clock-Sweep LRU             │
+                  └──────────┬───────────────────────────────────┬─────────┘
+                             │                                   │
+                             ▼                                   ▼
+                  ┌────────────────────┐               ┌────────────────────┐
+                  │  WAL BUFFERS &     │               │ TABLE HEAP & INDEX │
+                  │  WAL WRITER        │               │ Checkpointer / OS  │
+                  └──────────┬─────────┘               └─────────┬──────────┘
+                             │                                   │
+                             ▼                                   ▼
+                  ┌────────────────────┐               ┌────────────────────┐
+                  │ WAL Disk Files     │               │ 8KB Data Pages     │
+                  │ (pg_wal / SSD)     │               │ (base/oid / SSD)   │
+                  └────────────────────┘               └────────────────────┘
+```
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Unindexed Foreign Keys** | Creating `REFERENCES` without index | Full table scans during cascades and child lookups; table lockups | Explicitly index all foreign key columns |
+| **Massive Offset Pagination** | `OFFSET 500000 LIMIT 20` | Database scans 500,020 rows, thrashing memory and CPU | Use Keyset (cursor) pagination: `WHERE id > :last_id ORDER BY id LIMIT 20` |
+| **DDL Table Locking in Peak Hours** | Running `ALTER TABLE ADD COLUMN ... DEFAULT ...` or non-concurrent index | Exclusive table lock freezes all web requests | Use `CREATE INDEX CONCURRENTLY` and safe migration protocols |
+| **Idle in Transaction Connections** | Unclosed transactions held by application threads | Prevents autovacuum from cleaning dead tuples; leads to freeze risk | Set `idle_in_transaction_session_timeout = '60s'` |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] All foreign keys have explicit supporting B-Tree indexes.

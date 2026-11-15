@@ -2,7 +2,7 @@
   "name": "devskill",
   "version": "1.0.0",
   "description": "Production-Grade Engineering Standards, Architectural Blueprints & Decision Matrices",
-  "total_documents": 75,
+  "total_documents": 76,
   "modules": {
     "core": [
       {
@@ -125,7 +125,7 @@
       {
         "path": "frameworks/frontend/nextjs.md",
         "title": "\u26a1 Production Next.js 15 App Router & React Server Components Mastery",
-        "lines": 174
+        "lines": 197
       },
       {
         "path": "frameworks/frontend/react.md",
@@ -135,12 +135,12 @@
       {
         "path": "frameworks/frontend/sveltekit.md",
         "title": "\ud83e\udde1 Svelte 5 Runes & SvelteKit Fullstack Production Architecture",
-        "lines": 158
+        "lines": 180
       },
       {
         "path": "frameworks/frontend/tailwindcss.md",
         "title": "\ud83c\udfa8 Enterprise Tailwind CSS v3/v4 & Design Token Architecture",
-        "lines": 160
+        "lines": 182
       },
       {
         "path": "frameworks/frontend/vue-nuxt.md",
@@ -155,7 +155,7 @@
       {
         "path": "frameworks/mobile/react-native-expo.md",
         "title": "\ud83d\udcf1 Enterprise React Native & Expo Production Engineering Standards",
-        "lines": 221
+        "lines": 233
       }
     ],
     "languages": [
@@ -182,7 +182,7 @@
       {
         "path": "languages/rust.md",
         "title": "\ud83e\udd80 Rust Production Standard (`rust.md`)",
-        "lines": 1039
+        "lines": 1063
       },
       {
         "path": "languages/sql.md",
@@ -204,12 +204,12 @@
       {
         "path": "pipelines/deployment-strategies.md",
         "title": "\ud83d\udea2 Production Deployment Strategies: Blue/Green, Canary & Progressive Delivery",
-        "lines": 160
+        "lines": 181
       },
       {
         "path": "pipelines/github-actions.md",
         "title": "\u26a1 Production GitHub Actions CI/CD Pipeline Architecture",
-        "lines": 152
+        "lines": 164
       },
       {
         "path": "pipelines/gitlab-ci.md",
@@ -219,7 +219,7 @@
       {
         "path": "pipelines/security-scanning-sast.md",
         "title": "\ud83d\udee1\ufe0f Shift-Left Security: SAST, DAST, SCA & Container Scanning Automation",
-        "lines": 151
+        "lines": 162
       }
     ],
     "scaffolding": [
@@ -231,22 +231,22 @@
       {
         "path": "scaffolding/templates/api-microservice.md",
         "title": "\ud83d\udd0c Production API Microservice Blueprint",
-        "lines": 464
+        "lines": 475
       },
       {
         "path": "scaffolding/templates/enterprise-modular-monolith.md",
         "title": "\ud83c\udfdb\ufe0f Architecture Blueprint: Enterprise Modular Monolith",
-        "lines": 135
+        "lines": 157
       },
       {
         "path": "scaffolding/templates/fullstack-nextjs-fastapi.md",
         "title": "\ud83d\ude80 Architecture Blueprint: Fullstack Next.js 15 App Router + Python FastAPI",
-        "lines": 174
+        "lines": 185
       },
       {
         "path": "scaffolding/templates/saas-multi-tenant.md",
         "title": "\ud83c\udfe2 SaaS Multi-Tenant Architecture Blueprint",
-        "lines": 484
+        "lines": 495
       }
     ],
     "sections": [
@@ -288,12 +288,12 @@
       {
         "path": "sections/database/nosql-redis-vector.md",
         "title": "\ud83e\uddec Polyglot Persistence: Redis, Vector Databases & NoSQL Mastery",
-        "lines": 147
+        "lines": 158
       },
       {
         "path": "sections/database/postgresql-mastery.md",
         "title": "\ud83d\udc18 Enterprise PostgreSQL Mastery: Internals, Indexing & Query Tuning",
-        "lines": 114
+        "lines": 162
       },
       {
         "path": "sections/database/schema-migrations.md",
@@ -303,7 +303,7 @@
       {
         "path": "sections/devops-infrastructure/docker-containers.md",
         "title": "\ud83d\udc33 Production Docker Containerization & Security Hardening",
-        "lines": 138
+        "lines": 150
       },
       {
         "path": "sections/devops-infrastructure/kubernetes-cloud.md",
@@ -313,7 +313,7 @@
       {
         "path": "sections/devops-infrastructure/observability-telemetry.md",
         "title": "\ud83d\udcca Distributed Observability: OpenTelemetry, Prometheus & Distributed Tracing",
-        "lines": 118
+        "lines": 139
       },
       {
         "path": "sections/devops-infrastructure/terraform-iac.md",
@@ -321,19 +321,24 @@
         "lines": 1119
       },
       {
+        "path": "sections/frontend/accessibility-a11y.md",
+        "title": "Accessibility (a11y) \u2014 Production Guide",
+        "lines": 952
+      },
+      {
         "path": "sections/frontend/accessibility.md",
         "title": "Accessibility (a11y) \u2014 Production Guide",
-        "lines": 929
+        "lines": 952
       },
       {
         "path": "sections/frontend/state-management.md",
         "title": "\ud83c\udf10 Modern Frontend State Management Architecture",
-        "lines": 144
+        "lines": 165
       },
       {
         "path": "sections/frontend/web-performance.md",
         "title": "\u26a1 Web Performance & Core Web Vitals (CWV) Industrial Engineering",
-        "lines": 180
+        "lines": 201
       },
       {
         "path": "sections/testing-qa/e2e-playwright.md",
@@ -348,7 +353,7 @@
       {
         "path": "sections/testing-qa/test-pyramid.md",
         "title": "\ud83e\uddea The Industrial Test Pyramid: Unit, Integration, Contract & E2E Strategies",
-        "lines": 145
+        "lines": 166
       }
     ],
     "workflows": [
@@ -360,12 +365,12 @@
       {
         "path": "workflows/WORKFLOW.md",
         "title": "\ud83d\udd04 8-Phase Engineering Workflow & Systematic Debugging Protocol (`workflows/WORKFLOW.md`)",
-        "lines": 256
+        "lines": 257
       },
       {
         "path": "workflows/code-review-standards.md",
         "title": "\ud83d\udd0d Senior Engineering Code Review Standards & PR Hygiene",
-        "lines": 88
+        "lines": 130
       },
       {
         "path": "workflows/feature-flags.md",
@@ -375,17 +380,17 @@
       {
         "path": "workflows/git-branching-pr.md",
         "title": "\ud83c\udf3f Trunk-Based Development, Git Branching & PR Hygiene",
-        "lines": 103
+        "lines": 166
       },
       {
         "path": "workflows/incident-response.md",
         "title": "\ud83d\udea8 Industrial Incident Response, On-Call Runbooks & Blameless Post-Mortems",
-        "lines": 104
+        "lines": 188
       },
       {
         "path": "workflows/release-versioning.md",
         "title": "\ud83c\udff7\ufe0f Semantic Versioning, Automated Releases & Changelog Governance",
-        "lines": 100
+        "lines": 164
       }
     ]
   }

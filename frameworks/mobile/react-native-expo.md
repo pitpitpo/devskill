@@ -211,6 +211,18 @@ export function OrderHistoryList({ orders }: { orders: Order[] }) {
 
 ---
 
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Animating on JavaScript Thread** | Using standard React state for animations | Heavy frame drops and jitter under network or computational load | Use `react-native-reanimated` worklets running on UI thread |
+| **Unbounded List Rendering** | Using `ScrollView` or un-optimized `FlatList` for 1,000+ items | Memory explosion, app crashes with Out-Of-Memory on mobile devices | Standardize on `@shopify/flash-list` with calibrated `estimatedItemSize` |
+| **Storing Secrets in Plaintext** | Saving JWTs or user tokens in `AsyncStorage` | Accessible to device root exploits and OS backup tools | Store all credentials in hardware-backed `expo-secure-store` |
+| **Over-The-Air (OTA) Native Desync** | Pushing JS updates that require new native pods | Immediate app crash on user launch | Enforce runtime version policies matching native app version |
+
 ## 7. Verification Checklist & Production Audit
 
 - [ ] New Architecture (Fabric + TurboModules) and Hermès engine are enabled in `app.json`.

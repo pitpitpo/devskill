@@ -151,6 +151,27 @@ Application deployments cannot roll out safely if database schema changes break 
 
 ---
 
+
+---
+
+## 5. Security & Performance Considerations
+
+| Area | Focus | Standard Guideline |
+| :--- | :--- | :--- |
+| **Zero-Downtime Drainage** | Traffic Loss Prevention | Configure `preStop` sleep hook (15s) ensuring ingress deregistration |
+| **Automated Metric Rollback** | Outage Containment | Abort canary rollout immediately if error rate exceeds 0.1% |
+| **RBAC Deployment Gate** | Unauthorized Deployments | Restrict production deployment pipelines to signed tags and approved environments |
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Dropping Capacity During Rollout** | Setting `maxUnavailable: 25%` on small fleet | Traffic overwhelms remaining pods, causing cascading HTTP 503 errors | Configure `maxUnavailable: 0` and `maxSurge: 25%` |
+| **Breaking DB Migrations** | Renaming database column in same release | Old pods crash instantly before new pods finish deploying | Always use the multi-phase Expand/Contract migration pattern |
+| **Missing Readiness Probes** | Pod declared ready before warming cache/connections | User traffic routed to cold pod, causing timeout spikes | Configure realistic `readinessProbe` with `initialDelaySeconds` |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] Deployments configure `maxUnavailable: 0` to prevent drop in capacity during rollout.

@@ -61,6 +61,22 @@ Every commit message on a branch or squashed PR must follow the [Conventional Co
 
 ---
 
+
+### 3.1 Conventional Commit Verification Script
+```bash
+#!/usr/bin/env bash
+# .husky/commit-msg: Enforce Conventional Commits locally
+commit_msg=$(cat "$1")
+pattern="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_\-]+\))?!?: .+$"
+
+if ! [[ "$commit_msg" =~ $pattern ]]; then
+  echo "❌ ERROR: Commit message does not adhere to Conventional Commits standard."
+  echo "Format: <type>(<scope>): <subject>"
+  echo "Example: feat(auth): implement OIDC token rotation"
+  exit 1
+fi
+```
+
 ## 4. Stacked Pull Requests Pattern
 
 When building a large, complex feature that requires 1,500 lines of code:
@@ -93,6 +109,53 @@ Use tools like `gh-stack` or Graphite to manage git branch rebasing automaticall
 - Solves the "merge race condition" where two independent PRs pass CI individually but break `main` when merged together. The merge queue tests PRs speculatively in series against the latest merged trunk before merging.
 
 ---
+
+
+---
+
+
+---
+
+## 2. Git Branching Topology & Stacked PR Architecture
+
+```
+                               ┌──────────────────────────────────────────────┐
+                               │                 TRUNK (MAIN)                 │
+                               │           Always Deployable / Protected      │
+                               └──────────────────────┬───────────────────────┘
+                                                      │
+                       ┌──────────────────────────────┴──────────────────────────────┐
+                       │ Linear Branching (Short-Lived: < 24-48h)                    │
+                       ▼                                                             ▼
+            ┌──────────────────────┐                                      ┌──────────────────────┐
+            │   PR 1: feat(core)   │                                      │   PR 3: fix(auth)    │
+            │   Add DB Migration   │                                      │   Patch Token Expiry │
+            └──────────┬───────────┘                                      └──────────────────────┘
+                       │ Stacked Dependency
+                       ▼
+            ┌──────────────────────┐
+            │   PR 2: feat(api)    │
+            │   Add Service Logic  │
+            └──────────────────────┘
+```
+
+---
+
+## 5. Security & Performance Considerations
+
+| Concern | Risk / Bottleneck | Production Enforcement |
+| :--- | :--- | :--- |
+| **Branch Divergence** | Merge conflicts & drift | Rebase feature branches onto latest `origin/main` daily; discard branches $> 48	ext{h}$ old |
+| **Secret Ingestion** | Leaking credentials in commits | Pre-commit Git hook executing Gitleaks scanner; block commit before writing to git ref |
+| **Monolithic PRs** | Review blind spots & defect escapes | Strict PR size limit: Max 400 lines of functional diff; split larger features into stacked PRs |
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Long-Lived Feature Branches** | Keeping branches open for weeks | Painful merge conflicts; delayed integration feedback | Trunk-based development; merge daily behind feature flags |
+| **Direct Commits to Main** | Bypassing PR review and CI gates | Unverified code breaks production trunk | Protect `main` branch with mandatory review and CI approvals |
+| **Vague Commit Messages** | Writing commits like `fix bug` or `updates` | Untrackable git history; automated changelog tools fail | Enforce Conventional Commits (`type(scope): description`) |
 
 ## 6. Verification Checklist & Production Audit
 

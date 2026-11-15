@@ -143,6 +143,18 @@ jobs:
 
 ---
 
+
+---
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Static Cloud Credentials** | Storing `AWS_ACCESS_KEY_ID` in GitHub Secrets | Key compromise leads to persistent unauthorized cloud access | Use OIDC token federation with short-lived session roles |
+| **Mutable Action Tags** | Using `uses: actions/checkout@v4` | Upstream supply-chain tag takeover can inject malicious code | Pin third-party actions to immutable 40-character commit SHAs |
+| **Redundant Concurrent Builds** | Missing `concurrency` configuration | Exhausts GitHub Actions runner minutes; older runs overwrite newer | Configure `concurrency.cancel-in-progress: true` for PR branches |
+| **Uncached Dependencies** | Re-downloading npm/pip packages on every run | Wastes 2-5 minutes per CI run | Use native setup action caching (`cache: 'npm'` or `actions/cache`) |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] `concurrency` block with `cancel-in-progress` prevents redundant CI runs on PR update.

@@ -109,6 +109,27 @@ process.on("SIGTERM", () => {
 
 ---
 
+
+---
+
+## 5. Security & Performance Considerations
+
+| Dimension | Risk / Vector | Production Defense |
+| :--- | :--- | :--- |
+| **PII in Spans & Logs** | Leaking passwords, tokens, or credit cards | Sanitization filters in OTel Collector stripping sensitive attributes |
+| **Telemetry Overhead** | Excessive CPU/network consumption from tracing | Configure Head-Based and Tail-Based Sampling (sample 5-10% of 2xx, 100% of 5xx) |
+| **High Cardinality Metrics** | Injecting user IDs or UUIDs into Prometheus labels | Memory explosion in Prometheus; strictly restrict metric labels to low-cardinality enums |
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **High-Cardinality Label Spikes** | Adding `user_id` as Prometheus label | Prometheus OOM crash due to millions of time-series series | Store high-cardinality identifiers in trace spans, not metrics |
+| **Unsampled Full Tracing** | 100% trace sampling on 50,000 req/sec | Collector network saturation, massive storage costs | Implement probabilistic or tail-based sampling rules |
+| **Unstructured Logging** | Writing freeform string messages | Inability to query logs by fields; broken log aggregation | Enforce machine-readable JSON logs with trace correlation IDs |
+
 ## 6. Verification Checklist & Production Audit
 
 - [ ] All services import and initialize OTel SDK before loading application dependencies.

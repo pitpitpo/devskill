@@ -128,6 +128,18 @@ ENTRYPOINT ["/api-service"]
 
 ---
 
+
+---
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Running as Root** | Missing `USER` directive in Dockerfile | Container escape grants root access to underlying host VM | Always specify unprivileged user (`USER 10001:10001` or `nonroot`) |
+| **Including Build Tools in Runtime** | Single-stage Dockerfile containing gcc/npm/git | Massive image size (1GB+) and critical vulnerability surface | Multi-stage build with distroless runtime stage |
+| **Baking Secrets into Image** | `ENV SECRET=xyz` or `COPY .env .` in Dockerfile | Secret stored permanently in Docker image layer history | Mount secrets at runtime via Kubernetes Secrets or Docker secrets |
+| **Using Latest Tag** | `FROM node:latest` | Non-deterministic builds; upstream breaking changes break CI | Pin base images to immutable SHA digests or specific LTS tags |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] All Dockerfiles use multi-stage builds separating compilation from runtime.

@@ -469,6 +469,17 @@ saas-platform/
 
 ---
 
+
+---
+
+## 7. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Missing Tenant Scoping in ORM Queries** | Querying entities without `WHERE tenant_id = :id` | Catastrophic multi-tenant data leakage (Severe P0 Security Breach) | Enforce PostgreSQL Row-Level Security (RLS) or tenant-aware repository base classes |
+| **Tenant Noisy Neighbor Saturation** | Single high-volume tenant exhausting connection pool or CPU | Degrades application performance for all other tenants | Implement per-tenant rate limiting and dedicated queue priority lanes |
+| **Hardcoded Tenant Storage Keys** | Unpartitioned cache keys in Redis | Tenant A overwrites Tenant B cached sessions | Prefix all cache keys with tenant ID: `{tenant_id}:resource:{id}` |
+
 ## 8. Verification Checklist
 
 - [ ] RLS policies enabled on ALL tenant-scoped tables

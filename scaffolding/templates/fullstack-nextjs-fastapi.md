@@ -165,6 +165,17 @@ volumes:
 
 ---
 
+
+---
+
+## 5. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Manual TypeScript Type Sync** | Hand-writing TypeScript types for backend models | Schema drift leads to silent frontend runtime crashes | Automate type generation via `openapi-typescript` on build |
+| **Exposing Internal API to Browser** | Calling FastAPI directly from client without auth proxy | Bypasses Next.js edge caching and exposes private service topology | Proxy through Next.js Route Handlers or Server Actions |
+| **Missing Asyncpg Connection Limits** | Unbounded database connection creation in FastAPI | Starves PostgreSQL connection pool under burst traffic | Configure explicit `max_size` on `create_async_engine` |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] OpenAPI schema updates automatically trigger TypeScript type regeneration in CI.

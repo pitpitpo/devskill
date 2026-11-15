@@ -126,6 +126,28 @@ When a module experiences radically different scaling requirements or requires a
 
 ---
 
+
+---
+
+
+---
+
+## 5. Security & Performance Considerations
+
+| Category | Focus Area | Production Standard |
+| :--- | :--- | :--- |
+| **Cross-Module Authorization** | Security Boundary | Modules must enforce independent permission guards; identity tokens must be passed and validated at public module interfaces |
+| **In-Memory Event Bus Saturation** | Performance & Backpressure | Bound asynchronous event queues; if event volume exceeds 1,000/s, transition dispatcher to Redis or Kafka broker |
+| **Schema Connection Sizing** | Database Isolation | Slices of the connection pool must be calibrated so high-activity modules (e.g. catalog) cannot starve critical modules (billing) |
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Cross-Schema SQL Joins** | Querying another module's database tables | Destroys domain boundaries; impossible to extract into microservice | Communicate exclusively via module APIs or async domain events |
+| **Direct Entity Mutation** | Module A calling `db.update(ModuleBEntity)` | Undocumented side effects, broken invariants, high coupling | Modules mutate only their own domain aggregates |
+| **Circular Module Dependencies** | Module A imports B; Module B imports A | Spaghetti architecture, build-time cyclic import errors | Enforce unidirectional dependency flow; extract shared types |
+
 ## 7. Verification Checklist & Production Audit
 
 - [ ] Linter rules (`eslint-plugin-boundaries` or ArchUnit) fail CI on cross-module internal file imports.

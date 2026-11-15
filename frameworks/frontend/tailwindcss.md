@@ -151,6 +151,28 @@ export default config;
 
 ---
 
+
+---
+
+## 5. Security & Performance Considerations
+
+| Area | Focus | Standard Guideline |
+| :--- | :--- | :--- |
+| **JIT Purge Optimization** | Bundle Size | Ensure `content` globs in `tailwind.config.ts` match all TSX files to purge unused utilities |
+| **Specificity Clashes** | Visual Regression | Always pass dynamic classes through `cn()` (`tailwind-merge` + `clsx`) |
+| **CSS Injection** | User-controlled style input | Never interpolate user-generated input directly into class names |
+| **Render Performance** | Paint Cost | Avoid excessive nested CSS filter backdrops and expensive box shadows |
+
+---
+
+## 6. Common Pitfalls & Anti-Patterns
+
+| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
+| :--- | :--- | :--- | :--- |
+| **Dynamic String Concatenation** | Writing `text-${color}-500` in templates | Tailwind JIT cannot detect dynamic string, resulting in uncompiled missing CSS | Write full literal strings or use lookup maps: `{ red: "text-red-500", blue: "text-blue-500" }` |
+| **Arbitrary Value Proliferation** | Abusing `w-[347px]` and `mt-[13px]` | Shatters design system cohesion, inflates CSS bundle | Restrict spacing and sizing to the standardized theme grid |
+| **Direct Class Concatenation** | Using template literals `${base} ${override}` | Specificity collisions cause unpredictable styling | Merge variants through `cva()` and `tailwind-merge` (`cn(...)`) |
+
 ## 5. Verification Checklist & Production Audit
 
 - [ ] All reusable component primitives utilize `cva` and `cn` (`tailwind-merge` + `clsx`).
