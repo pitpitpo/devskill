@@ -8,4 +8,5 @@ This directory provides deep idiomatic conventions, strict type standards, memor
 - [`python.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/python.md): Modern Python 3.11+, complete type hinting, Ruff linter/formatter, UV package manager, and AsyncIO.
 - [`golang.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/golang.md): Idiomatic Go, error handling, Goroutines and channels, context propagation, and interface design.
 - [`rust.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/rust.md): Ownership, lifetimes, Result/Option handling with `anyhow`/`thiserror`, Tokio async runtime.
+- [`java.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/java.md): Modern Java 21+ LTS, Records, Sealed Classes, Pattern Matching, Virtual Threads, Structured Concurrency, and GraalVM native images.
 - [`sql.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/sql.md): ANSI SQL, CTEs, Window functions, index-friendly predicates, and ACID transaction locks.

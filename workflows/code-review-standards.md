@@ -1,35 +1,88 @@
-# 👁️ Code Review Standards & Rubric (`code-review-standards.md`)
+# 🔍 Senior Engineering Code Review Standards & PR Hygiene
 
-> **Classification**: Engineering Quality & Peer Review Standard  
-> **Target**: Senior Engineers, Staff Architects, Automated Code Review Agents
-
----
-
-## 1. The Review Rubric
-
-Reviewers must prioritize evaluation in the following order:
-
-```
-1. CORRECTNESS & LOGIC   ──► Does it solve the business problem? Edge cases handled?
-2. SECURITY & PERM.     ──► Any OWASP flaws, IDOR, SQLi, secret leaks, missing auth?
-3. ARCHITECTURAL FIT    ──► Does it violate RULES.md or layer boundaries?
-4. PERFORMANCE & DATA   ──► Are queries indexed? N+1 queries prevented? Memory leaks?
-5. MAINTAINABILITY      ──► Readable naming, test coverage, self-documenting?
-6. STYLE & FORMATTING   ──► DELEGATED TO CI LINTERS (Humans never argue formatting)
-```
+> **Standard Identifier**: `WF-CODE-REVIEW-001`  
+> **Status**: Active / Production Standard  
+> **Target Audience**: Software Engineers, Tech Leads, Engineering Managers  
+> **Classification**: Level 4 Workflow Standard  
 
 ---
 
-## 2. Standardized Comment Prefixes
+## 1. Executive Summary & Core Philosophy
 
-Reviewers must prefix comments to clarify whether an item is blocking or informational:
+> **Golden Rule**: *Code review is a critical engineering quality gate, collective code ownership mechanism, and architecture alignment checkpoint. It is not a forum for subjective style debates or nitpicking formatting. Automate syntax in CI; focus human reviews on system architecture, security invariants, data modeling, and failure modes.*
 
-| Prefix | Meaning | Action Required by Author |
-|---|---|---|
-| `[BLOCKER]` | Critical bug, security risk, architectural violation | Must resolve before merge |
-| `[SUGGESTION]`| Better alternative, cleaner pattern | Consider; author can explain or adopt |
-| `[QUESTION]` | Inquiring about design rationale | Provide explanation |
-| `[NIT]` | Trivial polish (naming, typo in comment) | Optional; does not block merge |
+High-velocity engineering teams maintain high code quality by enforcing clear review SLAs, structured comment conventions, and small batch sizes (< 400 lines of diff per PR).
 
-### Example:
-> `[BLOCKER]` This SQL query uses string concatenation for `search_term`. Please replace with parameterized `$1` placeholder to prevent SQL injection.
+---
+
+## 2. The Conventional Comments Standard
+
+Reviewers must prefix comments with conventional labels to indicate severity and actionability:
+
+| Label | Meaning | Blocking? | Example |
+| :--- | :--- | :--- | :--- |
+| **`issue`** | A critical bug, security vulnerability, data race, or logic error | **Yes (Blocking)** | `issue: This query is vulnerable to SQL injection because raw user input is concatenated.` |
+| **`suggestion`** | A cleaner or more idiomatic alternative implementation | **Optional** | `suggestion: We could use a Set lookup here to reduce time complexity from O(N^2) to O(N).` |
+| **`question`** | Seeking clarification on intent or requirement | **Requires Reply** | `question: How does this endpoint handle concurrent updates from multiple browser tabs?` |
+| **`nitpick`** | Minor polish (naming, comment wording) | **No** | `nitpick: Consider renaming 'data' to 'activeCustomers' for clarity.` |
+| **`praise`** | Commending clean abstractions, thorough tests, or performance wins | **No** | `praise: Great job covering the edge case where the webhook arrives before the order row exists!` |
+
+---
+
+## 3. Senior Reviewer Comprehensive Checklist
+
+### 3.1 Architecture & Design
+- [ ] Does the change adhere to the single-responsibility principle?
+- [ ] Are domain boundaries respected without cyclic dependencies between modules?
+- [ ] Is there an existing utility or library that already solves this problem?
+
+### 3.2 Security & Data Integrity
+- [ ] Are all database queries parameterized? Zero raw string interpolations.
+- [ ] Are authorization checks performed at the object level (BOLA / IDOR protection)?
+- [ ] Are sensitive fields (passwords, tokens, PII) excluded from logs and error traces?
+
+### 3.3 Concurrency & Distributed Systems
+- [ ] Are race conditions possible in concurrent write paths?
+- [ ] Are distributed locks, atomic database operations, or idempotency keys utilized where needed?
+- [ ] What happens if an external network dependency (Stripe, Twilio) experiences 10-second latency? Are timeouts bounded?
+
+### 3.4 Performance & Database
+- [ ] Are database foreign keys indexed?
+- [ ] Are there hidden N+1 queries in serializers or entity mappers?
+- [ ] Is data fetching paginated with reasonable max bounds?
+
+### 3.5 Testing & Verification
+- [ ] Does the PR include automated tests proving the bug is fixed or feature functions?
+- [ ] Are edge cases tested (empty arrays, boundary numbers, null values)?
+- [ ] Are integration tests running against realistic test containers rather than excessive mocks?
+
+---
+
+## 4. Reviewer & Author Responsibilities and SLAs
+
+```
+   ┌─────────────────────────────────────────────────────────┐
+   │                    REVIEW TIMELINE                      │
+   └────────────────────────────┬────────────────────────────┘
+                                │
+     Author: Creates PR < 400 lines with description & test evidence
+                                ▼
+     CI: Automated lint, typecheck, tests, and security scans (< 5m)
+                                ▼
+     Reviewer SLA: First substantive review within 4 business hours
+                                ▼
+     Resolution: Author resolves blocking issues; Reviewer re-reviews
+```
+
+- **PR Batch Size**: Under 400 lines of diff (excluding lockfiles and generated fixtures). Large features must be broken into stacked PRs.
+- **Review SLA**: First response within 4 hours during business days.
+- **Approval Policy**: Minimum of 1 approved review from a code owner; zero unresolved blocking `issue` comments.
+
+---
+
+## 5. Verification Checklist & Production Audit
+
+- [ ] Automated linters and formatters pass in CI before review begins.
+- [ ] All comments use Conventional Comments syntax.
+- [ ] PR description includes motivation, architectural summary, and reproduction/verification steps.
+- [ ] Author never merges their own PR without required peer approval.

@@ -1,3 +1,12 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# .github-ci-template.yml — Universal GitHub Actions CI/CD Pipeline
+# ──────────────────────────────────────────────────────────────────────────────
+# Pipeline stages: Lint → Typecheck → Test → Build → Security Scan → Deploy
+#
+# Copy to your repo as `.github/workflows/ci.yml` and customize.
+# Supports: Node.js/TypeScript, Python, Go (matrix strategy)
+# ──────────────────────────────────────────────────────────────────────────────
+
 name: CI Pipeline
 
 on:
@@ -5,15 +14,429 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "Deployment target"
+        required: false
+        default: "none"
+        type: choice
+        options:
+          - none
+          - staging
+          - production
+
+# ── Concurrency ──────────────────────────────────────────────────────────────
+# Cancel in-progress runs for the same branch/PR (save CI minutes)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# ── Permissions (least-privilege) ────────────────────────────────────────────
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write     # For uploading SARIF to Security tab
+  id-token: write            # For OIDC-based deployment (AWS/GCP/Azure)
+
+# ── Environment Variables ────────────────────────────────────────────────────
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.12"
+  GO_VERSION: "1.22"
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  # Cache keys
+  CACHE_PREFIX: v1
+
+# ══════════════════════════════════════════════════════════════════════════════
+# JOBS
+# ══════════════════════════════════════════════════════════════════════════════
 
 jobs:
-  validate:
-    name: Lint & Typecheck
+
+  # ── 1. Lint ──────────────────────────────────────────────────────────────
+  lint:
+    name: "🔍 Lint"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node / Python / Go
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for diff-based linting
+
+      # ── Node.js / TypeScript linting ─────────────────────────────────────
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: echo "Run project-specific linting and typecheck here"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          # cache: "pnpm"   # Uncomment if using pnpm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+        # run: pnpm install --frozen-lockfile   # Uncomment if using pnpm
+
+      - name: ESLint
+        run: npx eslint . --max-warnings=0 --format=json --output-file=eslint-report.json
+        continue-on-error: true
+
+      - name: Prettier check
+        run: npx prettier --check "**/*.{ts,tsx,js,jsx,json,yaml,yml,md,css,scss}"
+
+      # ── Python linting ──────────────────────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Ruff lint + format check
+        run: |
+          pip install ruff>=0.8.0
+          ruff check . --output-format=github
+          ruff format . --check
+
+      # ── Go linting ─────────────────────────────────────────────────────
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
+
+      # ── Commit message lint ────────────────────────────────────────────
+      - name: Commitlint (Conventional Commits)
+        if: github.event_name == 'pull_request'
+        run: |
+          npm install -g @commitlint/cli @commitlint/config-conventional
+          echo 'module.exports = { extends: ["@commitlint/config-conventional"] };' > commitlint.config.cjs
+          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+
+  # ── 2. Typecheck ─────────────────────────────────────────────────────────
+  typecheck:
+    name: "🔬 Typecheck"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── TypeScript ───────────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: TypeScript typecheck
+        run: npx tsc --noEmit --pretty
+
+      # ── Python (mypy) ──────────────────────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt 2>/dev/null || true
+          pip install mypy>=1.11
+      - name: mypy strict typecheck
+        run: mypy . --strict --ignore-missing-imports
+        continue-on-error: true  # Remove once all stubs are in place
+
+  # ── 3. Test (Matrix Strategy) ────────────────────────────────────────────
+  test:
+    name: "🧪 Test (${{ matrix.lang }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [typecheck]
+    strategy:
+      fail-fast: false
+      matrix:
+        lang: [node, python, go]
+        include:
+          - lang: node
+            setup: |
+              npm ci
+            test_cmd: npm run test -- --ci --coverage --maxWorkers=2
+            coverage_file: coverage/lcov.info
+          - lang: python
+            setup: |
+              pip install -r requirements.txt 2>/dev/null || true
+              pip install pytest pytest-cov pytest-asyncio httpx
+            test_cmd: pytest --cov=. --cov-report=xml --cov-report=term-missing -x -q
+            coverage_file: coverage.xml
+          - lang: go
+            setup: echo "Go modules auto-download"
+            test_cmd: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+            coverage_file: coverage.out
+
+    # ── Test services (PostgreSQL + Redis) ─────────────────────────────────
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+      REDIS_URL: redis://localhost:6379/0
+      CI: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: matrix.lang == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Setup Python
+        if: matrix.lang == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Setup Go
+        if: matrix.lang == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install dependencies
+        run: ${{ matrix.setup }}
+
+      - name: Run tests
+        run: ${{ matrix.test_cmd }}
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.lang }}
+          path: ${{ matrix.coverage_file }}
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ── 4. Build ─────────────────────────────────────────────────────────────
+  build:
+    name: "📦 Build"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [test]
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.build-push.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=,format=short
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push
+        id: build-push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          # platforms: linux/amd64,linux/arm64  # Uncomment for multi-arch
+          provenance: true
+          sbom: true
+
+  # ── 5. Security Scan (Trivy) ─────────────────────────────────────────────
+  security-scan:
+    name: "🛡️ Security Scan"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Filesystem scan (dependencies, secrets, IaC) ─────────────────────
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          severity: "CRITICAL,HIGH"
+          format: "sarif"
+          output: "trivy-fs-results.sarif"
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload Trivy FS results to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-fs-results.sarif"
+          category: "trivy-filesystem"
+
+      # ── Container image scan ─────────────────────────────────────────────
+      - name: Trivy image scan
+        if: needs.build.outputs.image_digest != ''
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "image"
+          image-ref: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ needs.build.outputs.image_digest }}"
+          severity: "CRITICAL,HIGH"
+          format: "sarif"
+          output: "trivy-image-results.sarif"
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Upload Trivy image results to GitHub Security
+        if: always() && needs.build.outputs.image_digest != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-image-results.sarif"
+          category: "trivy-container"
+
+      # ── Secret scanning ────────────────────────────────────────────────
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── 6. Deploy (Staging) ──────────────────────────────────────────────────
+  deploy-staging:
+    name: "🚀 Deploy Staging"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [security-scan]
+    if: >-
+      (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
+      (github.event.inputs.deploy_target == 'staging')
+    environment:
+      name: staging
+      url: https://staging.example.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Authenticate via OIDC (no long-lived secrets) ────────────────────
+      # Uncomment and configure for your cloud provider:
+      #
+      # AWS:
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::ACCOUNT_ID:role/GitHubActionsRole
+      #     aws-region: us-east-1
+      #
+      # GCP:
+      # - name: Authenticate to GCP
+      #   uses: google-github-actions/auth@v2
+      #   with:
+      #     workload_identity_provider: projects/PROJECT_NUM/locations/global/workloadIdentityPools/POOL/providers/PROVIDER
+      #     service_account: deploy@PROJECT.iam.gserviceaccount.com
+
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying ${{ needs.build.outputs.image_tag }} to staging..."
+          # Replace with your deployment command:
+          # kubectl set image deployment/app app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ needs.build.outputs.image_digest }}
+          # or: aws ecs update-service ...
+          # or: gcloud run deploy ...
+
+      - name: Smoke test
+        run: |
+          echo "🔍 Running post-deployment smoke tests..."
+          # curl -sf https://staging.example.com/healthz || exit 1
+
+  # ── 7. Deploy (Production) ──────────────────────────────────────────────
+  deploy-production:
+    name: "🏁 Deploy Production"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [deploy-staging]
+    if: >-
+      (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+      (github.event.inputs.deploy_target == 'production')
+    environment:
+      name: production
+      url: https://example.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to production
+        run: |
+          echo "🏁 Deploying ${{ needs.build.outputs.image_tag }} to production..."
+          # Same deployment pattern as staging, targeting production cluster
+
+      - name: Post-deploy verification
+        run: |
+          echo "✅ Running production verification suite..."
+          # curl -sf https://example.com/healthz || exit 1
+          # Run synthetic monitoring / canary tests
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "📢 Production deployment complete!"
+          # Post to Slack, Teams, Discord, etc.
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "🚨 Production deployment FAILED — initiating rollback review"
+          # Trigger rollback or alert on-call

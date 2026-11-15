@@ -1,6 +1,32 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# docker-compose.yml — Production-Like Local Development Environment
+# ──────────────────────────────────────────────────────────────────────────────
+# Stack: PostgreSQL 16 · Redis 7 · Mailpit · MinIO (S3) · Adminer
+#
+# Usage:
+#   docker compose up -d                     # Start all services
+#   docker compose up -d postgres redis      # Start specific services
+#   docker compose logs -f postgres          # Tail logs
+#   docker compose down                      # Stop (keep volumes)
+#   docker compose down -v                   # Stop + destroy volumes
+#   docker compose ps                        # Service status
+#
+# Environment Variables (override via .env file or shell):
+#   DB_USER        (default: postgres)
+#   DB_PASSWORD    (default: postgres)
+#   DB_NAME        (default: app_dev)
+#   DB_PORT        (default: 5432)
+#   REDIS_PORT     (default: 6379)
+#   MINIO_USER     (default: minioadmin)
+#   MINIO_PASSWORD (default: minioadmin)
+# ──────────────────────────────────────────────────────────────────────────────
+
 name: devskill-local-env
 
+# ── Services ─────────────────────────────────────────────────────────────────
 services:
+
+  # ── PostgreSQL 16 ────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     container_name: local-postgres
@@ -9,23 +35,62 @@ services:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_NAME:-app_dev}
+      # Performance tuning for local dev (safe to be aggressive)
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Mount init scripts — any .sql/.sh files here run on first start
+      # - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    # Shared memory for parallel queries & hash joins
+    shm_size: "256mb"
+    command: >
+      postgres
+        -c shared_buffers=256MB
+        -c work_mem=16MB
+        -c maintenance_work_mem=128MB
+        -c effective_cache_size=512MB
+        -c max_connections=100
+        -c log_statement=all
+        -c log_duration=on
+        -c log_min_duration_statement=100
+        -c random_page_cost=1.1
+        -c jit=on
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-app_dev}"]
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+        reservations:
+          memory: 256M
+    networks:
+      - backend
 
+  # ── Redis 7 ──────────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: local-redis
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
+    command: >
+      redis-server
+        --appendonly yes
+        --appendfsync everysec
+        --maxmemory 256mb
+        --maxmemory-policy allkeys-lru
+        --save 60 1000
+        --loglevel notice
+        --tcp-backlog 511
+        --timeout 300
+        --tcp-keepalive 60
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -33,15 +98,119 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 64M
+    networks:
+      - backend
 
+  # ── Mailpit (Email Testing — replaces Mailhog) ──────────────────────────
+  # SMTP: localhost:1025 | Web UI: http://localhost:8025
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.21
     container_name: local-mailpit
     restart: unless-stopped
+    environment:
+      # Optional: Basic auth for the web UI
+      # MP_UI_AUTH: "admin:password"
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
     ports:
-      - "1025:1025" # SMTP port
-      - "8025:8025" # Web UI
+      - "1025:1025"   # SMTP server
+      - "8025:8025"   # Web UI
+    volumes:
+      - mailpit_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8025/api/v1/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.5"
+    networks:
+      - backend
 
+  # ── MinIO (S3-Compatible Object Storage) ─────────────────────────────────
+  # API: localhost:9000 | Console: http://localhost:9001
+  minio:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+    container_name: local-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-minioadmin}
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"   # S3 API endpoint
+      - "9001:9001"   # MinIO Console (Web UI)
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+        reservations:
+          memory: 128M
+    networks:
+      - backend
+
+  # ── Adminer (Database Management Web UI) ─────────────────────────────────
+  # Web UI: http://localhost:8080
+  adminer:
+    image: adminer:4-standalone
+    container_name: local-adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: dracula
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.5"
+    networks:
+      - backend
+
+# ── Volumes ──────────────────────────────────────────────────────────────────
 volumes:
   postgres_data:
+    driver: local
+    name: devskill_postgres_data
   redis_data:
+    driver: local
+    name: devskill_redis_data
+  mailpit_data:
+    driver: local
+    name: devskill_mailpit_data
+  minio_data:
+    driver: local
+    name: devskill_minio_data
+
+# ── Networks ─────────────────────────────────────────────────────────────────
+networks:
+  backend:
+    driver: bridge
+    name: devskill_backend

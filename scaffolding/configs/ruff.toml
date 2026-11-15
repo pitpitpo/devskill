@@ -1,25 +1,199 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# ruff.toml — Ultra-Fast Python Linter & Formatter Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+# Ruff ≥ 0.8.x | Docs: https://docs.astral.sh/ruff/
+#
+# Replaces: flake8, isort, pyupgrade, pep8-naming, bandit, autoflake
+# Performance: ~100x faster than flake8 (written in Rust)
+#
+# Usage:
+#   ruff check .                  # lint
+#   ruff check . --fix            # lint + auto-fix
+#   ruff format .                 # format (Black-compatible)
+#   ruff check . --select ALL     # audit: run EVERY rule once
+# ──────────────────────────────────────────────────────────────────────────────
+
 target-version = "py312"
 line-length = 88
 indent-width = 4
 
+# Files to include/exclude
+extend-include = ["*.pyi"]
+extend-exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".pytest_cache",
+    "dist",
+    "build",
+    "*.egg-info",
+    "node_modules",
+    "migrations",       # Auto-generated DB migrations — don't lint
+    "alembic/versions", # Alembic-specific migration scripts
+]
+
+# ── Linting ──────────────────────────────────────────────────────────────────
 [lint]
 select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-    "ARG", # flake8-unused-arguments
-    "SIM", # flake8-simplify
-    "TCH", # flake8-type-checking
-    "PTH", # flake8-use-pathlib
-    "RUF", # ruff-specific rules
-]
-ignore = []
+    # ── Core Python ──────────────────────────────────────────────────────
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes (undefined names, unused imports, etc.)
+    "I",    # isort (import sorting)
 
+    # ── Bug Prevention ───────────────────────────────────────────────────
+    "B",    # flake8-bugbear (common bugs and design problems)
+    "A",    # flake8-builtins (shadowing built-in names)
+    "C4",   # flake8-comprehensions (unnecessary list/dict/set comprehensions)
+    "T10",  # flake8-debugger (leftover breakpoint() / pdb calls)
+    "T20",  # flake8-print (leftover print() statements)
+    "G",    # flake8-logging-format (proper logging format strings)
+    "PIE",  # flake8-pie (misc lints: no-unnecessary-pass, etc.)
+
+    # ── Modernization ────────────────────────────────────────────────────
+    "UP",   # pyupgrade (upgrade syntax to target Python version)
+
+    # ── Naming Conventions ───────────────────────────────────────────────
+    "N",    # pep8-naming (class, function, variable naming)
+
+    # ── Security ─────────────────────────────────────────────────────────
+    "S",    # flake8-bandit (security issues: hardcoded passwords, SQL injection, etc.)
+
+    # ── Code Quality ─────────────────────────────────────────────────────
+    "SIM",  # flake8-simplify (simplifiable if/else, context managers, etc.)
+    "ARG",  # flake8-unused-arguments
+    "PTH",  # flake8-use-pathlib (prefer pathlib over os.path)
+    "RET",  # flake8-return (consistent return statements)
+    "TCH",  # flake8-type-checking (move type-only imports to TYPE_CHECKING)
+    "SLOT", # flake8-slots (add __slots__ to classes)
+
+    # ── Async ────────────────────────────────────────────────────────────
+    "ASYNC",  # flake8-async (async anti-patterns)
+
+    # ── Ruff-Specific ────────────────────────────────────────────────────
+    "RUF",  # Ruff-specific rules (blanket-noqa, unused-noqa, etc.)
+
+    # ── Documentation ────────────────────────────────────────────────────
+    "D",    # pydocstyle (docstring conventions) — uses numpy style below
+
+    # ── Complexity ───────────────────────────────────────────────────────
+    "C90",  # mccabe complexity
+
+    # ── Pytest ───────────────────────────────────────────────────────────
+    "PT",   # flake8-pytest-style (pytest best practices)
+
+    # ── Error messages ───────────────────────────────────────────────────
+    "EM",   # flake8-errmsg (readable exception messages)
+    "TRY",  # tryceratops (exception handling anti-patterns)
+
+    # ── Annotations ──────────────────────────────────────────────────────
+    "FA",   # flake8-future-annotations
+    "ANN",  # flake8-annotations (enforce type annotations)
+
+    # ── Perflint ─────────────────────────────────────────────────────────
+    "PERF", # perflint (performance anti-patterns)
+
+    # ── Logging ──────────────────────────────────────────────────────────
+    "LOG",  # flake8-logging (logging best practices)
+]
+
+ignore = [
+    # ── Docstrings ───────────────────────────────────────────────────────
+    "D100",   # Missing docstring in public module (too noisy for small modules)
+    "D104",   # Missing docstring in public package (__init__.py)
+    "D106",   # Missing docstring in public nested class
+    "D203",   # 1 blank line before class docstring (conflicts with D211)
+    "D213",   # Multi-line summary second line (conflicts with D212)
+
+    # ── Annotations ──────────────────────────────────────────────────────
+    "ANN101", # Missing type annotation for `self` (deprecated in Ruff)
+    "ANN102", # Missing type annotation for `cls` (deprecated in Ruff)
+    "ANN401", # `Any` type — sometimes necessary for generic wrappers
+
+    # ── Try/except ───────────────────────────────────────────────────────
+    "TRY003", # Long message in exception class (too restrictive)
+
+    # ── Slots ────────────────────────────────────────────────────────────
+    "SLOT000", # Require __slots__ on every class (too aggressive for ORMs/dataclasses)
+]
+
+# ── Complexity thresholds ────────────────────────────────────────────────────
+[lint.mccabe]
+max-complexity = 10
+
+# ── Per-File Ignores ─────────────────────────────────────────────────────────
+[lint.per-file-ignores]
+# Tests: allow assertions, magic values, hardcoded secrets, print, no docstrings, unused args
+"tests/**/*.py" = [
+    "S101",   # Use of assert (required in tests)
+    "S106",   # Hardcoded passwords (test fixtures)
+    "D",      # No docstring requirements in tests
+    "ARG",    # Unused arguments (pytest fixtures)
+    "ANN",    # No annotation requirements in tests
+    "T20",    # print() allowed in tests
+    "PT004",  # Fixture doesn't return anything (common pattern)
+]
+"test_*.py" = ["S101", "S106", "D", "ARG", "ANN", "T20"]
+"conftest.py" = ["S101", "D", "ARG", "ANN"]
+
+# Migrations: auto-generated, minimal linting
+"migrations/**/*.py" = ["D", "ANN", "E501", "N", "ARG"]
+"alembic/**/*.py" = ["D", "ANN", "E501", "N", "ARG"]
+
+# Scripts / CLI entry points: allow print statements
+"scripts/**/*.py" = ["T20"]
+"manage.py" = ["T20"]
+
+# __init__.py: allow unused imports (re-exports)
+"__init__.py" = ["F401", "D104"]
+
+# ── isort Configuration ──────────────────────────────────────────────────────
+[lint.isort]
+# Black-compatible import sorting
+force-single-line = false
+force-sort-within-sections = true
+known-first-party = ["app", "src", "core", "config", "tests"]
+known-third-party = [
+    "fastapi",
+    "pydantic",
+    "sqlalchemy",
+    "httpx",
+    "pytest",
+    "celery",
+    "redis",
+    "boto3",
+    "django",
+    "flask",
+]
+combine-as-imports = true
+split-on-trailing-comma = true
+lines-after-imports = 2
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+# ── pydocstyle (numpy convention) ────────────────────────────────────────────
+[lint.pydocstyle]
+convention = "numpy"
+
+# ── flake8-pytest-style ──────────────────────────────────────────────────────
+[lint.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+parametrize-names-type = "csv"
+
+# ── Formatting (Black-compatible) ────────────────────────────────────────────
 [format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+docstring-code-line-length = 72

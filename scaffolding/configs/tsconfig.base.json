@@ -1,10 +1,27 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "_comment": [
+    "Enterprise TypeScript Base Configuration — tsconfig.base.json",
+    "Extend this from per-package tsconfig.json files in a monorepo.",
+    "Target: TypeScript 5.4+ | Node 20+ | ES2022",
+    "",
+    "Usage in child packages:",
+    "  { \"extends\": \"../../tsconfig.base.json\",",
+    "    \"compilerOptions\": { \"outDir\": \"./dist\", \"rootDir\": \"./src\" },",
+    "    \"include\": [\"src\"],",
+    "    \"references\": [{ \"path\": \"../shared\" }]",
+    "  }"
+  ],
+
   "compilerOptions": {
+    // ── Emit & Module ─────────────────────────────────────────────────────
     "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": ["DOM", "DOM.Iterable", "ES2022", "ES2023.Array"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+
+    // ── Strict Type-Checking (ALL flags explicit — never rely on defaults) ─
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -12,17 +29,79 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
     "alwaysStrict": true,
+
+    // ── Advanced Safety ───────────────────────────────────────────────────
+    // Prevents `obj[key]` from silently returning `T` instead of `T | undefined`
+    "noUncheckedIndexedAccess": true,
+
+    // Forces `{ x?: string }` to mean `string | undefined` but NOT assignable
+    // with explicit `undefined` — use `x: string | undefined` for that
+    "exactOptionalPropertyTypes": true,
+
+    // ── Code Quality Gates ────────────────────────────────────────────────
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+
+    // ── Interop & Resolution ──────────────────────────────────────────────
     "esModuleInterop": true,
-    "resolveJsonModule": true
-  }
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    // ── Composite Projects (Monorepo Support) ─────────────────────────────
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo",
+
+    // ── Path Aliases ──────────────────────────────────────────────────────
+    // Override in child tsconfig.json as needed
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["./packages/shared/src/*"],
+      "@config/*": ["./packages/config/src/*"],
+      "@types/*": ["./packages/types/src/*"]
+    },
+
+    // ── Skip type-checking node_modules .d.ts for speed ───────────────────
+    "skipLibCheck": true,
+
+    // ── Decorators (NestJS / TypeORM / Angular) ───────────────────────────
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
+    // ── Output ────────────────────────────────────────────────────────────
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "newLine": "lf"
+  },
+
+  // ── Default file inclusion (override per-package) ───────────────────────
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.mts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".turbo",
+    ".next",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.e2e-spec.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ]
 }

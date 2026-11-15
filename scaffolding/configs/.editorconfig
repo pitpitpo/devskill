@@ -1,5 +1,20 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# .editorconfig — Universal Code Styling Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+# EditorConfig spec: https://editorconfig.org/
+# Supported by: VS Code, IntelliJ/WebStorm, Vim, Neovim, Emacs, Sublime, etc.
+#
+# Philosophy:
+#   1. Consistency > personal preference — one style across all contributors
+#   2. Language conventions are respected (Go=tabs, Python=4 spaces, etc.)
+#   3. UTF-8 everywhere, LF line endings (even on Windows)
+#   4. Always trim trailing whitespace (except Markdown trailing-space breaks)
+#   5. Always insert final newline (POSIX compliance)
+# ──────────────────────────────────────────────────────────────────────────────
+
 root = true
 
+# ── Global defaults ──────────────────────────────────────────────────────────
 [*]
 indent_style = space
 indent_size = 2
@@ -7,16 +22,148 @@ end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+max_line_length = 120
 
+# ── Python ───────────────────────────────────────────────────────────────────
+# PEP 8: 4-space indent, 88-char lines (Black/Ruff default)
 [*.py]
 indent_size = 4
+max_line_length = 88
 
+[*.pyi]
+indent_size = 4
+max_line_length = 88
+
+# ── Go ───────────────────────────────────────────────────────────────────────
+# gofmt mandates tabs
 [*.go]
 indent_style = tab
 indent_size = 4
 
-[*.md]
-trim_trailing_whitespace = false
+# ── Rust ─────────────────────────────────────────────────────────────────────
+# rustfmt default: 4-space indent
+[*.rs]
+indent_size = 4
+max_line_length = 100
 
+# ── Java / Kotlin / Scala ────────────────────────────────────────────────────
+[*.{java,kt,kts,scala}]
+indent_size = 4
+max_line_length = 120
+
+# ── C / C++ / C# ────────────────────────────────────────────────────────────
+[*.{c,h,cpp,hpp,cc,cxx,cs}]
+indent_size = 4
+max_line_length = 120
+
+# ── Ruby ─────────────────────────────────────────────────────────────────────
+[*.rb]
+indent_size = 2
+max_line_length = 120
+
+# ── TypeScript / JavaScript / JSX / TSX ──────────────────────────────────────
+[*.{ts,tsx,js,jsx,mts,mjs,cjs,cts}]
+indent_size = 2
+max_line_length = 100
+
+# ── HTML / CSS / SCSS / Less ─────────────────────────────────────────────────
+[*.{html,htm,css,scss,sass,less,vue,svelte}]
+indent_size = 2
+
+# ── JSON / JSONC / JSON5 ────────────────────────────────────────────────────
+[*.{json,jsonc,json5}]
+indent_size = 2
+insert_final_newline = true
+
+# ── YAML / TOML ─────────────────────────────────────────────────────────────
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.toml]
+indent_size = 2
+
+# ── XML / SVG / XSLT ────────────────────────────────────────────────────────
+[*.{xml,svg,xslt,xsd,plist}]
+indent_size = 2
+
+# ── Markdown ─────────────────────────────────────────────────────────────────
+# Markdown uses trailing spaces for <br/> line breaks — do NOT trim
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# ── reStructuredText ─────────────────────────────────────────────────────────
+[*.rst]
+indent_size = 3
+trim_trailing_whitespace = false
+max_line_length = off
+
+# ── Makefiles ────────────────────────────────────────────────────────────────
+# Make requires tabs for recipe lines — non-negotiable
 [Makefile]
 indent_style = tab
+indent_size = 4
+
+[*.mk]
+indent_style = tab
+indent_size = 4
+
+# ── Shell Scripts ────────────────────────────────────────────────────────────
+[*.{sh,bash,zsh,fish}]
+indent_size = 2
+max_line_length = 120
+
+# ── Dockerfiles ──────────────────────────────────────────────────────────────
+[Dockerfile*]
+indent_size = 4
+
+[*.dockerfile]
+indent_size = 4
+
+# ── Terraform / HCL ─────────────────────────────────────────────────────────
+[*.{tf,tfvars,hcl}]
+indent_size = 2
+
+# ── Protocol Buffers ─────────────────────────────────────────────────────────
+[*.proto]
+indent_size = 2
+
+# ── SQL ──────────────────────────────────────────────────────────────────────
+[*.sql]
+indent_size = 2
+max_line_length = 120
+
+# ── GraphQL ──────────────────────────────────────────────────────────────────
+[*.{graphql,gql}]
+indent_size = 2
+
+# ── Env files ────────────────────────────────────────────────────────────────
+[*.env]
+insert_final_newline = true
+
+[.env*]
+insert_final_newline = true
+
+# ── Lock files / Generated — do not modify ───────────────────────────────────
+[{package-lock.json,yarn.lock,pnpm-lock.yaml,Cargo.lock,poetry.lock,Pipfile.lock,go.sum}]
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ── Git config ───────────────────────────────────────────────────────────────
+[.gitattributes]
+indent_style = tab
+
+[.gitmodules]
+indent_style = tab
+
+# ── EditorConfig / Prettier / ESLint configs ─────────────────────────────────
+[.editorconfig]
+indent_style = space
+indent_size = 2
+
+[.prettierrc*]
+indent_size = 2
+
+[.eslintrc*]
+indent_size = 2
