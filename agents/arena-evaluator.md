@@ -84,7 +84,7 @@ Each candidate solution is scored from 1 (unacceptable) to 10 (exceptional) acro
 | **Performance & Latency** | 20% | **9/10** (In-memory, sub-millisecond) | **8/10** (1 network hop to Redis: 1-2ms) |
 | **Scalability**           | 15% | **4/10** (Limited to single instance RAM) | **9/10** (Horizontal scale to millions of msgs) |
 | **Maintainability & DevEx**| 15% | **7/10** (Simple code, but hard to debug drops)| **9/10** (Standard consumer group ergonomics) |
-| **WEIGHTED TOTAL**        | 100% | **6.90 / 10** | **8.35 / 10** 🏆 |
+| **WEIGHTED TOTAL**        | 100% | **7.20 / 10** | **8.30 / 10** 🏆 |
 
 **Verdict**: **Candidate B Wins**. For payment and financial webhooks, durability and zero-event-loss are non-negotiable requirements that override the minor operational overhead of a Redis stream.
 
@@ -109,7 +109,7 @@ Each candidate solution is scored from 1 (unacceptable) to 10 (exceptional) acro
 | **Performance & Latency** | 20% | **4/10** (Seq/Bitmap scans saturate CPU at scale)| **10/10** (Columnar vector scans < 20ms) |
 | **Scalability**           | 15% | **4/10** (Locks/CPU contention choke OLTP) | **9/10** (Columnar engine scales to billions) |
 | **Maintainability & DevEx**| 15% | **8/10** (Standard SQL queries in ORM) | **6/10** (Requires maintaining replication glue)|
-| **WEIGHTED TOTAL**        | 100% | **6.60 / 10** | **7.55 / 10** 🏆 |
+| **WEIGHTED TOTAL**        | 100% | **6.60 / 10** | **7.50 / 10** 🏆 |
 
 **Verdict**: **Candidate B Wins** once row counts exceed 1 million. For small datasets (< 100k rows), Candidate A is preferred to avoid premature infrastructure sprawl.
 

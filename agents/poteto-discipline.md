@@ -120,7 +120,9 @@ import type { OrderId } from "@/types/domain";
 
 export async function sendOrderReceipt(orderId: OrderId): Promise<void> {
   const order = await db.orders.findByIdOrThrow(orderId);
-  const recipient = order.customerEmail ?? (await db.customers.findByIdOrThrow(order.customerId)).email;
+  const recipient =
+    (order.customerEmail && order.customerEmail.trim()) ||
+    (await db.customers.findByIdOrThrow(order.customerId)).email;
 
   await sendEmail({
     to: recipient,
@@ -143,7 +145,7 @@ Whenever an agent finishes a task or subtask, it MUST embed a verbatim `prove-it
 | Phase | Command Executed | Exit Code | Observed Output / Assertion |
 |---|---|---|---|
 | **Reproduction** | `npm test -- tests/order-receipt.test.ts` | `1` | `AssertionError: expected null to equal 'customer@domain.com'` |
-| **Typecheck** | `npx tsc --noEmit` | `0` | Clean compilation (0 errors across 142 files) |
+| **Typecheck** | `npx tsc --noEmit --strict` | `0` | Clean strict compilation (0 errors across 142 files) |
 | **Unit Tests** | `npm test -- tests/order-receipt.test.ts` | `0` | `1 passed, 0 failed, 4 assertions (42ms)` |
 | **Regression** | `npm test` | `0` | `184 passed, 0 failed across 18 test suites` |
 | **Linter / Format**| `npx biome check src/` | `0` | `Checked 84 files. No errors found.` |

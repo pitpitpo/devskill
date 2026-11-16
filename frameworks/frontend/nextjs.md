@@ -181,20 +181,21 @@ export async function createOrderAction(
   const { productId, quantity } = parsed.data;
 
   try {
-    // 3. Execute Transaction
+    // 3. Execute Transaction with Atomic Concurrency Protection
     const order = await db.$transaction(async (tx) => {
       const product = await tx.product.findUniqueOrThrow({
         where: { id: productId },
       });
 
-      if (product.stock < quantity) {
-        throw new Error("Insufficient stock available.");
-      }
-
-      await tx.product.update({
-        where: { id: productId },
+      // Atomic conditional decrement prevents overselling under concurrent checkouts
+      const updated = await tx.product.updateMany({
+        where: { id: productId, stock: { gte: quantity } },
         data: { stock: { decrement: quantity } },
       });
+
+      if (updated.count === 0) {
+        throw new Error("Insufficient stock available.");
+      }
 
       return tx.order.create({
         data: {
@@ -402,7 +403,7 @@ export default function OrdersPage() {
 ```typescript
 // middleware.ts
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/request";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

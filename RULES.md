@@ -21,7 +21,8 @@
 11. [Deployment, Infrastructure & Resilience (R-153 to R-162)](#11-deployment-infrastructure--resilience)
 12. [Git Hygiene, Versioning & Process (R-163 to R-170)](#12-git-hygiene-versioning--process)
 13. [Agent Safety, Tool Sandboxing & Ethics (R-171 to R-180)](#13-agent-safety-tool-sandboxing--ethics)
-14. [Automated CI Gate Scan Patterns](#14-automated-ci-gate-scan-patterns)
+14. [Agent Discipline, Deterministic Execution & Minimal Diffs (R-181 to R-190)](#14-agent-discipline-deterministic-execution--minimal-diffs)
+15. [Automated CI Gate Scan Patterns](#15-automated-ci-gate-scan-patterns)
 
 ---
 

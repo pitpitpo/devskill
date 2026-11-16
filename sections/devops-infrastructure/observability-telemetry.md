@@ -199,17 +199,17 @@ interface LogPayload {
   context?: Record<string, unknown>;
 }
 
-// Regex patterns to scrub sensitive data before outputting to stdout
-const PII_PATTERNS = [
-  /("?(?:password|token|secret|apiKey|authorization)"?\s*[:=]\s*)"[^"]+"/gi,
-  /("?(?:cardNumber|creditCard)"?\s*[:=]\s*)"\d{13,19}"/gi,
-  /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b/g, // Email address redaction
+// Rules to scrub sensitive data before outputting to stdout
+const PII_RULES = [
+  { pattern: /("?(?:password|token|secret|apiKey|authorization)"?\s*[:=]\s*)"[^"]+"/gi, replacement: '$1"[REDACTED]"' },
+  { pattern: /("?(?:cardNumber|creditCard)"?\s*[:=]\s*)"\d{13,19}"/gi, replacement: '$1"[REDACTED]"' },
+  { pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b/g, replacement: '"[REDACTED_EMAIL]"' },
 ];
 
 function sanitizeLogMessage(input: string): string {
   let sanitized = input;
-  for (const pattern of PII_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '$1"[REDACTED]"');
+  for (const rule of PII_RULES) {
+    sanitized = sanitized.replace(rule.pattern, rule.replacement);
   }
   return sanitized;
 }

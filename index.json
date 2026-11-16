@@ -2,14 +2,9 @@
   "name": "devskill",
   "version": "1.1.0",
   "description": "Production-Grade Engineering Standards, Architectural Blueprints, Agent Discipline & Decision Matrices",
-  "total_documents": 79,
+  "total_documents": 77,
   "modules": {
     "core": [
-      {
-        "path": "AGENTS.md",
-        "title": "\ud83e\udd16 Autonomous Agent Operating Protocols (`agents.md`)",
-        "lines": 245
-      },
       {
         "path": "ARCHITECTURE.md",
         "title": "ARCHITECTURE.md \u2014 System Design & Architecture Principles",
@@ -58,7 +53,7 @@
       {
         "path": "RULES.md",
         "title": "\ud83d\udcdc Universal Engineering Rules (`RULES.md`)",
-        "lines": 370
+        "lines": 371
       },
       {
         "path": "SKILL.md",
@@ -95,7 +90,7 @@
       {
         "path": "agents/poteto-discipline.md",
         "title": "\ud83e\udd4b Agent Discipline & Execution Rigor (`poteto-discipline.md`)",
-        "lines": 187
+        "lines": 189
       },
       {
         "path": "agents/tdd-reproduction.md",
@@ -147,7 +142,7 @@
       {
         "path": "frameworks/frontend/nextjs.md",
         "title": "\u26a1 Production Next.js 15 App Router & React Server Components Mastery (`nextjs.md`)",
-        "lines": 482
+        "lines": 483
       },
       {
         "path": "frameworks/frontend/react.md",
@@ -189,7 +184,7 @@
       {
         "path": "languages/golang.md",
         "title": "\ud83d\udc39 Go Production Standard (`golang.md`)",
-        "lines": 703
+        "lines": 709
       },
       {
         "path": "languages/java.md",
@@ -231,7 +226,7 @@
       {
         "path": "sections/backend/api-design.md",
         "title": "\ud83c\udf10 Production API Design Standards (`api-design.md`)",
-        "lines": 1230
+        "lines": 1275
       },
       {
         "path": "sections/backend/background-jobs-queues.md",
@@ -287,11 +282,6 @@
         "path": "sections/devops-infrastructure/terraform-iac.md",
         "title": "Terraform & Infrastructure as Code Guide",
         "lines": 1119
-      },
-      {
-        "path": "sections/frontend/accessibility-a11y.md",
-        "title": "Accessibility (a11y) \u2014 Production Guide",
-        "lines": 952
       },
       {
         "path": "sections/frontend/accessibility.md",

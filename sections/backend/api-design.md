@@ -533,6 +533,12 @@ export function idempotencyMiddleware(redis: Redis, ttlSeconds = 86400) {
     // Intercept response to cache upon completion
     const originalJson = res.json.bind(res);
     res.json = (body: unknown): Response => {
+      // Evict transient 5xx server errors so clients can retry without being locked out
+      if (res.statusCode >= 500) {
+        redis.del(cacheKey).catch(() => {});
+        return originalJson(body);
+      }
+
       const completedRecord: IdempotencyRecord = {
         status: "COMPLETED",
         requestHash,
@@ -541,9 +547,7 @@ export function idempotencyMiddleware(redis: Redis, ttlSeconds = 86400) {
       };
 
       // Store cached response asynchronously
-      redis.set(cacheKey, JSON.stringify(completedRecord), "EX", ttlSeconds).catch((err) => {
-        console.error("[Idempotency] Failed to cache response:", err);
-      });
+      redis.set(cacheKey, JSON.stringify(completedRecord), "EX", ttlSeconds).catch(() => {});
 
       return originalJson(body);
     };
@@ -580,33 +584,65 @@ export function verifyWebhookSignature(endpointSecret: string, toleranceSeconds 
   return (req: Request, res: Response, next: NextFunction): void => {
     const signatureHeader = req.headers["stripe-signature"];
     if (!signatureHeader || typeof signatureHeader !== "string") {
-      res.status(401).json({ error: "Missing webhook signature header" });
+      res.status(401).json({
+        type: "https://api.example.com/errors/missing-webhook-signature",
+        title: "Missing Webhook Signature",
+        status: 401,
+        detail: "The request is missing the required Stripe-Signature header.",
+      });
       return;
     }
 
-    // Parse header: t=12345,v1=abcdef...
+    // Parse header: t=12345,v1=abcdef...,v1=dualKeySignature...
     const elements = signatureHeader.split(",");
     const timestampStr = elements.find((e) => e.startsWith("t="))?.slice(2);
-    const signature = elements.find((e) => e.startsWith("v1="))?.slice(3);
+    const candidateSignatures = elements
+      .filter((e) => e.startsWith("v1="))
+      .map((e) => e.slice(3));
 
-    if (!timestampStr || !signature) {
-      res.status(400).json({ error: "Malformed webhook signature header" });
+    if (!timestampStr || candidateSignatures.length === 0) {
+      res.status(400).json({
+        type: "https://api.example.com/errors/malformed-webhook-signature",
+        title: "Malformed Webhook Signature",
+        status: 400,
+        detail: "The Stripe-Signature header is missing timestamp or v1 signatures.",
+      });
       return;
     }
 
     const timestamp = Number.parseInt(timestampStr, 10);
+    if (Number.isNaN(timestamp)) {
+      res.status(400).json({
+        type: "https://api.example.com/errors/invalid-signature-timestamp",
+        title: "Invalid Webhook Timestamp",
+        status: 400,
+        detail: "The signature timestamp must be a valid numeric Unix timestamp.",
+      });
+      return;
+    }
+
     const now = Math.floor(Date.now() / 1000);
 
     // Enforce 300s replay attack window
     if (Math.abs(now - timestamp) > toleranceSeconds) {
-      res.status(400).json({ error: "Webhook timestamp outside tolerance window" });
+      res.status(400).json({
+        type: "https://api.example.com/errors/webhook-timestamp-expired",
+        title: "Webhook Timestamp Expired",
+        status: 400,
+        detail: `Webhook timestamp differs from server time by more than ${toleranceSeconds} seconds.`,
+      });
       return;
     }
 
     // Raw body buffer is strictly required (do not use parsed JSON)
     const rawBody = (req as unknown as { rawBody?: Buffer }).rawBody;
     if (!rawBody) {
-      res.status(500).json({ error: "Raw body buffer not captured by parser" });
+      res.status(500).json({
+        type: "https://api.example.com/errors/webhook-raw-body-missing",
+        title: "Raw Body Missing",
+        status: 500,
+        detail: "Server failed to preserve raw request body buffer required for HMAC verification.",
+      });
       return;
     }
 
@@ -616,15 +652,24 @@ export function verifyWebhookSignature(endpointSecret: string, toleranceSeconds 
       .update(signedPayload)
       .digest("hex");
 
-    const signatureBuffer = Buffer.from(signature, "hex");
     const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
-    // Guard against timing attacks with constant-time equality
-    if (
-      signatureBuffer.length !== expectedBuffer.length ||
-      !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
-    ) {
-      res.status(401).json({ error: "Invalid cryptographic webhook signature" });
+    // Guard against timing attacks; iterate through candidates to support key rotation
+    const signatureValid = candidateSignatures.some((candidate) => {
+      const candidateBuffer = Buffer.from(candidate, "hex");
+      return (
+        candidateBuffer.length === expectedBuffer.length &&
+        crypto.timingSafeEqual(candidateBuffer, expectedBuffer)
+      );
+    });
+
+    if (!signatureValid) {
+      res.status(401).json({
+        type: "https://api.example.com/errors/invalid-webhook-signature",
+        title: "Invalid Cryptographic Signature",
+        status: 401,
+        detail: "No signature in header matched the expected HMAC-SHA256 signature.",
+      });
       return;
     }
 

@@ -662,9 +662,9 @@ func (c *Counter) Increment() {
 }
 ```
 
-### 6.6 Zero-Allocation Byte Buffer Reuse (`sync.Pool`)
+### 6.6 Byte Buffer Reuse (`sync.Pool`) & Zero-Allocation Streaming
 ```go
-// ✅ GOOD: High-throughput serialization without heap churn using sync.Pool
+// Pattern A: Buffer Recycling via sync.Pool (Mitigates GC pressure; slice copy required to avoid race conditions)
 var bufferPool = sync.Pool{
 	New: func() any {
 		return bytes.NewBuffer(make([]byte, 0, 4096))
@@ -680,9 +680,15 @@ func SerializeOrder(order Order) ([]byte, error) {
 		return nil, fmt.Errorf("encoding failed: %w", err)
 	}
 
+	// Note: result slice allocation is required so the caller owns memory after buffer is returned to pool
 	result := make([]byte, buf.Len())
 	copy(result, buf.Bytes())
 	return result, nil
+}
+
+// Pattern B: True Zero-Allocation Streaming directly to network/file io.Writer
+func SerializeOrderTo(w io.Writer, order Order) error {
+	return json.NewEncoder(w).Encode(order)
 }
 ```
 
