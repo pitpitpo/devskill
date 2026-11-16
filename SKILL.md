@@ -62,7 +62,8 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 | **Repository Specification** | [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md) | Complete system architecture, taxonomy, schemas, and roadmap |
 | **Engineering Rules** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) | Universal laws of architecture, code style, testing, and operations |
 | **Security Standards** | [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md) | OWASP mitigation, cryptographic specs, AuthN/AuthZ, supply chain |
-| **Agent Protocols** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) | Persona definitions, execution safety, self-healing, context limits |
+| **Deterministic Routing** | [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) | Task-archetype decision matrix prescribing exact reading lists and test commands |
+| **Agent Protocols** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) & [`agents/`](file:///home/agy/.t3/userdata/attachments/devskill/agents/) | Poteto discipline (`deslop`, `prove-it-works`), TDD reproduction, and Arena scoring |
 | **Decision Trees** | [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) | Trade-off matrices for databases, architecture, state, and APIs |
 | **Fast Index** | [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json) | Fast-lookup machine-readable index of all topics and tags |
 | **Frameworks** | [`frameworks/`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/) | Deep-dive guides for React, Next.js, FastAPI, NestJS, Spring, etc. |

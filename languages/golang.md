@@ -640,6 +640,52 @@ func (p *UserProcessor) ProcessUser(ctx context.Context, userID string) error {
 }
 ```
 
+### 6.5 Copying Mutex by Value (Uber Go Concurrency Rule)
+```go
+// ❌ BAD: Mutex passed by value copies internal lock state, breaking mutual exclusion
+type Counter struct {
+	mu    sync.Mutex
+	count int
+}
+
+func (c Counter) Increment() { // Value receiver copies mu!
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.count++
+}
+
+// ✅ GOOD: Always use pointer receiver when struct contains a Mutex
+func (c *Counter) Increment() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.count++
+}
+```
+
+### 6.6 Zero-Allocation Byte Buffer Reuse (`sync.Pool`)
+```go
+// ✅ GOOD: High-throughput serialization without heap churn using sync.Pool
+var bufferPool = sync.Pool{
+	New: func() any {
+		return bytes.NewBuffer(make([]byte, 0, 4096))
+	},
+}
+
+func SerializeOrder(order Order) ([]byte, error) {
+	buf := bufferPool.Get().(*bytes.Buffer)
+	buf.Reset()
+	defer bufferPool.Put(buf)
+
+	if err := json.NewEncoder(buf).Encode(order); err != nil {
+		return nil, fmt.Errorf("encoding failed: %w", err)
+	}
+
+	result := make([]byte, buf.Len())
+	copy(result, buf.Bytes())
+	return result, nil
+}
+```
+
 ---
 
 ## 7. Verification Checklist

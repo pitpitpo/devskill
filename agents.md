@@ -23,16 +23,18 @@ When an agent is initialized in a repository equipped with DevSkill, it MUST con
 
 | Step | File | Purpose & Verification Scope |
 |---|---|---|
-| **1** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) | Self-protocols, personas, boundaries, report formats, and escalation policies. |
-| **2** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) | Universal non-negotiable engineering rules (R-001 through R-180+) and CI scan patterns. |
-| **3** | [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json) | Fast routing map to locate relevant guides across languages, frameworks, and sections. |
-| **4** | [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) | Architecture decision trees, framework trade-offs, and design patterns. |
-| **5** | [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md) | Project specifications, domain entities, interfaces, schemas, and system requirements. |
-| **6** | [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md) | Threat models, OWASP Top 10 mitigation matrix, and secure coding standards. |
-| **7** | `languages/` & `frameworks/` | Specialized language guides (e.g., `typescript.md`, `python.md`) and framework playbooks (e.g., `nextjs.md`, `fastapi.md`). |
-| **8** | [`workflows/WORKFLOW.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/WORKFLOW.md) | 8-phase development lifecycle and systematic debugging protocols. |
-| **9** | [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) | The 100-point ship gate rubric required before any task can be marked complete. |
-| **10**| [`MISTAKES.md`](file:///home/agy/.t3/userdata/attachments/devskill/MISTAKES.md) | Living log of known AI failure patterns and automated guardrails. |
+| **1** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) & [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) | Self-protocols, personas, boundaries, report formats, minimal diffs (`deslop`), and `prove-it-works` proof. |
+| **2** | [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) | Deterministic task routing matrix prescribing the exact reading list and verification pipeline per task archetype. |
+| **3** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) | Universal non-negotiable engineering rules (R-001 through R-190) and CI scan patterns. |
+| **4** | [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json) | Fast routing map to locate relevant guides across languages, frameworks, and sections. |
+| **5** | [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) & [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) | Architecture decision trees, multi-solution Arena scoring, and trade-off matrices. |
+| **6** | [`agents/tdd-reproduction.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/tdd-reproduction.md) *(If Bug/Defect)* | Mandatory Red-Green test reproduction protocol before modifying production source code. |
+| **7** | [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md) | Project specifications, domain entities, interfaces, schemas, and system requirements. |
+| **8** | [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md) | Threat models, OWASP Top 10 mitigation matrix, and secure coding standards. |
+| **9** | `languages/` & `frameworks/` | Specialized language guides (e.g., `typescript.md`, `python.md`) and framework playbooks (e.g., `nextjs.md`, `fastapi.md`). |
+| **10**| [`workflows/WORKFLOW.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/WORKFLOW.md) | 8-phase development lifecycle and systematic debugging protocols. |
+| **11**| [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) | The 100-point ship gate rubric required before any task can be marked complete. |
+| **12**| [`MISTAKES.md`](file:///home/agy/.t3/userdata/attachments/devskill/MISTAKES.md) | Living log of known AI failure patterns and automated guardrails. |
 
 ---
 

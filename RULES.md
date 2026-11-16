@@ -275,7 +275,22 @@
 
 ---
 
-## 14. Automated CI Gate Scan Patterns
+## 14. Agent Discipline, Deterministic Execution & Minimal Diffs
+
+- **R-181 [Prove-It-Works Execution Proof]**: An autonomous agent MUST NOT declare a task or subtask complete without executing concrete verification commands in the terminal and displaying real execution output (exit code 0, test pass count, lint/type status). Agents MUST NEVER simulate, hallucinate, or assume success.
+- **R-182 [Minimal Surgical Diffs & Anti-Slop (`deslop`)]**: Modifications to existing code MUST be minimal, surgical, and targeted strictly to the lines required to satisfy the invariant. Agents MUST NOT reformat entire files, introduce speculative abstractions, or add narrative comments explaining self-evident syntax.
+- **R-183 [Red-Green TDD Bug Reproduction]**: When resolving a bug, defect, or regression, the agent MUST write or execute a failing reproduction test BEFORE modifying production code. The agent MUST observe and document exit code != 0, apply the minimal fix, and verify exit code 0.
+- **R-184 [Stripe-Grade Idempotency & Replay Protection]**: Mutating endpoints (POST, PUT, PATCH) handling financial, transactional, or order state MUST support the IETF `Idempotency-Key` standard backed by atomic distributed locks (`SET NX EX`), request payload SHA-256 fingerprint matching, and response caching. Reused keys with mismatched payloads MUST return HTTP 422 Unprocessable Entity.
+- **R-185 [Webhook Cryptographic Signature Verification]**: Inbound and outbound webhooks MUST verify HMAC-SHA256 signatures with constant-time string comparisons (`crypto.timingSafeEqual`) and enforce a maximum 300-second timestamp replay window before processing payloads.
+- **R-186 [Deterministic Keyset Cursor Pagination]**: High-volume paginated list endpoints MUST use keyset cursor pagination (`starting_after`, `ending_before`) ordered by an indexed immutable key. Offset-based pagination (`OFFSET N`) is strictly prohibited on large tables.
+- **R-187 [Full Jitter Exponential Backoff & Circuit Breakers]**: Outbound RPC and HTTP calls to external or downstream microservices MUST incorporate exponential backoff with full jitter and circuit breakers to prevent thundering-herd cascades during partial outages.
+- **R-188 [Goroutine & Async Task Lifecycle Ownership]**: Every spawned goroutine, worker thread, or asynchronous task MUST have an explicit parent context or cancellation channel and be tracked via `sync.WaitGroup` or `errgroup.Group`. Unmonitored orphan tasks and context detachment are prohibited.
+- **R-189 [Nominal Branding & Boundary Validation Invariants]**: Domain primitives (e.g., `UserId`, `AccountId`, `EmailAddress`) MUST use nominal type branding (`Brand<T, B>`) or newtypes to prevent primitive obsession. External inputs MUST be validated at ingress using strict schema parsers (Zod, Pydantic).
+- **R-190 [Deterministic Routing Matrix Compliance]**: Autonomous agents MUST consult [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) to ingest the exact prescribed file list for their task archetype before generating or modifying any code.
+
+---
+
+## 15. Automated CI Gate Scan Patterns
 
 Add this script to your CI pipeline (e.g., GitHub Actions, GitLab CI, pre-commit) to enforce non-negotiable coding hygiene rules at commit and merge time.
 

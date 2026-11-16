@@ -422,64 +422,211 @@ function buildQuery(repo: Repository<Order>, params: QueryParams) {
 
 ---
 
-## 8. Idempotency Key Architecture
+## 8. Idempotency Key Architecture & Webhook Security
 
-Mutating requests (`POST /v1/payments`) must accept an `Idempotency-Key` header to ensure safe retries:
+### 8.1 Stripe / IETF Idempotency Key Standard
+
+Mutating requests (`POST`, `PUT`, `PATCH`) handling financial transactions, order placement, or critical state transitions must support the IETF `Idempotency-Key` header to ensure safe retries without duplicate side effects:
 
 ```
-Client ────── POST /v1/payments [Idempotency-Key: abc-123] ──────► API Gateway
-                                                                       │
-                                                         Check Redis for key
-                                                                       ├── If exists + COMPLETED: Return cached response
-                                                                       ├── If exists + IN_PROGRESS: Return 409 Conflict
-                                                                       └── If new:
-                                                                            1. Set status="IN_PROGRESS" in Redis (TTL: 120s)
-                                                                            2. Execute payment transaction in DB
-                                                                            3. Cache final response in Redis (TTL: 24h)
-                                                                            4. Return response to Client
+Client ────── POST /v1/payments [Idempotency-Key: uuid-v4] ──────► API Gateway
+                                                                        │
+                                                         Compute SHA-256(Body)
+                                                                        │
+                                                          Check Redis for key
+                                                                        ├── If exists + Fingerprint Mismatch: Return 422 Unprocessable Entity
+                                                                        ├── If exists + IN_PROGRESS: Return 409 Conflict
+                                                                        ├── If exists + COMPLETED: Return cached status code & body
+                                                                        └── If new:
+                                                                             1. Atomically acquire lock: SET NX EX 120 (status="IN_PROGRESS")
+                                                                             2. Execute payment transaction in DB
+                                                                             3. Cache final response in Redis (status="COMPLETED", TTL: 24h)
+                                                                             4. Return response to Client
 ```
 
-### Implementation:
+#### Production Idempotency Middleware Implementation:
 
 ```typescript
 // middleware/idempotency.ts
-export function idempotencyMiddleware(redis: Redis) {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    if (req.method !== 'POST' && req.method !== 'PUT') return next();
+import crypto from "node:crypto";
+import type { Request, Response, NextFunction } from "express";
+import type { Redis } from "ioredis";
 
-    const key = req.headers['idempotency-key'] as string;
-    if (!key) return next(); // Optional: make it required for certain routes
+interface IdempotencyRecord {
+  status: "IN_PROGRESS" | "COMPLETED";
+  requestHash: string;
+  statusCode?: number;
+  headers?: Record<string, string>;
+  body?: unknown;
+}
 
-    const cacheKey = `idem:${req.path}:${key}`;
-
-    // Try to acquire the lock
-    const acquired = await redis.set(cacheKey, JSON.stringify({ status: 'IN_PROGRESS' }),
-      'EX', 120, 'NX');
-
-    if (!acquired) {
-      const existing = JSON.parse(await redis.get(cacheKey) || '{}');
-      if (existing.status === 'IN_PROGRESS') {
-        return res.status(409).json({
-          type: 'https://api.example.com/errors/idempotency-conflict',
-          title: 'Request In Progress',
-          status: 409,
-          detail: 'A request with this idempotency key is already being processed.',
-        });
-      }
-      // Return cached response
-      return res.status(existing.statusCode).json(existing.body);
+export function idempotencyMiddleware(redis: Redis, ttlSeconds = 86400) {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (req.method !== "POST" && req.method !== "PUT" && req.method !== "PATCH") {
+      return next();
     }
 
-    // Intercept the response to cache it
+    const idempotencyKey = req.headers["idempotency-key"];
+    if (!idempotencyKey || typeof idempotencyKey !== "string") {
+      return next();
+    }
+
+    // Compute deterministic SHA-256 hash of the request body
+    const rawBody = JSON.stringify(req.body ?? {});
+    const requestHash = crypto.createHash("sha256").update(rawBody).digest("hex");
+    const cacheKey = `idempotency:${req.baseUrl}${req.path}:${idempotencyKey}`;
+
+    // Atomically acquire lock
+    const initialRecord: IdempotencyRecord = {
+      status: "IN_PROGRESS",
+      requestHash,
+    };
+
+    const acquired = await redis.set(
+      cacheKey,
+      JSON.stringify(initialRecord),
+      "EX",
+      120, // 2-minute lock for in-flight requests
+      "NX"
+    );
+
+    if (!acquired) {
+      const cached = await redis.get(cacheKey);
+      if (!cached) {
+        res.status(500).json({
+          type: "https://api.example.com/errors/internal-error",
+          title: "Idempotency State Error",
+          status: 500,
+          detail: "Unable to determine idempotency state. Please retry.",
+        });
+        return;
+      }
+
+      const existingRecord: IdempotencyRecord = JSON.parse(cached);
+
+      // Verify payload fingerprint: rejecting key reuse with mismatched payloads
+      if (existingRecord.requestHash !== requestHash) {
+        res.status(422).json({
+          type: "https://api.example.com/errors/idempotency-payload-mismatch",
+          title: "Idempotency Key Conflict",
+          status: 422,
+          detail: "Idempotency key was previously used with a different request payload.",
+        });
+        return;
+      }
+
+      if (existingRecord.status === "IN_PROGRESS") {
+        res.status(409).json({
+          type: "https://api.example.com/errors/idempotency-conflict",
+          title: "Request In Progress",
+          status: 409,
+          detail: "A request with this idempotency key is currently being processed.",
+        });
+        return;
+      }
+
+      // Return cached completed response
+      res.status(existingRecord.statusCode ?? 200).json(existingRecord.body);
+      return;
+    }
+
+    // Intercept response to cache upon completion
     const originalJson = res.json.bind(res);
-    res.json = (body: any) => {
-      redis.set(cacheKey, JSON.stringify({
-        status: 'COMPLETED',
+    res.json = (body: unknown): Response => {
+      const completedRecord: IdempotencyRecord = {
+        status: "COMPLETED",
+        requestHash,
         statusCode: res.statusCode,
         body,
-      }), 'EX', 86400); // 24 hours
+      };
+
+      // Store cached response asynchronously
+      redis.set(cacheKey, JSON.stringify(completedRecord), "EX", ttlSeconds).catch((err) => {
+        console.error("[Idempotency] Failed to cache response:", err);
+      });
+
       return originalJson(body);
     };
+
+    next();
+  };
+}
+```
+
+---
+
+### 8.2 Webhook Cryptographic Signature Verification (Stripe Standard)
+
+When exposing webhook endpoints to receive asynchronous events from third-party systems (Stripe, GitHub, Shopify), services **MUST** verify cryptographic HMAC signatures using constant-time comparisons and enforce timestamp replay protection.
+
+#### Header Format:
+```http
+Stripe-Signature: t=1710500000,v1=5257a869e7eceefe225b394441574701e2c7594f007a93c6966f928809821379
+```
+
+#### Verification Protocol:
+1. **Extract Timestamp & Signature**: Parse `t=<timestamp>` and `v1=<signature>`.
+2. **Replay Window Tolerance**: Reject requests where `|currentTime - timestamp| > 300` (5 minutes) with HTTP 400.
+3. **Construct Signed Payload**: Combine `${timestamp}.${rawBody}`.
+4. **Compute Expected HMAC-SHA256**: Sign using endpoint shared secret.
+5. **Constant-Time Comparison**: Use `crypto.timingSafeEqual` to prevent timing attacks.
+
+```typescript
+// middleware/webhook-verifier.ts
+import crypto from "node:crypto";
+import type { Request, Response, NextFunction } from "express";
+
+export function verifyWebhookSignature(endpointSecret: string, toleranceSeconds = 300) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const signatureHeader = req.headers["stripe-signature"];
+    if (!signatureHeader || typeof signatureHeader !== "string") {
+      res.status(401).json({ error: "Missing webhook signature header" });
+      return;
+    }
+
+    // Parse header: t=12345,v1=abcdef...
+    const elements = signatureHeader.split(",");
+    const timestampStr = elements.find((e) => e.startsWith("t="))?.slice(2);
+    const signature = elements.find((e) => e.startsWith("v1="))?.slice(3);
+
+    if (!timestampStr || !signature) {
+      res.status(400).json({ error: "Malformed webhook signature header" });
+      return;
+    }
+
+    const timestamp = Number.parseInt(timestampStr, 10);
+    const now = Math.floor(Date.now() / 1000);
+
+    // Enforce 300s replay attack window
+    if (Math.abs(now - timestamp) > toleranceSeconds) {
+      res.status(400).json({ error: "Webhook timestamp outside tolerance window" });
+      return;
+    }
+
+    // Raw body buffer is strictly required (do not use parsed JSON)
+    const rawBody = (req as unknown as { rawBody?: Buffer }).rawBody;
+    if (!rawBody) {
+      res.status(500).json({ error: "Raw body buffer not captured by parser" });
+      return;
+    }
+
+    const signedPayload = `${timestamp}.${rawBody.toString("utf8")}`;
+    const expectedSignature = crypto
+      .createHmac("sha256", endpointSecret)
+      .update(signedPayload)
+      .digest("hex");
+
+    const signatureBuffer = Buffer.from(signature, "hex");
+    const expectedBuffer = Buffer.from(expectedSignature, "hex");
+
+    // Guard against timing attacks with constant-time equality
+    if (
+      signatureBuffer.length !== expectedBuffer.length ||
+      !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
+    ) {
+      res.status(401).json({ error: "Invalid cryptographic webhook signature" });
+      return;
+    }
 
     next();
   };
