@@ -679,4 +679,4 @@ ENTRYPOINT ["java", \
 
 ---
 
-*See also*: [`./express.md`](./express.md) for Node.js comparison, [`../../databases/postgresql.md`](../../databases/postgresql.md) for advanced PostgreSQL patterns.
+*See also*: [`./express.md`](./express.md) for Node.js comparison, [`../../sections/database/postgresql-mastery.md`](../../sections/database/postgresql-mastery.md) for advanced PostgreSQL patterns.

@@ -661,4 +661,4 @@ CMD ["node", "dist/server.js"]
 
 ---
 
-*See also*: [`../frontend/react.md`](../frontend/react.md) for full-stack patterns, [`../../testing/integration.md`](../../testing/integration.md) for E2E strategies.
+*See also*: [`../frontend/react.md`](../frontend/react.md) for full-stack patterns, [`../../sections/testing-qa/integration-contract.md`](../../sections/testing-qa/integration-contract.md) for E2E strategies.

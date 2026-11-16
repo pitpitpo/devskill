@@ -63,10 +63,16 @@ devskill/
 ├── README.md                         # Main Documentation, Architecture Overview & Quick Start
 ├── specs.md                          # Complete System Specification (This Document)
 ├── RULES.md                          # Non-Negotiable Universal Engineering Rules
+├── ROUTING.md                        # Task Archetype Router & Context Retrieval Directives
 ├── security.md                       # Comprehensive Production Security Standards & Checklist
 ├── agents.md                         # Autonomous Agent Protocols, Boundaries & Execution Guardrails
 ├── decisions.md                      # Tech Stack & Architecture Decision Matrices (The Selector)
 ├── index.json                        # Machine-Readable Catalog & Fast Token Index for AI Retrieval
+│
+├── agents/                           # Autonomous Agent Sub-Skills & Execution Protocols
+│   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence Standards
+│   ├── tdd-reproduction.md           # Reproduction-First TDD, Defect Localization & Isolation
+│   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
 │
 ├── frameworks/                       # Framework-Specific Deep Mastery Guides
 │   ├── README.md                     # Directory index and framework selection guidance
