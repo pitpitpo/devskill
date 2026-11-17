@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "updated": "2026-11-17",
   "description": "Production-Grade Engineering Standards, Architectural Blueprints, Agent Discipline & Decision Matrices",
-  "total_documents": 88,
+  "total_documents": 91,
   "modules": {
     "core": [
       {
@@ -84,24 +84,34 @@
     ],
     "agents": [
       {
-        "path": "agents/orchestrator.md",
-        "title": "🎼 Autonomous Agent Orchestrator Skills (`agents/orchestrator.md`)",
-        "lines": 569
-      },
-      {
         "path": "agents/arena-evaluator.md",
         "title": "🏛️ Architecture Arena & Multi-Solution Evaluator (`arena-evaluator.md`)",
-        "lines": 146
+        "lines": 147
+      },
+      {
+        "path": "agents/full-send-delivery.md",
+        "title": "🚀 Autonomous End-to-End PR Delivery & Merge Gate Engine (`agents/full-send-delivery.md`)",
+        "lines": 265
+      },
+      {
+        "path": "agents/multi-model-council.md",
+        "title": "🏛️ Multi-Provider Model Council & Iterative Review Loops (`agents/multi-model-council.md`)",
+        "lines": 281
+      },
+      {
+        "path": "agents/orchestrator.md",
+        "title": "🎼 Autonomous Agent Orchestrator Skills (`agents/orchestrator.md`)",
+        "lines": 570
       },
       {
         "path": "agents/poteto-discipline.md",
         "title": "🥋 Agent Discipline & Execution Rigor (`poteto-discipline.md`)",
-        "lines": 189
+        "lines": 190
       },
       {
         "path": "agents/tdd-reproduction.md",
         "title": "🔴 Red-Green TDD Bug Reproduction Protocol (`tdd-reproduction.md`)",
-        "lines": 196
+        "lines": 197
       }
     ],
     "frameworks": [
@@ -400,6 +410,11 @@
         "path": "workflows/incident-response.md",
         "title": "🚨 Industrial Incident Response, On-Call Runbooks & Blameless Post-Mortems",
         "lines": 188
+      },
+      {
+        "path": "workflows/pr-lifecycle-babysitting.md",
+        "title": "🔄 PR Lifecycle, Bot Babysitting, Modernization & Takeover (`workflows/pr-lifecycle-babysitting.md`)",
+        "lines": 287
       },
       {
         "path": "workflows/release-versioning.md",

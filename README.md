@@ -19,7 +19,7 @@
   - [`frameworks/`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/) (Next.js, React, FastAPI, NestJS, Django, Spring Boot, Go Gin, Odoo, ERPNext, Android AOSP, etc.)
   - [`sections/`](file:///home/agy/.t3/userdata/attachments/devskill/sections/) (Backend, Frontend, Database, DevOps, Testing & QA, Enterprise ERP/Ledger, Systems & Kernel Drivers)
   - [`languages/`](file:///home/agy/.t3/userdata/attachments/devskill/languages/) (TypeScript, Python, Go, Rust, Java, C/C++, SQL)
-  - [`workflows/`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/) (Git branching, PR reviews, SemVer, Incident response)
+  - [`workflows/`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/) (PR babysitting, modernization, takeover, Git branching, SemVer, Incident response)
   - [`pipelines/`](file:///home/agy/.t3/userdata/attachments/devskill/pipelines/) (CI/CD GitHub Actions, GitLab CI, SAST/DAST)
   - [`scaffolding/`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/) (Production starter configs and architecture templates)
 
@@ -40,6 +40,8 @@ devskill/
 │
 ├── agents/                           # Autonomous Agent Sub-Skills & Execution Protocols
 │   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases & Reconcilers
+│   ├── full-send-delivery.md         # Autonomous PR Delivery, Merge Gates & Handoff
+│   ├── multi-model-council.md        # Tri-Provider Flagship Council & Review Loops
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence
 │   ├── tdd-reproduction.md           # Reproduction-First TDD & Defect Isolation
 │   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
@@ -60,7 +62,7 @@ devskill/
 │   └── testing-qa/                   # Test Pyramid, Contract Testing, E2E Playwright
 │
 ├── languages/                        # TypeScript, Python, Go, Rust, Java, C/C++, SQL
-├── workflows/                        # Git Branching, Code Reviews, Release Versioning, Incidents
+├── workflows/                        # PR Babysitting, Modernization, Git, SemVer, Incidents
 ├── pipelines/                        # GitHub Actions, GitLab CI, Security Scanning, Deployments
 └── scaffolding/                      # Starter Configs (.editorconfig, tsconfig, Docker, etc.)
 ```

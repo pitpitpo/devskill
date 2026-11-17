@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 13 categories below.
+1. **Identify the Task Archetype** from the 15 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -217,6 +217,32 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-001** (Zero deferred markers: TODO/FIXME), **R-002** (Zero mock placeholders), **R-031** (Strict memory safety: RAII, zero buffer overflows, zero dangling pointers), **R-032** (Atomic context invariants: zero sleeping/blocking inside spinlocks or interrupt service routines), **R-033** (Kernel-user boundary validation: mandatory `copy_to_user` / `copy_from_user` with bounds check), **R-065** (AOSP Treble stability: `@VintfStability` and strict SELinux `neverallow` compliance) |
 | **Prohibited Actions** | ❌ Dereferencing user-space pointers directly in kernel space without `copy_from_user` / `copy_to_user`.<br>❌ Calling sleeping functions (`msleep`, `mutex_lock`, `kmalloc(..., GFP_KERNEL)`) while holding spinlocks or in atomic/interrupt context.<br>❌ Bypassing Android Treble Stable AIDL boundaries using raw, unstabilized binder interfaces across `/system` and `/vendor`.<br>❌ Modifying AOSP SELinux policies by adding permissive domains or violating upstream `neverallow` assertions.<br>❌ Using unconstrained C-style casts or manual memory allocation (`malloc`/`free`) where RAII smart pointers or C23 bounds are available. |
 | **Mandatory Verification** | 1. Compilation Cleanliness: Kernel module builds with zero warnings (`-Wall -Werror`); AOSP modules compile cleanly with `m <module_name>`.<br>2. Sanitizer / Dynamic Checks: Clang AddressSanitizer / UndefinedBehaviorSanitizer (`-fsanitize=address,undefined`) clean run.<br>3. SELinux Policy Validation: `checkpolicy` / `secilc` compiles sepolicy with zero `neverallow` failures.<br>4. Driver Lifecycle Test: Verification of `insmod` / `rmmod` clean unload with zero kernel memory leaks or dangling sysfs nodes. |
+ 
+---
+ 
+### Archetype 14: Autonomous PR Delivery & Full-Send Shipping
+ 
+*Executing end-to-end hands-free PR delivery (`full-send` or `full-stop`), verifying direct session proof, filing problem-first PRs, babysitting CI and review bots, and automating merge gate evaluation.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/full-send-delivery.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/full-send-delivery.md) *(7-step delivery loop, 5-point merge gate, full-stop handoffs)*<br>2. [`workflows/pr-lifecycle-babysitting.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/pr-lifecycle-babysitting.md) *(Event-driven watchers, rate limit partitioning, bot triage)*<br>3. [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) *(Surgical diffs, observable CLI proof)*<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-201, R-202, R-205, R-209)*<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-201** (5-point Merge Gate verification on latest head), **R-202** (Direct observable proof over mocked tests), **R-205** (Event-driven PR watchers; zero tight polling loops), **R-206** (REST quota fallback when GraphQL rates expire), **R-209** (Problem-first PR descriptions; zero implementation inventories) |
+| **Prohibited Actions** | ❌ Ending turn while CI checks, review bots, or merge queues are pending.<br>❌ Running tight `while sleep; do ...` polling loops that exhaust GitHub rate limits.<br>❌ Merging through branch protection using administrative bypasses (`gh pr merge --admin`).<br>❌ Filing PRs that lead with file-by-file inventories instead of problem statements.<br>❌ Merging when the PR branch is BEHIND or DIRTY without rebasing first. |
+| **Mandatory Verification** | 1. Direct Proof Assertion: Exit code 0 on reproduction test + real runtime check.<br>2. Merge Gate Evaluation: 100% checks green, bot findings triaged, 0 human blockers.<br>3. Base Synchronization: `git fetch origin && git status -uno` confirms 0 commits behind `main`.<br>4. Remote Status: Verify GitHub reports PR as `MERGED` (full-send) or `OPEN/READY` (full-stop). |
+ 
+---
+ 
+### Archetype 15: Multi-Model Consensus, Tri-Provider Council & Adversarial Review
+ 
+*Convening cross-provider frontier model councils (`council`) or deep iterative review loops (`sol-loop`), enforcing finding severity taxonomies, and defending against review-induced scope creep.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/multi-model-council.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/multi-model-council.md) *(Tri-model selection, 3-round budget ceiling, findings ledger)*<br>2. [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) *(Adversarial debate & arbiter scoring)*<br>3. [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) *(Surgical diffs, minimal intervention)*<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-198, R-203, R-204)*<br>5. Target language and framework guides |
+| **Key Invariant Rules** | **R-198** (Adversarial debate for high-stakes modifications), **R-203** (Three frontier models from distinct independent providers), **R-204** (Review scope-creep defense; triage into blocker/should/nit), **R-182** (Minimal surgical diffs), **R-195** (Hard ceiling of $\le 3$ rounds; 5 for security/auth/concurrency) |
+| **Prohibited Actions** | ❌ Appeasing reviewers by adding speculative helpers, extra adapters, or unneeded guards.<br>❌ Looping past 3 rounds (or 5 for auth/security) without escalating disputes to human decision.<br>❌ Fabricating numerical ratings or scores when delegates provided only qualitative feedback.<br>❌ Allowing reviewer subagents to mutate files directly or spawn nested child agents.<br>❌ Duplicating models from the same provider when three distinct providers were requested. |
+| **Mandatory Verification** | 1. Provider Diversity Audit: Confirm 3 distinct AI provider models participated.<br>2. Budget Check: Verify round count $\le 3$ (or $\le 5$ for auth/data-loss/concurrency).<br>3. Scope-Creep Diff Check: `git diff --stat` confirms diff did not inflate by $>20\%$.<br>4. Ledger Reconciliation: 100% of blockers/shoulds resolved or declined with written evidence. |
  
 ---
  

@@ -71,6 +71,8 @@ devskill/
 │
 ├── agents/                           # Autonomous Agent Sub-Skills & Execution Protocols
 │   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases, Sagas & Reconciler Loops
+│   ├── full-send-delivery.md         # Autonomous End-to-End PR Delivery, Merge Gates & Full-Stop Handoff
+│   ├── multi-model-council.md        # Tri-Provider Flagship Council, Review Loops & Scope-Creep Defense
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence Standards
 │   ├── tdd-reproduction.md           # Reproduction-First TDD, Defect Localization & Isolation
 │   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
@@ -145,6 +147,7 @@ devskill/
 │
 ├── workflows/                        # Development & Operational Workflows
 │   ├── README.md                     # Directory overview
+│   ├── pr-lifecycle-babysitting.md   # PR Monitoring, Bot Triage, Modernization, Takeover & Comment Attribution
 │   ├── git-branching-pr.md           # Trunk-Based Development, Conventional Commits, PR Hygiene
 │   ├── release-versioning.md         # Semantic Versioning (SemVer 2.0.0), Changelogs, Tagging Automations
 │   ├── code-review-standards.md      # Senior PR Review Checklist, Blocking vs Non-Blocking Comments

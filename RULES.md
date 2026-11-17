@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-17 (Rules R-001 through R-200 Active)
+> **Last Updated**: 2026-11-17 (Rules R-001 through R-210 Active)
 
 ---
 
@@ -23,7 +23,8 @@
 12. [Git Hygiene, Versioning & Process (R-163 to R-170)](#12-git-hygiene-versioning--process)
 13. [Agent Safety, Tool Sandboxing & Ethics (R-171 to R-180)](#13-agent-safety-tool-sandboxing--ethics)
 14. [Agent Discipline, Deterministic Execution & Multi-Agent Orchestration (R-181 to R-200)](#14-agent-discipline-deterministic-execution--multi-agent-orchestration)
-15. [Automated CI Gate Scan Patterns](#15-automated-ci-gate-scan-patterns)
+15. [Autonomous PR Delivery, Model Councils & Review Gates (R-201 to R-210)](#15-autonomous-pr-delivery-model-councils--review-gates)
+16. [Automated CI Gate Scan Patterns](#16-automated-ci-gate-scan-patterns)
 
 ---
 
@@ -299,10 +300,20 @@
 - **R-198 [Adversarial Debate for High-Stakes Decisions]**: Breaking schema modifications, technology selections, or architectural migrations MUST undergo adversarial debate between a Proposer and a Reviewer, arbitrated via [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md).
 - **R-199 [Reconciler Desired-State Convergence]**: System modifications MUST follow level-triggered reconciler semantics, driving observed state to desired state idempotently with full-jitter exponential backoff.
 - **R-200 [Cryptographic Human-in-the-Loop Boundaries]**: Destructive operations (production deployments, database drop/truncate, external credential generation) MUST pause and require explicit confirmation tokens before execution.
+- **R-201 [Autonomous PR Lifecycle & Full-Send Merge Gate]**: End-to-end autonomous execution ("full-send") MUST satisfy the 5-point Merge Gate on the latest commit (100% direct proof observed, CI green, bot findings addressed, no human change requests, branch up to date & mergeable). Agents MUST NOT merge if any gate criterion fails or bypass branch protection via `--admin`.
+- **R-202 [Direct Proof Over Synthetic Simulation]**: Green mocked unit tests DO NOT prove runtime UI or user experience behavior. Proof MUST consist of direct evidence observed in the session (CLI exit code 0, visual inspection/screenshot, reproduction test failing then passing).
+- **R-203 [Tri-Model Multi-Provider Council Protocol]**: When high-stakes architectural or security consensus is requested ("council"), the lead agent MUST evaluate changes with three flagship models from distinct providers (e.g. Anthropic Claude, OpenAI GPT, Google Gemini), enforce a hard budget of $\le 3$ rounds (extendable to 5 only for auth/data-loss/concurrency), and prevent review-induced scope creep.
+- **R-204 [Review Scope-Creep Defense & Finding Triage]**: Review feedback MUST be triaged into `blocker` (intended case broken), `should` (real bug callers hit), and `nit` (style/rare/extra perf/unneeded guards). Agents MUST fight against scope creep by rejecting unneeded guards, extra options, and speculative edge cases with written rationale.
+- **R-205 [Event-Driven PR Babysitting & Zero Polling Loops]**: Agents monitoring PRs MUST use event-driven watchers (`watch_pull_request` in T3 Code or backoff script). Agents MUST NOT implement tight polling loops or arbitrary `sleep` timers that exhaust GitHub API rate limits.
+- **R-206 [GitHub Rate-Limit Resource Partitioning]**: When GitHub GraphQL rate limits are exhausted (`gh pr ...`), agents MUST fall back to REST endpoints (`gh api repos/.../pulls`) which maintain independent quota pools.
+- **R-207 [PR Modernization Disposition Over Mechanical Rebase]**: Before rebasing an aged PR, agents MUST establish a formal disposition: `MODERNIZE` (intent still valid and shape correct), `REWORK` (intent valid, implementation outdated), or `CLOSE` (superseded/obsolete). Rebasing MUST use `--force-with-lease` against the recorded pre-rebase remote head.
+- **R-208 [Git Contributor Authorship & Co-Author Preservation]**: When taking over another contributor's PR or branch, original Git author identities and co-author trailers (`Co-authored-by: Name <email>`) MUST be preserved. Model attribution MUST NEVER replace human contributor credit.
+- **R-209 [Problem-First Pull Request Communication]**: PR titles and descriptions MUST lead with a concise explanation of the user problem and the direct solution. PRs MUST NOT lead with bloated file-by-file implementation inventories.
+- **R-210 [Standardized Agent GitHub Comment Attribution]**: Every comment posted on GitHub on behalf of the user MUST be prefixed with the standardized markdown note callout `> [!NOTE]\n> 🤖 **<model> responding on behalf of <user>**`, separating verified factual findings from judgment.
 
 ---
 
-## 15. Automated CI Gate Scan Patterns
+## 16. Automated CI Gate Scan Patterns
 
 Add this script to your CI pipeline (e.g., GitHub Actions, GitLab CI, pre-commit) to enforce non-negotiable coding hygiene rules at commit and merge time.
 
