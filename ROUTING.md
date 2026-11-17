@@ -10,7 +10,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 10 categories below.
+1. **Identify the Task Archetype** from the 11 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -177,6 +177,19 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-001** (Zero deferred markers: TODO/FIXME), **R-034** (Zero `any` / `@ts-ignore`), **R-046** (No swallowed exceptions), **R-164** (Atomic commits), **R-182** (Minimal surgical diffs) |
 | **Prohibited Actions** | ❌ Changing external public API signatures during internal refactors.<br>❌ Reformatting entire files unrelated to the refactored logic.<br>❌ Introducing any regressions in the test suite. |
 | **Mandatory Verification** | 1. `git diff --stat` confirming small surgical scope.<br>2. Typecheck: `npx tsc --noEmit` or `mypy --strict .` (0 errors)<br>3. Regression Suite: Full test run passing with 100% green. |
+
+---
+
+### Archetype 11: Multi-Agent Orchestration & Workflow Automation
+
+*Coordinating multi-agent swarms, dispatching parallel subagents, decomposing epics into DAGs, managing distributed Saga compensations, or orchestrating reconciler control loops.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md) *(Topological DAGs, Fencing tokens, Saga rollback, Reconciler loop)*<br>2. [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) *(Persona boundaries, tool sandboxing, communication protocols)*<br>3. [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) *(Adversarial debate & arbiter scoring)*<br>4. [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) *(Surgical diffs & proof-of-work)*<br>5. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Section 14: R-191 to R-200)* |
+| **Key Invariant Rules** | **R-191** (Orchestrator Role Isolation: orchestrator never directly implements), **R-192** (Pointer-based context handoffs, zero context tsunami), **R-193** (Martin Kleppmann fencing tokens on state writes), **R-194** (Saga compensating rollbacks on partial failure), **R-195** (Acyclic graph validation & $\le 3$ cycle ceiling), **R-196** (Unresponsive subagent & zombie reaping), **R-197** (Bounded worker concurrency $K \le 4$), **R-198** (Adversarial debate for high-stakes decisions), **R-199** (Reconciler desired-state convergence), **R-200** (Cryptographic HITL boundaries) |
+| **Prohibited Actions** | ❌ Writing application source code directly inside the lead orchestrator context.<br>❌ Dumping raw multi-megabyte conversation transcripts into child agent prompts.<br>❌ Dispatching unbounded parallel workers without a semaphore pool ($K > 4$).<br>❌ Marking tasks complete without inspecting subagent terminal exit codes and assertion counts.<br>❌ Mutating distributed state without defining inverse Saga compensating rollbacks. |
+| **Mandatory Verification** | 1. Graph Cycle Audit: Topological sort verification confirming acyclic DAG.<br>2. Fencing Token Assertion: Ensure epoch token is passed to all write operations.<br>3. Exit Code Verification: Inspect stdout/stderr of every child subagent (exit code 0).<br>4. Git Cleanliness: `git status -s` confirming 0 uncommitted or untracked changes. |
 
 ---
 

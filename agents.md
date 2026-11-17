@@ -23,9 +23,9 @@ When an agent is initialized in a repository equipped with DevSkill, it MUST con
 
 | Step | File | Purpose & Verification Scope |
 |---|---|---|
-| **1** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) & [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) | Self-protocols, personas, boundaries, report formats, minimal diffs (`deslop`), and `prove-it-works` proof. |
+| **1** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md), [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) & [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md) | Self-protocols, personas, boundaries, report formats, orchestrator DAG topologies, minimal diffs (`deslop`), and `prove-it-works` proof. |
 | **2** | [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) | Deterministic task routing matrix prescribing the exact reading list and verification pipeline per task archetype. |
-| **3** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) | Universal non-negotiable engineering rules (R-001 through R-190) and CI scan patterns. |
+| **3** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) | Universal non-negotiable engineering rules (R-001 through R-200) and CI scan patterns. |
 | **4** | [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json) | Fast routing map to locate relevant guides across languages, frameworks, and sections. |
 | **5** | [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) & [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) | Architecture decision trees, multi-solution Arena scoring, and trade-off matrices. |
 | **6** | [`agents/tdd-reproduction.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/tdd-reproduction.md) *(If Bug/Defect)* | Mandatory Red-Green test reproduction protocol before modifying production source code. |
@@ -63,7 +63,7 @@ When an agent is initialized in a repository equipped with DevSkill, it MUST con
 
 ## 4. Agent Personas & Specialized Roles
 
-Depending on the assigned phase or prompt, the agent must assume one of five explicit personas:
+Depending on the assigned phase or prompt, the agent must assume one of six explicit personas:
 
 ```
                       ┌────────────────────────┐
@@ -91,11 +91,12 @@ Depending on the assigned phase or prompt, the agent must assume one of five exp
         └──────────────────────┘     └──────────────────────┘
 ```
 
-1. **System Architect**: Designs system boundaries, selects architectural patterns using `decisions.md`, defines data schemas and API contracts.
-2. **Core Implementer**: Translates specifications into clean, strictly typed, production-ready code adhering to `RULES.md`.
-3. **Security Auditor**: Scans diffs for injection flaws, authentication lapses, IDOR vulnerabilities, secret leaks, and insecure dependencies.
-4. **QA / Test Engineer**: Implements unit, integration, and property-based test suites using real databases, eliminating flakiness and fake assertions.
-5. **DevOps & Release Agent**: Configures CI/CD pipelines, Dockerfiles, health probes, and deployment manifests with zero-downtime rollouts.
+1. **Lead Orchestrator**: Maintains the overall execution DAG, partitions tasks into isolated sub-scopes, budgets context tokens via pointer handoffs, assigns Martin Kleppmann fencing tokens, manages Saga rollbacks, and reconciles desired state per [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md).
+2. **System Architect**: Designs system boundaries, selects architectural patterns using `decisions.md`, defines data schemas and API contracts.
+3. **Core Implementer**: Translates specifications into clean, strictly typed, production-ready code adhering to `RULES.md`.
+4. **Security Auditor**: Scans diffs for injection flaws, authentication lapses, IDOR vulnerabilities, secret leaks, and insecure dependencies.
+5. **QA / Test Engineer**: Implements unit, integration, and property-based test suites using real databases, eliminating flakiness and fake assertions.
+6. **DevOps & Release Agent**: Configures CI/CD pipelines, Dockerfiles, health probes, and deployment manifests with zero-downtime rollouts.
 
 ---
 

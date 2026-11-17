@@ -21,7 +21,7 @@
 11. [Deployment, Infrastructure & Resilience (R-153 to R-162)](#11-deployment-infrastructure--resilience)
 12. [Git Hygiene, Versioning & Process (R-163 to R-170)](#12-git-hygiene-versioning--process)
 13. [Agent Safety, Tool Sandboxing & Ethics (R-171 to R-180)](#13-agent-safety-tool-sandboxing--ethics)
-14. [Agent Discipline, Deterministic Execution & Minimal Diffs (R-181 to R-190)](#14-agent-discipline-deterministic-execution--minimal-diffs)
+14. [Agent Discipline, Deterministic Execution & Multi-Agent Orchestration (R-181 to R-200)](#14-agent-discipline-deterministic-execution--multi-agent-orchestration)
 15. [Automated CI Gate Scan Patterns](#15-automated-ci-gate-scan-patterns)
 
 ---
@@ -276,7 +276,7 @@
 
 ---
 
-## 14. Agent Discipline, Deterministic Execution & Minimal Diffs
+## 14. Agent Discipline, Deterministic Execution & Multi-Agent Orchestration
 
 - **R-181 [Prove-It-Works Execution Proof]**: An autonomous agent MUST NOT declare a task or subtask complete without executing concrete verification commands in the terminal and displaying real execution output (exit code 0, test pass count, lint/type status). Agents MUST NEVER simulate, hallucinate, or assume success.
 - **R-182 [Minimal Surgical Diffs & Anti-Slop (`deslop`)]**: Modifications to existing code MUST be minimal, surgical, and targeted strictly to the lines required to satisfy the invariant. Agents MUST NOT reformat entire files, introduce speculative abstractions, or add narrative comments explaining self-evident syntax.
@@ -288,6 +288,16 @@
 - **R-188 [Goroutine & Async Task Lifecycle Ownership]**: Every spawned goroutine, worker thread, or asynchronous task MUST have an explicit parent context or cancellation channel and be tracked via `sync.WaitGroup` or `errgroup.Group`. Unmonitored orphan tasks and context detachment are prohibited.
 - **R-189 [Nominal Branding & Boundary Validation Invariants]**: Domain primitives (e.g., `UserId`, `AccountId`, `EmailAddress`) MUST use nominal type branding (`Brand<T, B>`) or newtypes to prevent primitive obsession. External inputs MUST be validated at ingress using strict schema parsers (Zod, Pydantic).
 - **R-190 [Deterministic Routing Matrix Compliance]**: Autonomous agents MUST consult [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) to ingest the exact prescribed file list for their task archetype before generating or modifying any code.
+- **R-191 [Orchestrator Role Isolation]**: Lead Orchestrator agents MUST coordinate, partition, budget, and reconcile execution per [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md). Orchestrators MUST NOT directly implement low-level source code in multi-step workflows; implementation belongs to specialized child subagents.
+- **R-192 [Pointer-Based Context Handoff]**: Orchestrators MUST hand off file paths, artifact URIs, and structured summary pointers (`file:///...`) to subagents. Orchestrators MUST NOT dump raw multi-megabyte conversation transcripts into child prompts, avoiding context window bloat and reasoning degradation.
+- **R-193 [Martin Kleppmann Fencing Tokens]**: Distributed task leases, file locks, and state-writing subagents MUST carry strictly monotonically increasing epoch tokens. Any write attempt carrying a stale token ($token < current$) MUST be rejected by storage layers to prevent split-brain overwrites.
+- **R-194 [Saga Compensating Rollbacks]**: Multi-agent workflows executing mutating operations across distinct subsystems MUST define inverse compensation actions. If an intermediate task fails, preceding completed tasks MUST be compensated in reverse order to restore consistency.
+- **R-195 [Acyclic Graph Validation & Cycle Ceilings]**: Orchestrators MUST validate execution DAGs for cycles prior to dispatch. If an iterative feedback loop (e.g., Code-Review-Revise) is required, the orchestrator MUST enforce a hard ceiling of $\le 3$ iterations.
+- **R-196 [Unresponsive Subagent & Zombie Reaping]**: Every subagent invocation MUST specify a hard timeout ($T_{\text{timeout}}$). Orchestrators MUST monitor child task health and terminate stalled workers before reclaiming resources.
+- **R-197 [Bounded Worker Concurrency]**: Parallel subagent dispatch MUST be bounded by an explicit semaphore pool ($K \le 4$ default). Unbounded parallel fan-out that exhausts LLM rate limits or creates git merge collisions is prohibited.
+- **R-198 [Adversarial Debate for High-Stakes Decisions]**: Breaking schema modifications, technology selections, or architectural migrations MUST undergo adversarial debate between a Proposer and a Reviewer, arbitrated via [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md).
+- **R-199 [Reconciler Desired-State Convergence]**: System modifications MUST follow level-triggered reconciler semantics, driving observed state to desired state idempotently with full-jitter exponential backoff.
+- **R-200 [Cryptographic Human-in-the-Loop Boundaries]**: Destructive operations (production deployments, database drop/truncate, external credential generation) MUST pause and require explicit confirmation tokens before execution.
 
 ---
 

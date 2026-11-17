@@ -70,6 +70,7 @@ devskill/
 ├── index.json                        # Machine-Readable Catalog & Fast Token Index for AI Retrieval
 │
 ├── agents/                           # Autonomous Agent Sub-Skills & Execution Protocols
+│   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases, Sagas & Reconciler Loops
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence Standards
 │   ├── tdd-reproduction.md           # Reproduction-First TDD, Defect Localization & Isolation
 │   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
