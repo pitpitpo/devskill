@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 11 categories below.
+1. **Identify the Task Archetype** from the 13 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -191,9 +191,35 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-191** (Orchestrator Role Isolation: orchestrator never directly implements), **R-192** (Pointer-based context handoffs, zero context tsunami), **R-193** (Martin Kleppmann fencing tokens on state writes), **R-194** (Saga compensating rollbacks on partial failure), **R-195** (Acyclic graph validation & $\le 3$ cycle ceiling), **R-196** (Unresponsive subagent & zombie reaping), **R-197** (Bounded worker concurrency $K \le 4$), **R-198** (Adversarial debate for high-stakes decisions), **R-199** (Reconciler desired-state convergence), **R-200** (Cryptographic HITL boundaries) |
 | **Prohibited Actions** | ❌ Writing application source code directly inside the lead orchestrator context.<br>❌ Dumping raw multi-megabyte conversation transcripts into child agent prompts.<br>❌ Dispatching unbounded parallel workers without a semaphore pool ($K > 4$).<br>❌ Marking tasks complete without inspecting subagent terminal exit codes and assertion counts.<br>❌ Mutating distributed state without defining inverse Saga compensating rollbacks. |
 | **Mandatory Verification** | 1. Graph Cycle Audit: Topological sort verification confirming acyclic DAG.<br>2. Fencing Token Assertion: Ensure epoch token is passed to all write operations.<br>3. Exit Code Verification: Inspect stdout/stderr of every child subagent (exit code 0).<br>4. Git Cleanliness: `git status -s` confirming 0 uncommitted or untracked changes. |
-
+ 
 ---
-
+ 
+### Archetype 12: Enterprise ERP & Business Ledger Engineering
+ 
+*Developing, customizing, or maintaining ERP systems (Odoo, ERPNext / Frappe), double-entry accounting ledgers, multi-currency transactions, FIFO inventory valuation, and supply chain automation.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`sections/erp-enterprise/core-accounting-ledger.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/erp-enterprise/core-accounting-ledger.md) *(Ledger invariants, Debit=Credit, multi-currency, penny rounding)*<br>2. [`sections/erp-enterprise/inventory-supply-chain.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/erp-enterprise/inventory-supply-chain.md) *(FIFO cost layers, perpetual COGS, landed costs)*<br>3. Target ERP Framework: [`frameworks/erp/odoo.md`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/erp/odoo.md) *(Odoo 17/18 ORM, compute fields, access rules)* OR [`frameworks/erp/erpnext.md`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/erp/erpnext.md) *(Frappe v15/v16 DocType lifecycle, SLE, hooks)*<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Financial data invariants & idempotency)*<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-001** (Zero deferred markers: TODO/FIXME), **R-002** (No mock/synthetic data in production), **R-041** (Exact fixed-point Decimal arithmetic; IEEE-754 floats strictly prohibited for currency), **R-042** ($\sum \text{Debit} \equiv \sum \text{Credit}$ general ledger invariant), **R-043** (Append-only immutable journal entries; no direct UPDATE/DELETE on posted ledgers), **R-044** (Perpetual inventory FIFO cost layer queue invariant), **R-062** (Multi-company / multi-tenant record rule isolation) |
+| **Prohibited Actions** | ❌ Using IEEE-754 floating point numbers (`float`) for monetary amounts or tax calculations.<br>❌ Executing direct SQL `UPDATE` or `DELETE` on posted journal entries (`account.move` / `GL Entry`) bypassing ORM cancel/reversal workflows.<br>❌ Allowing negative inventory quantities without explicit negative-stock policy configuration.<br>❌ Mutating submittable Frappe documents after submission (`docstatus == 1`) without amend workflow.<br>❌ Omitting record-level security rules (`ir.rule` / Permission Query conditions) in multi-company setups. |
+| **Mandatory Verification** | 1. Ledger Balance Assertion: Verify $\sum \text{debits} - \sum \text{credits} = 0$ on all posted entries.<br>2. Decimal Precision Check: Verify all monetary values use `Decimal` with quantized precision.<br>3. Unit & Integration Suite: `python -m pytest tests/` or `bench run-tests --app <app>` / `odoo-bin -i <module> --test-enable` (100% pass).<br>4. Security / Access Audit: Verify unprivileged users cannot read or mutate cross-company journals. |
+ 
+---
+ 
+### Archetype 13: Systems Programming, Linux Kernel & AOSP Customization
+ 
+*Developing Linux kernel modules, character/platform device drivers, eBPF tracepoints, Android AOSP HALs, Treble AIDL services, SELinux policies, or modern C23/C++23 systems software.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. Target Subsystem: [`sections/systems-kernel/linux-kernel-driver.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/systems-kernel/linux-kernel-driver.md) *(Linux 6.6+ drivers, Device Tree, atomic contexts, eBPF)* OR [`frameworks/mobile/android-aosp.md`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/mobile/android-aosp.md) *(Android 14/15/16 Treble, AIDL HAL, Soong, SELinux)*<br>2. [`languages/c-cpp.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/c-cpp.md) *(Modern ISO C23/C++23, RAII lifetimes, concurrency, sanitizers)*<br>3. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(System safety, memory bounds & concurrency invariants)*<br>4. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-001** (Zero deferred markers: TODO/FIXME), **R-002** (Zero mock placeholders), **R-031** (Strict memory safety: RAII, zero buffer overflows, zero dangling pointers), **R-032** (Atomic context invariants: zero sleeping/blocking inside spinlocks or interrupt service routines), **R-033** (Kernel-user boundary validation: mandatory `copy_to_user` / `copy_from_user` with bounds check), **R-065** (AOSP Treble stability: `@VintfStability` and strict SELinux `neverallow` compliance) |
+| **Prohibited Actions** | ❌ Dereferencing user-space pointers directly in kernel space without `copy_from_user` / `copy_to_user`.<br>❌ Calling sleeping functions (`msleep`, `mutex_lock`, `kmalloc(..., GFP_KERNEL)`) while holding spinlocks or in atomic/interrupt context.<br>❌ Bypassing Android Treble Stable AIDL boundaries using raw, unstabilized binder interfaces across `/system` and `/vendor`.<br>❌ Modifying AOSP SELinux policies by adding permissive domains or violating upstream `neverallow` assertions.<br>❌ Using unconstrained C-style casts or manual memory allocation (`malloc`/`free`) where RAII smart pointers or C23 bounds are available. |
+| **Mandatory Verification** | 1. Compilation Cleanliness: Kernel module builds with zero warnings (`-Wall -Werror`); AOSP modules compile cleanly with `m <module_name>`.<br>2. Sanitizer / Dynamic Checks: Clang AddressSanitizer / UndefinedBehaviorSanitizer (`-fsanitize=address,undefined`) clean run.<br>3. SELinux Policy Validation: `checkpolicy` / `secilc` compiles sepolicy with zero `neverallow` failures.<br>4. Driver Lifecycle Test: Verification of `insmod` / `rmmod` clean unload with zero kernel memory leaks or dangling sysfs nodes. |
+ 
+---
+ 
 ## 4. Conflict Resolution Protocol
 
 If two guides or rules appear to conflict in a specific context:

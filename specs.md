@@ -91,9 +91,14 @@ devskill/
 │   │   ├── spring-boot.md            # Java Spring Boot 3, Spring Security, JPA, Virtual Threads (Project Loom)
 │   │   ├── go-gin-axum.md            # Go (Gin/Echo/Chi) & Rust (Axum/Actix-web) High-Throughput Services
 │   │   └── dotnet-aspnet.md          # C# .NET 8/9 Minimal APIs, EF Core, Middleware Pipeline, Caching
+│   ├── erp/
+│   │   ├── README.md                 # ERP Ecosystem Taxonomy, Selection Matrix & Common Ledger Invariants
+│   │   ├── odoo.md                   # Odoo 17/18 Architecture, Models/ORM, Computed Fields, XML Views & Security
+│   │   └── erpnext.md                # Frappe Framework v15/v16 & ERPNext, DocType Lifecycle & Submittables
 │   └── mobile/
 │       ├── react-native-expo.md      # Expo Router, Native Modules, Hermès Engine, Performance Tuning
-│       └── flutter.md                # Dart/Flutter 3+, Riverpod/Bloc, Platform Channels, Shaders
+│       ├── flutter.md                # Dart/Flutter 3+, Riverpod/Bloc, Platform Channels, Shaders
+│       └── android-aosp.md           # Android 14/15/16 AOSP, Project Treble, Stable AIDL HAL, Soong & SELinux
 │
 ├── sections/                         # Domain-Specific Cross-Cutting Architectural Layers
 │   ├── README.md                     # Directory index and domain taxonomy
@@ -111,6 +116,13 @@ devskill/
 │   │   ├── schema-migrations.md      # Zero-Downtime Migrations, Expand/Contract Pattern, Alembic, Prisma
 │   │   ├── nosql-redis-vector.md     # MongoDB, Redis Data Structures, Pgvector, DynamoDB Single-Table Design
 │   │   └── connection-pooling.md     # PgBouncer, Connection Sizing, Timeout Configuration, Deadlock Handling
+│   ├── erp-enterprise/
+│   │   ├── README.md                 # Enterprise Financial, Supply Chain & Accounting Invariants
+│   │   ├── core-accounting-ledger.md # Double-Entry Bookkeeping Invariants, Immutability & Multi-Currency Ledger
+│   │   └── inventory-supply-chain.md # FIFO Inventory Queues, Landed Cost Distribution & Perpetual Valuation
+│   ├── systems-kernel/
+│   │   ├── README.md                 # Systems & Kernel Overview, Ring 0 Memory Safety & Atomic Context Rules
+│   │   └── linux-kernel-driver.md    # Linux 6.6+ Character & Platform Drivers, Device Tree, Mutexes & eBPF
 │   ├── devops-infrastructure/
 │   │   ├── docker-containers.md      # Multi-Stage Builds, Rootless Execution, Distroless Images, Layer Caching
 │   │   ├── kubernetes-cloud.md       # Deployments, StatefulSets, HPA, Services, Ingress, Probes, Resource Limits
@@ -128,6 +140,7 @@ devskill/
 │   ├── golang.md                     # Idiomatic Go, Goroutines, Channels, Mutexes, Error Wrapping, Interfaces
 │   ├── rust.md                       # Ownership, Borrowing, Lifetimes, Traits, Tokio Async, Result/Error Handling
 │   ├── java.md                       # Modern Java 21 LTS, Records, Pattern Matching, Sealed Classes, Loom
+│   ├── c-cpp.md                      # Modern ISO C23 & C++23/26, RAII Lifetimes, Memory Safety & Concurrency
 │   └── sql.md                        # ANSI SQL, CTEs, Window Functions, Index-Friendly Filtering, Transactions
 │
 ├── workflows/                        # Development & Operational Workflows

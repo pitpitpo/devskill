@@ -16,9 +16,9 @@
 - **Autonomous Agent Safety**: [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) defines agent personas, sandboxing rules, self-correction loops, and context hygiene.
 - **Architectural Decision Matrix**: [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) guides choices across databases, frameworks, APIs, and state managers.
 - **Comprehensive Technical Guides**: Deep production manuals organized into modular folders:
-  - [`frameworks/`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/) (Next.js, React, FastAPI, NestJS, Django, Spring Boot, Go Gin, etc.)
-  - [`sections/`](file:///home/agy/.t3/userdata/attachments/devskill/sections/) (Backend, Frontend, Database, DevOps, Testing & QA)
-  - [`languages/`](file:///home/agy/.t3/userdata/attachments/devskill/languages/) (TypeScript, Python, Go, Rust, Java, SQL)
+  - [`frameworks/`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/) (Next.js, React, FastAPI, NestJS, Django, Spring Boot, Go Gin, Odoo, ERPNext, Android AOSP, etc.)
+  - [`sections/`](file:///home/agy/.t3/userdata/attachments/devskill/sections/) (Backend, Frontend, Database, DevOps, Testing & QA, Enterprise ERP/Ledger, Systems & Kernel Drivers)
+  - [`languages/`](file:///home/agy/.t3/userdata/attachments/devskill/languages/) (TypeScript, Python, Go, Rust, Java, C/C++, SQL)
   - [`workflows/`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/) (Git branching, PR reviews, SemVer, Incident response)
   - [`pipelines/`](file:///home/agy/.t3/userdata/attachments/devskill/pipelines/) (CI/CD GitHub Actions, GitLab CI, SAST/DAST)
   - [`scaffolding/`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/) (Production starter configs and architecture templates)
@@ -47,16 +47,19 @@ devskill/
 ├── frameworks/
 │   ├── frontend/                     # Next.js, React, Vue/Nuxt, SvelteKit, Tailwind
 │   ├── backend/                      # FastAPI, NestJS, Django, Express, Spring, Go/Rust, .NET
-│   └── mobile/                       # React Native Expo, Flutter
+│   ├── erp/                          # Odoo 17/18, Frappe & ERPNext v15/v16
+│   └── mobile/                       # React Native Expo, Flutter, Android AOSP
 │
 ├── sections/
 │   ├── backend/                      # API Design, Microservices vs Monolith, Caching, Queues
 │   ├── frontend/                     # State Management, Accessibility (A11y), Performance
 │   ├── database/                     # PostgreSQL Mastery, Migrations, NoSQL, Pooling
+│   ├── erp-enterprise/               # Core Accounting Ledger, Inventory & Supply Chain
+│   ├── systems-kernel/               # Linux Kernel Drivers, Device Tree & eBPF
 │   ├── devops-infrastructure/        # Docker Containers, Kubernetes, Terraform, Observability
 │   └── testing-qa/                   # Test Pyramid, Contract Testing, E2E Playwright
 │
-├── languages/                        # TypeScript, Python, Go, Rust, Java, SQL
+├── languages/                        # TypeScript, Python, Go, Rust, Java, C/C++, SQL
 ├── workflows/                        # Git Branching, Code Reviews, Release Versioning, Incidents
 ├── pipelines/                        # GitHub Actions, GitLab CI, Security Scanning, Deployments
 └── scaffolding/                      # Starter Configs (.editorconfig, tsconfig, Docker, etc.)
