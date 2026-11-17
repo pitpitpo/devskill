@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-17 (Rules R-001 through R-214 Active)
+> **Last Updated**: 2026-11-17 (Rules R-001 through R-215 Active)
 
 ---
 
@@ -314,6 +314,7 @@
 - **R-212 [Scientific Hillclimbing & Benchmark Discipline]**: Performance claims MUST pass the 7-Question Benchmark Audit (limiter named, production tuning matched, Amdahl's law respected, errors counted, $\ge 5$ alternating runs). Iterative optimizations MUST freeze the harness first, record attempts in a decision ledger, and commit strictly one accepted hypothesis at a time.
 - **R-213 [Structural Encoding Over Comment Sermons]**: Engineers and agents MUST NOT add narrative comments, workaround apologies, or inline warning comments (`// do not remove`) to production business logic. Invariants MUST be encoded into the type system, runtime schemas, or CI lints.
 - **R-214 [Zero AI Slop & Unsolicited Banners]**: Code, pull requests, and commit messages MUST NOT contain conversational AI filler, sycophantic intros/outros, or ASCII banner flourishes. Communication MUST be framed directly around observed facts, constraints, and verifiable outcomes.
+- **R-215 [Non-Stop Reconciler Loop & Default Autonomous Execution]**: Autonomous agents MUST operate as continuous closed-loop reconcilers (the Ralph Loop pattern). Agents MUST NOT terminate turns, yield execution, or prompt the user with premature handoffs ("try this next", "it should work now") while unfulfilled tasks, broken builds, or failing tests exist. Tasks MUST be tracked durably on disk and Git, iterating continuously until the full verification matrix passes with Exit Code 0.
 
 ---
 

@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 17 categories below.
+1. **Identify the Task Archetype** from the 18 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -269,6 +269,19 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-211** (Single safety fact proof at Certainty Level $\ge 4$ via executable test), **R-213** (Encode constraints into types/schemas rather than comment warnings), **R-003** (Zero unverified assumptions), **R-018** (Backward compatibility of public/wire interfaces) |
 | **Prohibited Actions** | ❌ Relying solely on raw symbol grep to claim a change is safe.<br>❌ Presenting convincing written blast-radius descriptions without executing standalone proof probes.<br>❌ Modifying wire-format serialization fields or database column types without checking external consumers.<br>❌ Adding defensive comments (`// do not remove`) instead of structural compiler/schema constraints. |
 | **Mandatory Verification** | 1. Single-Fact Executable Probe: Standalone probe script exits with code 0 proving safety invariant.<br>2. Certainty Scale Assertion: Evidence reaches Level 4 (executed test) or Level 5 (live repro).<br>3. Wire & DB Contract Check: Validation of backward compatibility across serialization boundaries.<br>4. Clean Unslop Pass: 0 forbidden commentary sermons or workaround justifications in diff. |
+ 
+---
+ 
+### Archetype 18: The Ralph Reconciler Loop (Default Non-Stop Execution)
+ 
+*Autonomous, non-stop closed-loop execution. Running continuously against a disk-backed task backlog until all tasks pass verification gates with Exit Code 0 and all changes are committed.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/ralph-reconciler-loop.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/ralph-reconciler-loop.md) *(Ralph Wiggum loop, fresh-context iteration, disk memory)*<br>2. [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) *(Minimal diffs, prove-it-works evidence)*<br>3. [`agents/tdd-reproduction.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/tdd-reproduction.md) *(Reproduction-first defect isolation)*<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-001, R-004, R-181, R-201, R-215)*<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-215** (Non-stop closed-loop execution until Exit Code 0 across all gates), **R-004** (Anti-Fake Green: never commit without passing tests), **R-164** (Atomic commits: 1 commit per completed checklist item), **R-001** (Zero TODOs/placeholders), **R-182** (Surgical minimal diffs) |
+| **Prohibited Actions** | ❌ Stopping mid-task or asking the user to run tests when shell tools are available.<br>❌ Marking a task `[x]` in the backlog before running tests and observing Exit Code 0.<br>❌ Yielding execution with conversational excuses ("It should work now", "Try this").<br>❌ Leaving broken or dirty uncommitted changes across iteration cycles.<br>❌ Emitting unfinished stub functions or mock fallbacks. |
+| **Mandatory Verification** | 1. Backlog Verification: 100% of tasks in `IMPLEMENTATION_PLAN.md` marked `[x]`.<br>2. Clean Git State: `git status --porcelain` is empty (all progress committed).<br>3. Quality Gate Scan: Strict typecheck (0 errors) + Linter (0 warnings) + Tests (100% pass).<br>4. Completion Sentinel: Terminal output concludes with `<promise>COMPLETE</promise>` and verbatim `prove-it-works` scorecard. |
  
 ---
  

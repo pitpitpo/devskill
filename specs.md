@@ -77,7 +77,8 @@ devskill/
 │   ├── hillclimbing-optimization.md  # Performance Hillclimbing, 7-Question Benchmark Audit & Ledgers
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence Standards
 │   ├── tdd-reproduction.md           # Reproduction-First TDD, Defect Localization & Isolation
-│   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
+│   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
+│   └── ralph-reconciler-loop.md      # The Ralph Loop, Fresh-Context Iteration & Non-Stop Reconciler
 │
 ├── frameworks/                       # Framework-Specific Deep Mastery Guides
 │   ├── README.md                     # Directory index and framework selection guidance

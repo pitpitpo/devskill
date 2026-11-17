@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "updated": "2026-11-17",
   "description": "Production-Grade Engineering Standards, Architectural Blueprints, Agent Discipline & Decision Matrices",
-  "total_documents": 94,
+  "total_documents": 95,
   "modules": {
     "core": [
       {
@@ -117,6 +117,11 @@
         "path": "agents/poteto-discipline.md",
         "title": "\ud83e\udd4b Agent Discipline & Execution Rigor (`poteto-discipline.md`)",
         "lines": 190
+      },
+      {
+        "path": "agents/ralph-reconciler-loop.md",
+        "title": "\ud83d\udd01 The Ralph Loop & Non-Stop Reconciler Protocol ()",
+        "lines": 248
       },
       {
         "path": "agents/tdd-reproduction.md",

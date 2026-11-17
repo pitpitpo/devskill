@@ -46,7 +46,8 @@ devskill/
 │   ├── hillclimbing-optimization.md  # 7-Question Benchmark Audit & Hypothesis Ledgers
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence
 │   ├── tdd-reproduction.md           # Reproduction-First TDD & Defect Isolation
-│   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
+│   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
+│   └── ralph-reconciler-loop.md      # The Ralph Loop & Non-Stop Reconciler
 │
 ├── frameworks/
 │   ├── frontend/                     # Next.js, React, Vue/Nuxt, SvelteKit, Tailwind
