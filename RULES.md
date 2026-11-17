@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-17 (Rules R-001 through R-210 Active)
+> **Last Updated**: 2026-11-17 (Rules R-001 through R-214 Active)
 
 ---
 
@@ -23,7 +23,7 @@
 12. [Git Hygiene, Versioning & Process (R-163 to R-170)](#12-git-hygiene-versioning--process)
 13. [Agent Safety, Tool Sandboxing & Ethics (R-171 to R-180)](#13-agent-safety-tool-sandboxing--ethics)
 14. [Agent Discipline, Deterministic Execution & Multi-Agent Orchestration (R-181 to R-200)](#14-agent-discipline-deterministic-execution--multi-agent-orchestration)
-15. [Autonomous PR Delivery, Model Councils & Review Gates (R-201 to R-210)](#15-autonomous-pr-delivery-model-councils--review-gates)
+15. [Autonomous PR Delivery, Model Councils & Review Gates (R-201 to R-214)](#15-autonomous-pr-delivery-model-councils--review-gates)
 16. [Automated CI Gate Scan Patterns](#16-automated-ci-gate-scan-patterns)
 
 ---
@@ -310,6 +310,10 @@
 - **R-208 [Git Contributor Authorship & Co-Author Preservation]**: When taking over another contributor's PR or branch, original Git author identities and co-author trailers (`Co-authored-by: Name <email>`) MUST be preserved. Model attribution MUST NEVER replace human contributor credit.
 - **R-209 [Problem-First Pull Request Communication]**: PR titles and descriptions MUST lead with a concise explanation of the user problem and the direct solution. PRs MUST NOT lead with bloated file-by-file implementation inventories.
 - **R-210 [Standardized Agent GitHub Comment Attribution]**: Every comment posted on GitHub on behalf of the user MUST be prefixed with the standardized markdown note callout `> [!NOTE]\n> 🤖 **<model> responding on behalf of <user>**`, separating verified factual findings from judgment.
+- **R-211 [Blast-Radius Grounding & Single-Fact Proof]**: Changes touching shared or cross-cutting boundaries MUST identify the foundational safety fact the change depends on and verify it via executable test (Evidence Level $\ge 4$). Textual writeups or caller listings without runtime verification are prohibited.
+- **R-212 [Scientific Hillclimbing & Benchmark Discipline]**: Performance claims MUST pass the 7-Question Benchmark Audit (limiter named, production tuning matched, Amdahl's law respected, errors counted, $\ge 5$ alternating runs). Iterative optimizations MUST freeze the harness first, record attempts in a decision ledger, and commit strictly one accepted hypothesis at a time.
+- **R-213 [Structural Encoding Over Comment Sermons]**: Engineers and agents MUST NOT add narrative comments, workaround apologies, or inline warning comments (`// do not remove`) to production business logic. Invariants MUST be encoded into the type system, runtime schemas, or CI lints.
+- **R-214 [Zero AI Slop & Unsolicited Banners]**: Code, pull requests, and commit messages MUST NOT contain conversational AI filler, sycophantic intros/outros, or ASCII banner flourishes. Communication MUST be framed directly around observed facts, constraints, and verifiable outcomes.
 
 ---
 

@@ -42,6 +42,8 @@ devskill/
 │   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases & Reconcilers
 │   ├── full-send-delivery.md         # Autonomous PR Delivery, Merge Gates & Handoff
 │   ├── multi-model-council.md        # Tri-Provider Flagship Council & Review Loops
+│   ├── blast-radius-verification.md  # Systemic Impact Analysis & Dark Blast Radius
+│   ├── hillclimbing-optimization.md  # 7-Question Benchmark Audit & Hypothesis Ledgers
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence
 │   ├── tdd-reproduction.md           # Reproduction-First TDD & Defect Isolation
 │   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
@@ -62,7 +64,7 @@ devskill/
 │   └── testing-qa/                   # Test Pyramid, Contract Testing, E2E Playwright
 │
 ├── languages/                        # TypeScript, Python, Go, Rust, Java, C/C++, SQL
-├── workflows/                        # PR Babysitting, Modernization, Git, SemVer, Incidents
+├── workflows/                        # PR Babysitting, Git, SemVer, Incidents, Anti-Slop Hygiene
 ├── pipelines/                        # GitHub Actions, GitLab CI, Security Scanning, Deployments
 └── scaffolding/                      # Starter Configs (.editorconfig, tsconfig, Docker, etc.)
 ```

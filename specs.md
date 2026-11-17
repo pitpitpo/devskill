@@ -73,6 +73,8 @@ devskill/
 │   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases, Sagas & Reconciler Loops
 │   ├── full-send-delivery.md         # Autonomous End-to-End PR Delivery, Merge Gates & Full-Stop Handoff
 │   ├── multi-model-council.md        # Tri-Provider Flagship Council, Review Loops & Scope-Creep Defense
+│   ├── blast-radius-verification.md  # Systemic Impact Analysis, Single-Fact Proof & Dark Blast Radius
+│   ├── hillclimbing-optimization.md  # Performance Hillclimbing, 7-Question Benchmark Audit & Ledgers
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence Standards
 │   ├── tdd-reproduction.md           # Reproduction-First TDD, Defect Localization & Isolation
 │   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
@@ -152,7 +154,8 @@ devskill/
 │   ├── release-versioning.md         # Semantic Versioning (SemVer 2.0.0), Changelogs, Tagging Automations
 │   ├── code-review-standards.md      # Senior PR Review Checklist, Blocking vs Non-Blocking Comments
 │   ├── incident-response.md          # Severity Tiers (P0-P4), On-Call Runbooks, Blameless Post-Mortems
-│   └── feature-flags.md              # Trunk Development, Dark Launches, Flag Lifecycles, Kill Switches
+│   ├── feature-flags.md              # Trunk Development, Dark Launches, Flag Lifecycles, Kill Switches
+│   └── unslop-code-hygiene.md        # Comment Elimination, Anti-Slop Discipline & Structural Encoding
 │
 ├── pipelines/                        # CI/CD Automation Specifications & Templates
 │   ├── README.md                     # Pipeline architectures and security scanning

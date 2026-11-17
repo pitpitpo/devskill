@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 15 categories below.
+1. **Identify the Task Archetype** from the 17 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -243,6 +243,32 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-198** (Adversarial debate for high-stakes modifications), **R-203** (Three frontier models from distinct independent providers), **R-204** (Review scope-creep defense; triage into blocker/should/nit), **R-182** (Minimal surgical diffs), **R-195** (Hard ceiling of $\le 3$ rounds; 5 for security/auth/concurrency) |
 | **Prohibited Actions** | ❌ Appeasing reviewers by adding speculative helpers, extra adapters, or unneeded guards.<br>❌ Looping past 3 rounds (or 5 for auth/security) without escalating disputes to human decision.<br>❌ Fabricating numerical ratings or scores when delegates provided only qualitative feedback.<br>❌ Allowing reviewer subagents to mutate files directly or spawn nested child agents.<br>❌ Duplicating models from the same provider when three distinct providers were requested. |
 | **Mandatory Verification** | 1. Provider Diversity Audit: Confirm 3 distinct AI provider models participated.<br>2. Budget Check: Verify round count $\le 3$ (or $\le 5$ for auth/data-loss/concurrency).<br>3. Scope-Creep Diff Check: `git diff --stat` confirms diff did not inflate by $>20\%$.<br>4. Ledger Reconciliation: 100% of blockers/shoulds resolved or declined with written evidence. |
+ 
+---
+ 
+### Archetype 16: Performance Hillclimbing & Scientific Optimization
+ 
+*Sustained empirical optimization of latency, throughput, or resource consumption against a target, vetting benchmarks via the 7-Question Audit, freezing measurement harnesses, and maintaining decision ledgers.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/hillclimbing-optimization.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/hillclimbing-optimization.md) *(7-question audit, frozen harness, decision.tsv ledger)*<br>2. [`sections/frontend/web-performance.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/frontend/web-performance.md) OR target subsystem guide<br>3. [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) *(Surgical diffs, minimal intervention)*<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-202, R-212)*<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-212** (7-Question Benchmark Audit: limiter named, production tuning matched, Amdahl's law verified, $\ge 5$ alternating A/B runs), **R-164** (Atomic commits: 1 commit per accepted hypothesis), **R-202** (Direct proof over synthetic simulation), **R-015** (Surgical diffs: stage only touched files with `git add <file>`) |
+| **Prohibited Actions** | ❌ Stacking multiple untested speculative optimizations into a single commit.<br>❌ Comparing untuned configurations or debug builds against optimized release builds.<br>❌ Claiming a performance win from code inspection without executing the frozen benchmark harness.<br>❌ Keeping optimizations that fail to exceed the statistical noise threshold of the benchmark.<br>❌ Discarding or ignoring regressions in the primary test gate. |
+| **Mandatory Verification** | 1. 7-Question Benchmark Audit: All 7 questions answered with empirical data.<br>2. Baseline Comparison: Median of $\ge 5$ alternating A/B runs showing statistically significant gain.<br>3. Regression Gate: Full test suite passing with 0 errors.<br>4. Decision Ledger Audit: `decision.tsv` contains complete chronological trail of kept/reverted attempts. |
+ 
+---
+ 
+### Archetype 17: Blast-Radius Analysis & Cross-Boundary Verification
+ 
+*Analyzing systemic impact of risky or cross-cutting changes, discovering hidden failure modes beyond symbol grep (wire formats, serialization schemas, DB columns, microtask lifecycles), and proving single safety facts.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/blast-radius-verification.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/blast-radius-verification.md) *(5-level certainty scale, single-fact safety proof, dark blast radius)*<br>2. [`workflows/unslop-code-hygiene.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/unslop-code-hygiene.md) *(Structural encoding of invariants over comments)*<br>3. Target architecture guide (e.g. [`sections/backend/api-design.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/backend/api-design.md) or [`sections/database/schema-migrations.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/database/schema-migrations.md))<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-211, R-213, R-214)*<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-211** (Single safety fact proof at Certainty Level $\ge 4$ via executable test), **R-213** (Encode constraints into types/schemas rather than comment warnings), **R-003** (Zero unverified assumptions), **R-018** (Backward compatibility of public/wire interfaces) |
+| **Prohibited Actions** | ❌ Relying solely on raw symbol grep to claim a change is safe.<br>❌ Presenting convincing written blast-radius descriptions without executing standalone proof probes.<br>❌ Modifying wire-format serialization fields or database column types without checking external consumers.<br>❌ Adding defensive comments (`// do not remove`) instead of structural compiler/schema constraints. |
+| **Mandatory Verification** | 1. Single-Fact Executable Probe: Standalone probe script exits with code 0 proving safety invariant.<br>2. Certainty Scale Assertion: Evidence reaches Level 4 (executed test) or Level 5 (live repro).<br>3. Wire & DB Contract Check: Validation of backward compatibility across serialization boundaries.<br>4. Clean Unslop Pass: 0 forbidden commentary sermons or workaround justifications in diff. |
  
 ---
  
