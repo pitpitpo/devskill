@@ -16,6 +16,7 @@
 | **Prerequisites** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md), [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md), [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md), [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md), [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) |
 | **Governing Rules** | **R-001** (Zero TODOs), **R-015** (Surgical diffs), **R-181** (Prove-it-works), **R-187** (Jittered backoff), **R-188** (Task lifecycle ownership), **R-191** to **R-200** (Orchestrator Invariants) |
 | **Version Standard** | SemVer 2.0.0 (Production Enterprise Standard) |
+| **Last Updated** | 2026-11-17 (Frontier Labs & Big Tech Synthesis) |
 
 ---
 

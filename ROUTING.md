@@ -3,7 +3,8 @@
 > **Classification**: Machine-Readable & Human-Auditable Agent Navigation Engine  
 > **Status**: Mandatory / Non-Negotiable Core Protocol  
 > **Target Audience**: Autonomous AI Agents, LLM Orchestrator Engines, Engineering Leads  
-> **Objective**: Eliminate token bloat, prevent rule omissions, and guarantee deterministic task execution by prescribing the exact file reading lists and verification pipelines for every software task archetype.
+> **Objective**: Eliminate token bloat, prevent rule omissions, and guarantee deterministic task execution by prescribing the exact file reading lists and verification pipelines for every software task archetype.  
+> **Last Updated**: 2026-11-17
 
 ---
 

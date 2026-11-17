@@ -32,10 +32,17 @@ devskill/
 ├── SKILL.md                          # Top-level AI Agent Skill Specification
 ├── specs.md                          # System Specification & Architecture Schema
 ├── RULES.md                          # Non-Negotiable Universal Engineering Rules
+├── ROUTING.md                        # Deterministic Task-Archetype Decision Matrix
 ├── security.md                       # Production Security Standards & OWASP Checklist
 ├── agents.md                         # Autonomous Agent Protocols & Guardrails
 ├── decisions.md                      # Technology Selection Decision Trees
 ├── index.json                        # Machine-Readable Fast Topic Index
+│
+├── agents/                           # Autonomous Agent Sub-Skills & Execution Protocols
+│   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases & Reconcilers
+│   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence
+│   ├── tdd-reproduction.md           # Reproduction-First TDD & Defect Isolation
+│   └── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
 │
 ├── frameworks/
 │   ├── frontend/                     # Next.js, React, Vue/Nuxt, SvelteKit, Tailwind

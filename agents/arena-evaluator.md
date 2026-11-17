@@ -5,6 +5,7 @@
 > **Target Audience**: AI System Architects, Principal Engineers, LLM Evaluator Agents  
 > **Classification**: Level 5 Architectural Decision & Trade-off Scoring Standard  
 > **Prerequisites**: System Design Fundamentals, Distributed Systems, CAP Theorem, RFC 2119  
+> **Last Updated**: 2026-11-17
 
 ---
 

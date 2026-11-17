@@ -1,6 +1,6 @@
 # 📐 DevSkill Technical Specification (`specs.md`)
 
-> **Document Version**: 1.0.0  
+> **Document Version**: 1.2.0 (Updated: 2026-11-17)  
 > **Status**: Approved & Active  
 > **Classification**: Core System Architecture Specification  
 > **Target Audience**: AI Agents, System Architects, Principal Engineers, Platform Teams  

@@ -2,10 +2,10 @@
 name: devskill
 description: Comprehensive industry-grade software engineering skill for autonomous AI agents and professional developers. Contains non-negotiable engineering rules, production security blueprints, multi-agent execution guardrails, framework and language mastery guides, architectural decision trees, CI/CD pipelines, and project scaffolding.
 metadata:
-  version: 1.0.0
+  version: 1.2.0
   category: software-engineering
   author: DevSkill Core Architecture Team
-  updated: 2026-11-13
+  updated: 2026-11-17
 ---
 
 # DevSkill: Autonomous Industry-Grade Engineering Library

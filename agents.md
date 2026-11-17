@@ -46,11 +46,11 @@ When an agent is initialized in a repository equipped with DevSkill, it MUST con
 |---|---|---|
 | **Project Name** | *[Enter project name]* | `cat package.json \| grep name` / `pyproject.toml` |
 | **Repository Path** | `/home/agy/.t3/userdata/attachments/devskill` | `pwd` |
-| **Primary Language(s)** | TypeScript (ESM) / Python 3.12+ | File extensions & manifests |
-| **Runtime Environment** | Node.js v20 LTS / Python 3.12+ | `node -v`, `python3 --version` |
-| **Web Framework** | Next.js 14+ / FastAPI / NestJS | Manifest dependencies |
-| **Database Engine** | PostgreSQL 16+ | `docker-compose.yml` or ORM schema |
-| **ORM / Query Builder** | Prisma / Drizzle / SQLAlchemy / SQLModel | Manifest dependencies |
+| **Primary Language(s)** | TypeScript 5.6+ (ESM) / Python 3.12+ / Go 1.23+ / Rust 1.80+ | File extensions & manifests |
+| **Runtime Environment** | Node.js v22 LTS (v20) / Python 3.12+ / 3.13 | `node -v`, `python3 --version` |
+| **Web Framework** | Next.js 15+ App Router / FastAPI / NestJS | Manifest dependencies |
+| **Database Engine** | PostgreSQL 16+ / 17+ | `docker-compose.yml` or ORM schema |
+| **ORM / Query Builder** | Prisma / Drizzle / SQLAlchemy 2.0 / SQLModel | Manifest dependencies |
 | **Cache & Queue** | Redis 7+ / BullMQ / Celery | `docker-compose.yml` or config |
 | **Auth Architecture** | JWT (RS256) / Session Cookies / Argon2id | Auth middleware files |
 | **Linter & Formatter** | ESLint / Biome / Ruff | `.eslintrc.*`, `ruff.toml` |
