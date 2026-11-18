@@ -78,7 +78,9 @@ devskill/
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence Standards
 │   ├── tdd-reproduction.md           # Reproduction-First TDD, Defect Localization & Isolation
 │   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
-│   └── ralph-reconciler-loop.md      # The Ralph Loop, Fresh-Context Iteration & Non-Stop Reconciler
+│   ├── ralph-reconciler-loop.md      # The Ralph Loop, Fresh-Context Iteration & Non-Stop Reconciler
+│   ├── sol-loop.md                   # Adversarial Single-Model Review Loop & Sol Protocol
+│   └── formal-verification-statecharts.md # Formal Verification, Statecharts & TLA+ Invariant Checking
 │
 ├── frameworks/                       # Framework-Specific Deep Mastery Guides
 │   ├── README.md                     # Directory index and framework selection guidance
@@ -156,7 +158,11 @@ devskill/
 │   ├── code-review-standards.md      # Senior PR Review Checklist, Blocking vs Non-Blocking Comments
 │   ├── incident-response.md          # Severity Tiers (P0-P4), On-Call Runbooks, Blameless Post-Mortems
 │   ├── feature-flags.md              # Trunk Development, Dark Launches, Flag Lifecycles, Kill Switches
-│   └── unslop-code-hygiene.md        # Comment Elimination, Anti-Slop Discipline & Structural Encoding
+│   ├── unslop-code-hygiene.md        # Comment Elimination, Anti-Slop Discipline & Structural Encoding
+│   └── pr-modernize-takeover.md      # PR Modernization, Stale Branch Triage & Contributor Takeover
+│
+├── scripts/                          # Automated Verification & Watcher Utilities
+│   └── pr-wait.py                    # Standalone Headless GitHub PR & Review Bot Watcher
 │
 ├── pipelines/                        # CI/CD Automation Specifications & Templates
 │   ├── README.md                     # Pipeline architectures and security scanning

@@ -47,7 +47,9 @@ devskill/
 │   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence
 │   ├── tdd-reproduction.md           # Reproduction-First TDD & Defect Isolation
 │   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
-│   └── ralph-reconciler-loop.md      # The Ralph Loop & Non-Stop Reconciler
+│   ├── ralph-reconciler-loop.md      # The Ralph Loop & Non-Stop Reconciler
+│   ├── sol-loop.md                   # Single-Model Adversarial Review Loop & Sol Protocol
+│   └── formal-verification-statecharts.md # TLA+ Invariant Checking & Statecharts
 │
 ├── frameworks/
 │   ├── frontend/                     # Next.js, React, Vue/Nuxt, SvelteKit, Tailwind
@@ -65,7 +67,8 @@ devskill/
 │   └── testing-qa/                   # Test Pyramid, Contract Testing, E2E Playwright
 │
 ├── languages/                        # TypeScript, Python, Go, Rust, Java, C/C++, SQL
-├── workflows/                        # PR Babysitting, Git, SemVer, Incidents, Anti-Slop Hygiene
+├── workflows/                        # PR Babysitting, Modernize/Takeover, Git, SemVer, Incidents, Anti-Slop
+├── scripts/                          # Headless PR Watcher & Event Engine (pr-wait.py)
 ├── pipelines/                        # GitHub Actions, GitLab CI, Security Scanning, Deployments
 └── scaffolding/                      # Starter Configs (.editorconfig, tsconfig, Docker, etc.)
 ```

@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "updated": "2026-11-17",
   "description": "Production-Grade Engineering Standards, Architectural Blueprints, Agent Discipline & Decision Matrices",
-  "total_documents": 95,
+  "total_documents": 98,
   "modules": {
     "core": [
       {
@@ -94,6 +94,11 @@
         "lines": 241
       },
       {
+        "path": "agents/formal-verification-statecharts.md",
+        "title": "\ud83d\udcd0 Formal Verification, Statecharts & TLA+ Invariant Checking ()",
+        "lines": 257
+      },
+      {
         "path": "agents/full-send-delivery.md",
         "title": "\ud83d\ude80 Autonomous End-to-End PR Delivery & Merge Gate Engine (`agents/full-send-delivery.md`)",
         "lines": 265
@@ -122,6 +127,11 @@
         "path": "agents/ralph-reconciler-loop.md",
         "title": "\ud83d\udd01 The Ralph Loop & Non-Stop Reconciler Protocol ()",
         "lines": 248
+      },
+      {
+        "path": "agents/sol-loop.md",
+        "title": "\ud83d\udd01 Adversarial Single-Model Review Loop & Sol Protocol ()",
+        "lines": 237
       },
       {
         "path": "agents/tdd-reproduction.md",
@@ -430,6 +440,11 @@
         "path": "workflows/pr-lifecycle-babysitting.md",
         "title": "\ud83d\udd04 PR Lifecycle, Bot Babysitting, Modernization & Takeover (`workflows/pr-lifecycle-babysitting.md`)",
         "lines": 287
+      },
+      {
+        "path": "workflows/pr-modernize-takeover.md",
+        "title": "\ud83d\udd04 PR Modernization, Stale Branch Triage & Contributor Takeover ()",
+        "lines": 218
       },
       {
         "path": "workflows/release-versioning.md",

@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 18 categories below.
+1. **Identify the Task Archetype** from the 21 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -282,6 +282,45 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-215** (Non-stop closed-loop execution until Exit Code 0 across all gates), **R-004** (Anti-Fake Green: never commit without passing tests), **R-164** (Atomic commits: 1 commit per completed checklist item), **R-001** (Zero TODOs/placeholders), **R-182** (Surgical minimal diffs) |
 | **Prohibited Actions** | ❌ Stopping mid-task or asking the user to run tests when shell tools are available.<br>❌ Marking a task `[x]` in the backlog before running tests and observing Exit Code 0.<br>❌ Yielding execution with conversational excuses ("It should work now", "Try this").<br>❌ Leaving broken or dirty uncommitted changes across iteration cycles.<br>❌ Emitting unfinished stub functions or mock fallbacks. |
 | **Mandatory Verification** | 1. Backlog Verification: 100% of tasks in `IMPLEMENTATION_PLAN.md` marked `[x]`.<br>2. Clean Git State: `git status --porcelain` is empty (all progress committed).<br>3. Quality Gate Scan: Strict typecheck (0 errors) + Linter (0 warnings) + Tests (100% pass).<br>4. Completion Sentinel: Terminal output concludes with `<promise>COMPLETE</promise>` and verbatim `prove-it-works` scorecard. |
+ 
+---
+ 
+### Archetype 19: Adversarial Single-Model Review Loop (Sol Loop)
+ 
+*Tight, iterative code hardening using a single flagship reasoning model (OpenAI Sol/o1/o3-mini, Claude Opus, or Gemini Pro) across a strict 3-to-5 round budget with an immutable finding ledger.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/sol-loop.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/sol-loop.md) *(Adversarial review loop, budget cap, finding ledger)*<br>2. [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) *(Surgical diffs, anti-slop)*<br>3. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-204, R-216)*<br>4. Target domain or framework guide<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-216** (Max 3 rounds, extendable to 5 only for auth/data-loss/concurrency; immutable ledger; dedicated test per blocker), **R-204** (Scope-creep defense: reject speculative guards), **R-015** (Surgical diffs: stage only touched files) |
+| **Prohibited Actions** | ❌ Exceeding round budgets without authorization.<br>❌ Blindly implementing speculative edge-case guards requested by the reviewer.<br>❌ Re-sending the entire repository on rounds 2 and 3 instead of delta diffs.<br>❌ Agreeing with reviewer hallucinations just to receive an `APPROVE` verdict.<br>❌ Allowing the review loop to expand the total diff size significantly. |
+| **Mandatory Verification** | 1. Ledger Verification: All findings tracked with stable IDs and explicit outcomes (`fixed:`, `disagree:`, `declined:`).<br>2. Reproduction Proof: Failing-then-passing test added for every accepted blocker.<br>3. Diff Delta Check: `git diff --shortstat` verifies surgical containment.<br>4. PR Description Trailer: Verbatim note `Reviewed with sol-loop: <N> rounds with <model>. Sol verdict: approved`. |
+ 
+---
+ 
+### Archetype 20: Formal Verification & State Machine Model Checking
+ 
+*Formally verifying mission-critical distributed systems, concurrent protocols, financial ledgers, and complex state machines over bounded state spaces using TLA+ and TLC, extracting shortest-path counterexamples and Mermaid statecharts.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/formal-verification-statecharts.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/formal-verification-statecharts.md) *(TLA+ spec, TLC runner, Mermaid statecharts)*<br>2. [`agents/tdd-reproduction.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/tdd-reproduction.md) *(Replaying counterexamples as unit tests)*<br>3. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-003, R-188, R-217)*<br>4. Target language or concurrency guide (e.g. [`languages/golang.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/golang.md) or [`languages/rust.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/rust.md))<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-217** (Mathematical verification over bounded state space; shortest-path counterexample extraction; replayable code test), **R-003** (Zero unverified assumptions), **R-188** (Goroutine and async lifecycle bounding) |
+| **Prohibited Actions** | ❌ Weakening an invariant when TLC surfaces a counterexample trace.<br>❌ Declaring a model verified without first proving that mutating the invariant causes TLC to fail.<br>❌ Using unbounded integer ranges or sets that cause TLC memory exhaustion.<br>❌ Disconnecting TLA+ variable names from actual source code symbol identifiers. |
+| **Mandatory Verification** | 1. Falsification Verification: Invariant proven capable of failing on a broken variant.<br>2. TLC Clean Pass: Model checker evaluates $\ge 10$ distinct states with 0 errors.<br>3. Replayable Test: Extracted counterexample trace verified as a real test in codebase.<br>4. Mermaid Statechart: Clean state diagram generated and rendered. |
+ 
+---
+ 
+### Archetype 21: PR Modernization, Triage & Contributor Takeover
+ 
+*Auditing, rebasing, and taking over stale branches or existing PRs; establishing a formal disposition (MODERNIZE, REWORK, or CLOSE); preserving human contributor credit and verifying intent via git range-diff.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`workflows/pr-modernize-takeover.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/pr-modernize-takeover.md) *(Tri-disposition, range-diff, author attribution)*<br>2. [`workflows/pr-lifecycle-babysitting.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/pr-lifecycle-babysitting.md) *(PR babysitting, bot triage)*<br>3. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-207, R-208, R-218)*<br>4. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-218** (Mandatory disposition selection: `MODERNIZE`, `REWORK`, or `CLOSE`; `git range-diff` validation), **R-208** (Preserve original Git author and `Co-authored-by:` trailers), **R-207** (Push exclusively with `--force-with-lease` tied to pre-rebase head SHA) |
+| **Prohibited Actions** | ❌ Mechanically rebasing a stale branch without checking what landed on `main` since divergence.<br>❌ Replacing human author identities with AI agent model names in Git commits.<br>❌ Using unqualified `git push --force` that overwrites upstream progress.<br>❌ Closing another contributor's PR without human authorization and documented evidence.<br>❌ Re-introducing deleted or superseded code through careless merge conflict resolution. |
+| **Mandatory Verification** | 1. Disposition Justification: Documented rationale for `MODERNIZE`, `REWORK`, or `CLOSE`.<br>2. Authorship Audit: `git log -1` verifies original contributor identity and co-author trailers.<br>3. Range-Diff Check: `git range-diff` confirms commit series integrity.<br>4. Leased Push: Successful push with `--force-with-lease` matching recorded pre-rebase SHA. |
  
 ---
  
