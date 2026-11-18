@@ -80,7 +80,8 @@ devskill/
 │   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Architectural Trade-offs
 │   ├── ralph-reconciler-loop.md      # The Ralph Loop, Fresh-Context Iteration & Non-Stop Reconciler
 │   ├── sol-loop.md                   # Adversarial Single-Model Review Loop & Sol Protocol
-│   └── formal-verification-statecharts.md # Formal Verification, Statecharts & TLA+ Invariant Checking
+│   ├── formal-verification-statecharts.md # Formal Verification, Statecharts & TLA+ Invariant Checking
+│   └── model-capability-orchestration.md # Dynamic Model Discovery, Capability Profiling & Task Orchestration
 │
 ├── frameworks/                       # Framework-Specific Deep Mastery Guides
 │   ├── README.md                     # Directory index and framework selection guidance

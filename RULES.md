@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-18 (Rules R-001 through R-218 Active)
+> **Last Updated**: 2026-11-18 (Rules R-001 through R-219 Active)
 
 ---
 
@@ -23,7 +23,7 @@
 12. [Git Hygiene, Versioning & Process (R-163 to R-170)](#12-git-hygiene-versioning--process)
 13. [Agent Safety, Tool Sandboxing & Ethics (R-171 to R-180)](#13-agent-safety-tool-sandboxing--ethics)
 14. [Agent Discipline, Deterministic Execution & Multi-Agent Orchestration (R-181 to R-200)](#14-agent-discipline-deterministic-execution--multi-agent-orchestration)
-15. [Autonomous PR Delivery, Model Councils & Review Gates (R-201 to R-218)](#15-autonomous-pr-delivery-model-councils--review-gates)
+15. [Autonomous PR Delivery, Model Councils & Review Gates (R-201 to R-219)](#15-autonomous-pr-delivery-model-councils--review-gates)
 16. [Automated CI Gate Scan Patterns](#16-automated-ci-gate-scan-patterns)
 
 ---
@@ -318,6 +318,7 @@
 - **R-216 [Single-Model Adversarial Sol-Loop & Finding Ledger]**: When executing tight code review cycles ("sol loop"), the lead agent MUST deploy a single reasoning model across a strict $\le 3$-round budget ($\le 5$ exclusively for auth/data-loss/concurrency), maintain an immutable ledger (`fixed:`, `disagree:`, `declined:` with evidence), reject speculative scope creep, and require a dedicated reproduction test for every accepted blocker.
 - **R-217 [Statechart & TLA+ Invariant Verification for Concurrency]**: Mission-critical distributed systems, concurrency protocols, and complex state machines MUST be formally verified across a bounded state space using TLA+/TLC or statechart model checking. Counterexamples MUST be reported as the shortest transition path in code symbols and replayed as executable unit tests.
 - **R-218 [Stale PR Disposition: Modernize, Rework, or Close]**: Before rebasing or taking over a stale branch, agents MUST audit commits added to the default branch since divergence and declare an explicit disposition (`MODERNIZE`, `REWORK`, or `CLOSE`). Mechanical rebasing without conceptual verification is strictly prohibited. Contributor authorship and `Co-authored-by:` trailers MUST be preserved, and rebases verified via `git range-diff`.
+- **R-219 [Dynamic Model Capability Discovery & Optimal Workload Assignment]**: Prior to multi-agent task delegation or model council selection, agents MUST introspect runtime orchestrator capabilities (`orchestrator_capabilities` or provider APIs) rather than hardcoding model IDs. Subagent tasks MUST be routed according to empirical model strengths: Deep Reasoning (o1/o3/Luna) for algorithmic/concurrency proofs; Architectural & Aesthetic (Claude Opus/Sonnet) for multi-file refactoring and UI; High-Throughput/Context (Gemini Flash/Pro) for monorepo analysis and continuous test loops. Commits and PRs MUST disclose the executing model without erasing human authorship.
 
 ---
 

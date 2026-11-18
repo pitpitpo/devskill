@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 21 categories below.
+1. **Identify the Task Archetype** from the 22 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -321,6 +321,19 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-218** (Mandatory disposition selection: `MODERNIZE`, `REWORK`, or `CLOSE`; `git range-diff` validation), **R-208** (Preserve original Git author and `Co-authored-by:` trailers), **R-207** (Push exclusively with `--force-with-lease` tied to pre-rebase head SHA) |
 | **Prohibited Actions** | ❌ Mechanically rebasing a stale branch without checking what landed on `main` since divergence.<br>❌ Replacing human author identities with AI agent model names in Git commits.<br>❌ Using unqualified `git push --force` that overwrites upstream progress.<br>❌ Closing another contributor's PR without human authorization and documented evidence.<br>❌ Re-introducing deleted or superseded code through careless merge conflict resolution. |
 | **Mandatory Verification** | 1. Disposition Justification: Documented rationale for `MODERNIZE`, `REWORK`, or `CLOSE`.<br>2. Authorship Audit: `git log -1` verifies original contributor identity and co-author trailers.<br>3. Range-Diff Check: `git range-diff` confirms commit series integrity.<br>4. Leased Push: Successful push with `--force-with-lease` matching recorded pre-rebase SHA. |
+ 
+---
+ 
+### Archetype 22: Dynamic Model Discovery & Multi-Provider Workload Orchestration
+ 
+*Discovering runtime model capabilities, profiling empirical strengths, routing DAG subtasks to optimal models (Deep Reasoning, Architectural, High-Context, Fast Runner), and ensuring transparent Git commit attribution.*
+ 
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/model-capability-orchestration.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/model-capability-orchestration.md) *(Model discovery, capability matrix, task routing)*<br>2. [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md) *(Multi-agent DAGs, fencing leases)*<br>3. [`agents/multi-model-council.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/multi-model-council.md) *(Tri-provider council)*<br>4. [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) *(Rules R-203, R-208, R-219)*<br>5. [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-219** (Mandatory pre-flight discovery via `orchestrator_capabilities` or provider API; workload-strength matching; model commit disclosure), **R-208** (Preserve human author identity), **R-171** (Subagent tool sandboxing) |
+| **Prohibited Actions** | ❌ Hardcoding model IDs without querying live orchestrator capabilities.<br>❌ Attempting to delegate tasks to disabled or constrained provider instances.<br>❌ Assigning high-reasoning models to mechanical styling edits, or low-tier models to formal concurrency proofs.<br>❌ Erasing human contributor identities in favor of AI model names in Git history. |
+| **Mandatory Verification** | 1. Discovery Verification: Pre-flight capability scan successfully evaluated active providers.<br>2. Strength Alignment: Concurrency/security tasks routed to Reasoning tier; refactors to Architectural tier; tests to High-Throughput tier.<br>3. Clean Execution: All subagent delegate tasks completed with Exit Code 0.<br>4. Commit Attribution: Git commit message contains verified model and human co-authorship trailers. |
  
 ---
  

@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "updated": "2026-11-17",
   "description": "Production-Grade Engineering Standards, Architectural Blueprints, Agent Discipline & Decision Matrices",
-  "total_documents": 98,
+  "total_documents": 99,
   "modules": {
     "core": [
       {
@@ -107,6 +107,11 @@
         "path": "agents/hillclimbing-optimization.md",
         "title": "\ud83d\udcc8 Performance Hillclimbing & Scientific Optimization ()",
         "lines": 263
+      },
+      {
+        "path": "agents/model-capability-orchestration.md",
+        "title": "\ud83e\udded Dynamic Model Discovery, Capability Profiling & Task Orchestration ()",
+        "lines": 267
       },
       {
         "path": "agents/multi-model-council.md",

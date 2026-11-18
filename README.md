@@ -49,7 +49,8 @@ devskill/
 │   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
 │   ├── ralph-reconciler-loop.md      # The Ralph Loop & Non-Stop Reconciler
 │   ├── sol-loop.md                   # Single-Model Adversarial Review Loop & Sol Protocol
-│   └── formal-verification-statecharts.md # TLA+ Invariant Checking & Statecharts
+│   ├── formal-verification-statecharts.md # TLA+ Invariant Checking & Statecharts
+│   └── model-capability-orchestration.md # Dynamic Model Discovery & Workload Orchestration
 │
 ├── frameworks/
 │   ├── frontend/                     # Next.js, React, Vue/Nuxt, SvelteKit, Tailwind
