@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 23 categories below.
+1. **Identify the Task Archetype** from the 28 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -347,6 +347,71 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-060** (Strict tool argument schema validation), **R-078** (Prompt injection defense & untrusted output quarantine), **R-151** (OpenTelemetry GenAI semantic conventions), **R-228** (OWASP Agentic least agency & tool sandboxing), **R-229** (Stateless MCP Streamable HTTP & OAuth 2.1 RFC 8707 audience scoping), **R-232** (Fail-closed exception handling), **R-235** (MCP & model supply chain provenance) |
 | **Prohibited Actions** | ❌ Exposing generic raw-SQL or arbitrary shell execution tools over remote MCP endpoints.<br>❌ Passing through ambient broad user JWTs without RFC 8707 `resource`/`aud` validation.<br>❌ Pinning MCP servers to stateful in-memory local sessions behind multi-replica load balancers.<br>❌ Concatenating untrusted RAG/tool output raw into privileged system instructions.<br>❌ Allowing unbounded A2A agent recursion without hop limits or cost/time ceilings. |
 | **Mandatory Verification** | 1. AuthZ Contract Test: Token with mismatched `aud` or missing scope rejected fail-closed (`401`/`403`).<br>2. Schema Fuzzing: Malformed/extra tool parameters rejected by strict Zod/Pydantic schemas.<br>3. Stateless Replay Test: Identical MCP requests succeed across independent stateless worker instances.<br>4. Telemetry Audit: Verify OTel `gen_ai.*` spans emitted with scrubbed secrets and propagated `traceparent`. |
+
+---
+
+### Archetype 24: Pre-Code Discovery, Codebase Forensics & Architecture Review (`/how`, `/why`, `/interrogate`, `/architect`)
+
+*Investigating unfamiliar subsystems, tracing execution paths, verifying Chesterton's Fence via git archaeology, grilling ambiguous product specs, and locking down module boundaries before writing code.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/code-forensics-interrogation.md`](agents/code-forensics-interrogation.md) *(`/how`, `/why`, `/interrogate`, `/architect`, `file-pr`, failed-theory cleanup)*<br>2. [`agents/unified-agent-stacks.md`](agents/unified-agent-stacks.md) *(`gstack` scope modes, `superpowers` two-stage review, `compound-engineering` loop)*<br>3. [`sections/architecture-foundations/software-design-craft.md`](sections/architecture-foundations/software-design-craft.md) *(Ousterhout deep modules, Beck Tidy First, Hyrum's Law)*<br>4. [`decisions.md`](decisions.md) *(Trade-off matrices)* |
+| **Key Invariant Rules** | **R-003** (Zero unverified assumptions), **R-236** (Deep modules over shallow wrappers), **R-245** (Chesterton's Fence git archaeology before deletion), **R-248** (Two-stage review: spec compliance before code quality), **R-249** (Explicit scope mode & problem-first PR narrative), **R-250** (Compound lessons into repo memory) |
+| **Prohibited Actions** | ❌ Editing source files during read-only `/how` or `/why` forensics.<br>❌ Deleting guards, locks, or shims without checking `git log -S` / `git blame -w -C -C`.<br>❌ Writing implementation bodies before settling types, boundaries, and explicit scope mode.<br>❌ Submitting PRs that list raw modified files instead of explaining the problem and CLI proof. |
+| **Mandatory Verification** | 1. Trace Brief: Exact file paths + line numbers mapped from ingress to storage sink.<br>2. Archaeology Proof: Relevant commit SHAs cited when altering/removing legacy guards.<br>3. Scope & Spec Sign-off: Explicit scope mode declared and 6 forcing questions answered.<br>4. Clean Tree: `git status --short` confirms zero edits during read-only discovery phase. |
+
+---
+
+### Archetype 25: Legacy System Modernization, Safe Refactoring & Architectural Fitness
+
+*Modernizing untested legacy codebases, separating structural tidying from behavioral changes, replacing brittle mocks with characterization tests, migrating via Strangler Fig / Branch by Abstraction, and adding CI fitness functions.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`sections/architecture-foundations/software-design-craft.md`](sections/architecture-foundations/software-design-craft.md) *(Feathers characterization tests & seams, Beck Tidy First, Fowler Strangler Fig & Mikado Method)*<br>2. [`sections/architecture-foundations/evolutionary-delivery-architecture.md`](sections/architecture-foundations/evolutionary-delivery-architecture.md) *(Automated architectural fitness functions, connascence, DORA)*<br>3. [`agents/blast-radius-verification.md`](agents/blast-radius-verification.md) *(Caller & contract blast-radius check)*<br>4. [`agents/code-forensics-interrogation.md`](agents/code-forensics-interrogation.md) *(Chesterton's Fence & failed-theory cleanup)* |
+| **Key Invariant Rules** | **R-015** (Surgical diff discipline), **R-236** (Deep modules), **R-237** (Separate structural tidying commits from behavioral commits), **R-239** (Characterization tests before legacy edits), **R-240** (Test public behavior, not internal mocks), **R-244** (Automated architectural fitness functions), **R-246** (Failed-theory diff cleanup), **R-247** (Git worktree isolation) |
+| **Prohibited Actions** | ❌ Mixing structural refactoring and behavioral bug fixes in the same commit.<br>❌ Editing untested legacy functions without first writing passing characterization tests.<br>❌ Attempting a big-bang rewrite instead of Strangler Fig or Branch by Abstraction.<br>❌ Writing brittle change-detector tests tightly coupled to private method call order. |
+| **Mandatory Verification** | 1. Characterization Baseline: New characterization tests pass on unmodified legacy code (Exit Code 0).<br>2. Commit Separation: `git log --stat` confirms structural tidying commit(s) separated from behavioral commit(s).<br>3. Fitness Gate: Layer/boundary/API compatibility fitness check passes in CI.<br>4. Full Regression: Complete test suite green with zero weakened assertions (`R-011`). |
+
+---
+
+### Archetype 26: Kubernetes Cluster Forensics, Auditing & SRE Operations (`kstack`)
+
+*Diagnosing live Kubernetes outages, CrashLoopBackOff/OOMKilled pods, RBAC/Pod Security posture, NetworkPolicies, resource right-sizing/FinOps cost audits, deprecated API scans, and distributed reliability reviews.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`sections/devops-infrastructure/kstack-cluster-operations.md`](sections/devops-infrastructure/kstack-cluster-operations.md) *(Read-only `/cluster-status`, `/investigate`, 4-pillar audits, zero-leak `/cleanup`)*<br>2. [`sections/architecture-foundations/distributed-systems-reliability.md`](sections/architecture-foundations/distributed-systems-reliability.md) *(Bulkheads, load shedding, retry budgets, SLI/SLO error budgets, Transactional Outbox)*<br>3. [`sections/devops-infrastructure/kubernetes-cloud.md`](sections/devops-infrastructure/kubernetes-cloud.md) *(K8s manifests, PDBs, HPA, securityContext)*<br>4. [`workflows/incident-response.md`](workflows/incident-response.md) *(SEV triage & blameless postmortems)* |
+| **Key Invariant Rules** | **R-153**–**R-162** (Deployment & infrastructure resilience), **R-200** (Human confirmation for mutating/destructive prod actions), **R-232** (Fail-closed defaults), **R-241** (Transactional Outbox / zero dual-writes), **R-242** (Bulkheads, load shedding & retry budgets), **R-243** (SLI/SLO error budgets & burn-rate alerts) |
+| **Prohibited Actions** | ❌ Running `kubectl` without first verifying `kubectl config current-context`.<br>❌ Deleting crashing pods before capturing `describe`, Warning `events`, and `--previous` logs.<br>❌ Leaving ephemeral debug pods/jobs running after troubleshooting (must run `/cleanup`).<br>❌ Running mutating cluster patches or `--profile=sysadmin` shells without operator confirmation (`R-200`). |
+| **Mandatory Verification** | 1. Context Confirmation: `kubectl config current-context` recorded in forensic log.<br>2. Correlated Evidence: Pod conditions, Warning events, `--previous` logs, metrics, and rollout history correlated.<br>3. Audit Report: Security (RBAC/PSS), NetworkPolicies, Resource requests/limits, and Pluto/Trivy findings documented.<br>4. Zero-Leak Check: `kubectl get all -A -l app.kubernetes.io/managed-by=devskill-debug` returns empty. |
+
+---
+
+### Archetype 27: Universal Frontend Design Systems, Multi-Framework Web UI & Styling
+
+*Designing or building production web UIs, design systems, and token architectures across React 19.2 / Next.js 16, Vue 3.5 / Nuxt 4, Svelte 5 / SvelteKit 2, Angular 19/20 Zoneless, Astro 5 Server Islands, SolidJS / SolidStart, and Tailwind CSS v4.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`FRONTEND.md`](FRONTEND.md) *(Universal Frontend Constitution & Framework Selection Matrix)*<br>2. [`sections/frontend/design-systems-ui-craft.md`](sections/frontend/design-systems-ui-craft.md) *(OKLCH Tokens, Modern CSS `@layer`/`@container`/Popover/View Transitions, Headless Primitives, Anti-Slop Rubric)*<br>3. Target Framework Guide in [`frameworks/frontend/`](frameworks/frontend/) (`react.md`, `nextjs.md`, `vue-nuxt.md`, `sveltekit.md`, `angular.md`, `astro.md`, `solidjs.md`, `tailwindcss.md`)<br>4. [`sections/frontend/accessibility.md`](sections/frontend/accessibility.md) & [`sections/frontend/web-performance.md`](sections/frontend/web-performance.md) |
+| **Key Invariant Rules** | **R-129**–**R-141** (Frontend, a11y & Core Web Vitals), **R-251** (Semantic design tokens & zero-slop UI craft), **R-252** (Web platform first & zero-JS default), **R-253** (Framework-native reactivity & zero SSR request leaks), **R-259** (Tailwind CSS v4 CSS-first tokenization), **R-260** (Frontend security hardening) |
+| **Prohibited Actions** | ❌ Hardcoding hex colors, magic pixels, or dynamic Tailwind template strings (`bg-${color}-500`).<br>❌ Storing session JWTs/tokens in `localStorage` or duplicating remote server data into client stores.<br>❌ Declaring mutable module-scoped user/request singletons on SSR servers.<br>❌ Shipping unverified UIs with missing focus rings, `axe-core` WCAG 2.2 AA violations, or horizontal overflow. |
+| **Mandatory Verification** | 1. Type & Lint: Strict framework checker (`tsc --noEmit` / `svelte-check` / `astro check` / `ng build`) exits `0`.<br>2. Accessibility & E2E: Playwright + `axe-core` verifies 0 WCAG 2.2 AA violations and 0 console/network errors.<br>3. Performance Budget: Lighthouse Performance ≥ 90, LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1.<br>4. Responsive Check: Visual layout verified at 320px, 768px, and 1280px with dark mode & reduced motion. |
+
+---
+
+### Archetype 28: Cross-Platform & Native Mobile Engineering (Flutter, React Native/Expo, Android Kotlin/Compose, iOS SwiftUI)
+
+*Building production mobile applications using Flutter 3.35+ (Impeller/Riverpod 3), React Native 0.79–0.81+ New Architecture / Expo SDK 53–54+, Native Android (Kotlin 2.x + Jetpack Compose), or Native iOS (Swift 6 + SwiftUI).*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. Target Mobile Guide: [`frameworks/mobile/flutter.md`](frameworks/mobile/flutter.md), [`frameworks/mobile/react-native-expo.md`](frameworks/mobile/react-native-expo.md), [`frameworks/mobile/android-kotlin-compose.md`](frameworks/mobile/android-kotlin-compose.md), or [`frameworks/mobile/ios-swiftui.md`](frameworks/mobile/ios-swiftui.md)<br>2. [`security.md`](security.md) *(Mobile secret storage, TLS pinning, OAuth PKCE)*<br>3. [`RULES.md`](RULES.md) *(Section 20: R-256, R-257, R-258; R-064 Zero Hardcoded Secrets)*<br>4. [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-064** (Zero hardcoded keys; Keychain/KeyStore only), **R-256** (Flutter Impeller, Riverpod 3 `Ref.mounted` & `Isolate.run`), **R-257** (React Native New Architecture, Reanimated UI-thread & FlashList), **R-258** (Swift 6 `@MainActor`/Sendable & Kotlin `collectAsStateWithLifecycle`) |
+| **Prohibited Actions** | ❌ Storing auth tokens or database encryption keys in `SharedPreferences`, `UserDefaults`, or `AsyncStorage`.<br>❌ Blocking the UI thread with heavy JSON parsing, image processing, or JS-thread animations.<br>❌ Using unbounded `ScrollView`/`Column` for large lists or ignoring async lifecycle cancellation (`Ref.mounted`, `.task`, `collectAsStateWithLifecycle`).<br>❌ Shipping release binaries without obfuscation/R8/symbol uploads or running `expo-doctor` / `flutter analyze`. |
+| **Mandatory Verification** | 1. Static Gate: `flutter analyze` / `npx expo-doctor && tsc --noEmit` / `./gradlew lint` / `xcodebuild` Swift 6 clean (Exit `0`).<br>2. Automated Tests: Unit + Widget/Component + Golden/Snapshot + E2E (Maestro / Integration / XCUITest) pass.<br>3. Frame & Startup Profile: 60/120fps verified in release/profile build with zero frame drops > 16ms.<br>4. Security Audit: Confirm zero plaintext credentials on device storage and valid Universal/App Links. |
 
 ---
  

@@ -1,15 +1,16 @@
-# 📱 Dart/Flutter Production Engineering Guide (`flutter.md`)
+# 📱 Dart / Flutter 3.35+ Production Engineering Guide (`flutter.md`)
 
-> **Framework**: Flutter 3.24+ / Dart 3.5+  
+> **Framework**: Flutter 3.29 – 3.35+ / Dart 3.7 – 3.9+ / Impeller / Riverpod 3.x  
 > **Classification**: Cross-Platform Mobile, Desktop & Web Architecture  
-> **Applicability**: Production apps targeting iOS, Android, Web, macOS, Windows, Linux  
-> **Last Updated**: 2026-11
+> **Applicability**: Production apps targeting iOS, Android (Kotlin DSL `build.gradle.kts`), Web, macOS, Windows, Linux  
+> **Governing Rules**: **R-001**, **R-033**, **R-064**, **R-256**  
+> **Last Updated**: 2026-11-19
 
 ---
 
 ## 1. Core Philosophy
 
-**"Own every pixel, own every frame."** Flutter gives you direct control over the render pipeline — use that power to ship 60/120fps experiences with pixel-perfect design, but respect platform conventions for navigation, accessibility, and security.
+**"Own every pixel, own every frame."** Flutter 3.29–3.35+ compiles ahead-of-time with **Impeller** as the default rendering engine on both iOS and Android (API 29+ Vulkan), eliminating Skia shader jank. Pair strict Dart 3.7–3.9+ pattern matching & records, **Riverpod 3.x** (`@riverpod` + `Ref.mounted` + `AsyncValue.guard`), **Material 3 Expressive**, and **Pigeon** type-safe native interop to ship 60/120fps apps with zero frame drops.
 
 ---
 
@@ -120,27 +121,28 @@ lib/
 
 ---
 
-## 4. State Management — Riverpod (Recommended)
+## 4. State Management — Riverpod 3.x (Recommended)
 
-### 4.1 Why Riverpod Over Bloc
+### 4.1 Why Riverpod 3.x Over Bloc
 
-| Criterion | Riverpod 2.5+ | Bloc 8.1+ |
+| Criterion | Riverpod 3.x (`@riverpod` + `riverpod_lint`) | Bloc 9.x |
 |---|---|---|
-| Boilerplate | Minimal with `@riverpod` codegen | Moderate (Event + State + Bloc classes) |
-| Compile-time safety | Providers are compile-time checked | Runtime `BlocProvider` lookups |
-| Dependency injection | Built-in, declarative | Requires manual wiring or `get_it` |
-| Testing | Override any provider in tests | Requires `MockBloc` + `blocTest` |
-| Learning curve | Moderate | Moderate-High |
-| **Recommendation** | **Use for new projects** | Use when team already knows Bloc |
+| Boilerplate | Minimal with `@riverpod` codegen & plain `Ref` | Moderate (Event + State + Bloc classes) |
+| Compile-time safety | Providers & `riverpod_lint` checked at compile time | Runtime `BlocProvider` lookups |
+| Async lifecycle safety | Built-in `Ref.mounted`, `AsyncValue.guard`, `.copyWithPrevious()` | Manual cancellation / `isClosed` checks |
+| Dependency injection | Built-in, declarative, scoped overrides | Requires manual wiring or `get_it` |
+| Testing | Override any provider in `ProviderContainer` / `ProviderScope` | Requires `MockBloc` + `blocTest` |
+| **Recommendation** | **Default for new production apps** | Use when team already standardizes on Bloc |
 
-### 4.2 Riverpod — Production Patterns
+### 4.2 Riverpod 3.x — Production Patterns
 
 ```dart
 // pubspec.yaml dependencies:
-// flutter_riverpod: ^2.5.1
-// riverpod_annotation: ^2.3.5
-// riverpod_generator: ^2.4.3  (dev)
-// build_runner: ^2.4.12       (dev)
+// flutter_riverpod: ^3.0.0
+// riverpod_annotation: ^3.0.0
+// riverpod_generator: ^3.0.0  (dev)
+// riverpod_lint: ^3.0.0       (dev)
+// build_runner: ^2.4.15       (dev)
 
 // ── domain/repositories/order_repository.dart ──
 abstract class OrderRepository {
@@ -191,12 +193,14 @@ class OrderRepositoryImpl implements OrderRepository {
 }
 
 // ── presentation/providers/order_providers.dart ──
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'order_providers.g.dart';
 
+// Riverpod 3.x: Use unified `Ref` (custom `*Ref` typedefs were removed in 3.0)
 @riverpod
-OrderRepository orderRepository(OrderRepositoryRef ref) {
+OrderRepository orderRepository(Ref ref) {
   final client = ref.watch(dioClientProvider);
   final local = ref.watch(orderLocalDataSourceProvider);
   return OrderRepositoryImpl(client, local);
@@ -208,7 +212,7 @@ class OrderList extends _$OrderList {
   static const _limit = 20;
 
   @override
-  FutureOr<List<Order>> build() => _fetch();
+  Future<List<Order>> build() => _fetch();
 
   Future<List<Order>> _fetch() {
     return ref.read(orderRepositoryProvider).getOrders(
@@ -219,8 +223,11 @@ class OrderList extends _$OrderList {
 
   Future<void> loadNextPage() async {
     _page++;
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _fetch());
+    // Preserve previous items on screen while fetching next page (zero layout flash)
+    state = const AsyncValue<List<Order>>.loading().copyWithPrevious(state);
+    final next = await AsyncValue.guard(() => _fetch());
+    if (!ref.mounted) return; // Riverpod 3.x lifecycle guard across async gaps
+    state = next;
   }
 
   Future<void> refresh() async {
@@ -230,7 +237,7 @@ class OrderList extends _$OrderList {
 }
 
 @riverpod
-Future<Order> orderDetail(OrderDetailRef ref, String orderId) {
+Future<Order> orderDetail(Ref ref, String orderId) {
   return ref.watch(orderRepositoryProvider).getOrderById(orderId);
 }
 
@@ -240,25 +247,34 @@ class OrdersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Keep providers pure: handle UI side effects (snackbars, navigation) via ref.listen
+    ref.listen(orderListProvider, (previous, next) {
+      if (next.hasError && !next.isLoading) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Refresh failed: ${next.error}')),
+        );
+      }
+    });
+
     final ordersAsync = ref.watch(orderListProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Orders')),
-      body: ordersAsync.when(
-        // ✅ Good: Handle all three states explicitly
-        data: (orders) => RefreshIndicator(
-          onRefresh: () => ref.read(orderListProvider.notifier).refresh(),
-          child: ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) => OrderTile(order: orders[index]),
+      // Exhaustive Dart 3 pattern matching on AsyncValue
+      body: switch (ordersAsync) {
+        AsyncData(:final value) => RefreshIndicator(
+            onRefresh: () => ref.read(orderListProvider.notifier).refresh(),
+            child: ListView.builder(
+              itemCount: value.length,
+              itemBuilder: (context, index) => OrderTile(order: value[index]),
+            ),
           ),
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => ErrorRetryWidget(
-          message: error.toString(),
-          onRetry: () => ref.invalidate(orderListProvider),
-        ),
-      ),
+        AsyncError(:final error) => ErrorRetryWidget(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(orderListProvider),
+          ),
+        _ => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
@@ -343,13 +359,14 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 │  BasicMessage    │         │                  │
 └─────────────────┘         └─────────────────┘
 
-Channel Types:
-  MethodChannel   → Request/Response (RPC-style)
-  EventChannel    → Stream of events from native → Dart
-  BasicMessage    → Raw bidirectional messages
+Channel Types & Modern Codegen:
+  Pigeon (Recommended) → Generates compile-time type-safe Dart + Swift + Kotlin channels (eliminates stringly-typed Map casting)
+  MethodChannel        → Request/Response (RPC-style, fallback for tiny 1-method bridges)
+  EventChannel         → Stream of events from native → Dart
+  dart:ffi / ffigen    → Direct zero-copy C/Rust/Objective-C/JNI interop for high-frequency compute
 ```
 
-### 5.2 MethodChannel — Production Example
+### 5.2 MethodChannel — Production Example (or Generate via `pigeon`)
 
 ```dart
 // ── Dart side ──
@@ -579,17 +596,17 @@ class SparklineChart extends CustomPainter {
 
 ## 7. Fragment Shaders & Impeller
 
-### 7.1 Impeller Rendering Engine
+### 7.1 Impeller Rendering Engine (Default on iOS & Android)
 
-Flutter 3.16+ uses **Impeller** by default on iOS. Android Impeller became stable in Flutter 3.22+.
+Flutter 3.29–3.35+ runs **Impeller** by default on both iOS (Metal) and Android (Vulkan on API 29+, OpenGL ES fallback). Do not disable Impeller in production or attempt legacy Skia manual shader warmup.
 
-| Feature | Skia (Legacy) | Impeller |
+| Feature | Skia (Legacy) | Impeller (Default) |
 |---|---|---|
-| Shader compilation | Runtime (causes jank) | Ahead-of-time (no jank) |
-| First-frame performance | Slow (shader warm-up) | Fast |
-| iOS default since | — | Flutter 3.16 |
-| Android default since | — | Flutter 3.22 |
-| Custom fragment shaders | `.glsl` | `.frag` (GLSL ES 1.0) |
+| Shader compilation | Runtime (causes jank) | Ahead-of-time offline compilation (zero shader jank) |
+| First-frame & blur performance | Slow warm-up | Fast (~50% lower blur rasterization cost) |
+| iOS default | Legacy | Default since Flutter 3.16 (Metal) |
+| Android default | Legacy | Default on API 29+ Vulkan (Flutter 3.27+) |
+| Custom fragment shaders | `.glsl` | `.frag` compiled via `impellerc` |
 
 ### 7.2 Fragment Shader Example
 
@@ -840,60 +857,52 @@ Widget build(BuildContext context) {
  ╱________________╲  Pure Dart, mocked deps
 ```
 
-### 9.2 Golden Tests — Visual Regression
+### 9.2 Golden Tests — Visual Regression (`alchemist` — replaces archived `golden_toolkit`)
 
 ```dart
 // test/golden/order_card_test.dart
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart'; // golden_toolkit: ^0.15.0
 
 void main() {
-  // Load fonts before golden tests
-  setUpAll(() async {
-    await loadAppFonts();
-  });
-
-  testGoldens('OrderCard renders correctly across sizes', (tester) async {
-    final builder = DeviceBuilder()
-      ..overrideDevicesForAllScenarios(devices: [
-        Device.phone,
-        Device.iphone11,
-        Device.tabletPortrait,
-      ])
-      ..addScenario(
-        name: 'default state',
-        widget: const OrderCard(
-          order: Order(
-            id: 'ORD-001',
-            status: OrderStatus.processing,
-            total: 99.99,
-            itemCount: 3,
-            createdAt: '2026-01-15',
+  goldenTest(
+    'OrderCard renders all lifecycle states cleanly',
+    fileName: 'order_card_states',
+    builder: () => GoldenTestGroup(
+      columns: 2,
+      children: [
+        GoldenTestScenario(
+          name: 'processing',
+          child: const OrderCard(
+            order: Order(
+              id: 'ORD-001',
+              status: OrderStatus.processing,
+              total: 99.99,
+              itemCount: 3,
+              createdAt: '2026-01-15',
+            ),
           ),
         ),
-      )
-      ..addScenario(
-        name: 'cancelled state',
-        widget: const OrderCard(
-          order: Order(
-            id: 'ORD-002',
-            status: OrderStatus.cancelled,
-            total: 0,
-            itemCount: 0,
-            createdAt: '2026-01-10',
+        GoldenTestScenario(
+          name: 'cancelled',
+          child: const OrderCard(
+            order: Order(
+              id: 'ORD-002',
+              status: OrderStatus.cancelled,
+              total: 0,
+              itemCount: 0,
+              createdAt: '2026-01-10',
+            ),
           ),
         ),
-      );
-
-    await tester.pumpDeviceBuilder(builder);
-    await screenMatchesGolden(tester, 'order_card_states');
-  });
+      ],
+    ),
+  );
 }
 
 // Run golden tests:
-// flutter test --update-goldens              # Generate reference images
+// flutter test --update-goldens              # Generate CI & platform reference images
 // flutter test                                # Compare against references
-// flutter test --tags golden                  # Run only golden tests
 ```
 
 ### 9.3 Widget Test with Riverpod
@@ -1290,16 +1299,16 @@ Before shipping a Flutter production app, verify:
 
 | Category | Package | Version |
 |---|---|---|
-| State Management | `flutter_riverpod` | ^2.5.1 |
-| Routing | `go_router` | ^14.3.0 |
-| HTTP Client | `dio` | ^5.7.0 |
-| Local DB | `drift` | ^2.20.0 |
-| Secure Storage | `flutter_secure_storage` | ^9.2.2 |
-| Image Loading | `cached_network_image` | ^3.4.1 |
-| Serialization | `freezed` + `json_serializable` | ^2.5.7 / ^6.8.0 |
-| Testing (mocks) | `mocktail` | ^1.0.4 |
-| Testing (golden) | `golden_toolkit` | ^0.15.0 |
-| Background Work | `workmanager` | ^0.5.2 |
-| Analytics | `firebase_analytics` | ^11.3.0 |
-| Crash Reporting | `sentry_flutter` | ^8.9.0 |
-| Linting | `very_good_analysis` | ^6.0.0 |
+| State Management | `flutter_riverpod` + `riverpod_annotation` + `riverpod_lint` | `^3.0.0` |
+| Routing | `go_router` | `^15.0.0` |
+| HTTP Client | `dio` | `^5.8.0` |
+| Local DB (SQLite) | `drift` | `^2.26.0` |
+| Secure Storage | `flutter_secure_storage` | `^9.2.4` |
+| Native Interop | `pigeon` (dev) | `^25.0.0` |
+| Image Loading | `cached_network_image` | `^3.4.1` |
+| Serialization | `freezed` + `json_serializable` | `^3.0.0` / `^6.9.0` |
+| Testing (mocks) | `mocktail` | `^1.0.4` |
+| Testing (golden) | `alchemist` (replaces archived `golden_toolkit`) | `^0.12.0` |
+| Background Work | `workmanager` | `^0.7.0` |
+| Analytics & Crash | `firebase_analytics` + `sentry_flutter` | `^11.4.0` / `^8.14.0` |
+| Linting | `very_good_analysis` | `^7.0.0` |

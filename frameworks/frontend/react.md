@@ -1,8 +1,9 @@
-# ⚛️ React Production Guide (`react.md`)
+# ⚛️ React 19.2 & React Compiler Production Guide (`react.md`)
 
-> **Framework**: React 18 / 19
-> **Classification**: Core Frontend Component Architecture
-> **Core Philosophy**: "UI is a Pure Function of State; Minimize Renders, Maximize Predictability."
+> **Framework**: React 19.2+ & React Compiler (1.0+)  
+> **Classification**: Core Frontend Component Architecture  
+> **Core Philosophy**: "UI is a Pure Function of State; Minimize Renders, Maximize Predictability."  
+> **Last Updated**: 2026-11-19
 
 ---
 
@@ -12,10 +13,17 @@ React is the dominant UI library for building component-based user interfaces. U
 
 - Building single-page applications (SPAs) or interactive dashboards
 - You need a rich ecosystem of libraries (routing, state, forms, animations)
-- Server-side rendering or static generation is required (via Next.js, Remix, or Astro)
+- Server-side rendering or static generation is required (via Next.js, React Router v7, TanStack Start, or Astro)
 - The team needs strong TypeScript support and component-level isolation
 
-**Do NOT use React** for static marketing pages with no interactivity (use Astro or plain HTML), extremely small widgets where the 40KB runtime is unjustified, or performance-critical canvas/WebGL applications where direct DOM manipulation is required.
+**Do NOT use React** for static marketing pages with no interactivity (use Astro or plain HTML), extremely small widgets where the ~40KB runtime is unjustified, or performance-critical canvas/WebGL applications where direct DOM manipulation is required.
+
+### React 19.2 & React Compiler Standards (2025–2026)
+- **`ref` as a Standard Prop**: Never wrap new function components in `React.forwardRef` — accept `ref` directly in props (`ComponentPropsWithRef<'button'>`).
+- **React Compiler (`babel-plugin-react-compiler`)**: Enable the React Compiler + `eslint-plugin-react-hooks` compiler rules. Stop writing defensive `useMemo` / `useCallback` / `React.memo` boilerplate everywhere — keep render functions pure (no mutating props, refs, or state during render) so the compiler auto-memoizes safely.
+- **Actions & Async Transitions**: Use `useActionState`, `useOptimistic`, `useFormStatus`, and `startTransition` for async form mutations instead of manual `isLoading`/`error` `useState` + `useEffect` chains.
+- **Context & Resource Reading**: Use `<MyContext value={...}>` (instead of `<MyContext.Provider>`) and `use(promiseOrContext)` for conditional context reads or Suspense promise unwrapping.
+- **UI State Preservation**: Use `<Activity mode="hidden" | "visible">` (React 19.2) to preserve off-screen tab/drawer state without paying mount/unmount cost, and `useEffectEvent` to separate non-reactive callback logic from effect dependencies.
 
 ---
 

@@ -1,111 +1,128 @@
-# 📱 Enterprise React Native & Expo Production Engineering Standards
+# 📱 React Native 0.79–0.81+ (New Architecture) & Expo SDK 53/54+ Guide (`frameworks/mobile/react-native-expo.md`)
 
 > **Standard Identifier**: `FW-MOBILE-EXPO-001`  
+> **Framework**: React Native 0.79–0.81+ (Fabric, TurboModules, JSI, Bridgeless, Hermes) & Expo SDK 53/54+  
 > **Status**: Active / Production Standard  
-> **Target Audience**: Mobile Engineers, Cross-Platform Architects  
-> **Classification**: Level 4 Framework Mastery Guide  
+> **Governing Rules**: **R-001**, **R-034**, **R-064**, **R-257**  
+> **Last Updated**: 2026-11-19
 
 ---
 
 ## 1. Executive Summary & Core Philosophy
 
-> **Golden Rule**: *React Native with Expo is not a web view; it is a compiled native runtime executing JavaScript on the Hermès engine via the JSI (JavaScript Interface). Prioritize 60/120 FPS UI-thread animations with Reanimated, enforce offline-first architecture with MMKV, and automate binary generation via EAS Build.*
-
-Modern cross-platform mobile delivery has converged on Expo with the New Architecture (Fabric renderer + TurboModules). By moving away from legacy asynchronous JSON bridges to direct C++ memory pointers via JSI, Expo delivers near-zero latency native performance while maintaining rapid iteration.
+> **Golden Rule**: *React Native with Expo is a compiled native runtime running on Hermes over C++ JSI (Fabric + TurboModules + Bridgeless Mode). Treat the New Architecture as non-negotiable, keep animations on the UI thread with Reanimated worklets, persist offline data in hardware-keyed MMKV or `expo-sqlite` + Drizzle, and validate native health with `npx expo-doctor` in CI.*
 
 ---
 
-## 2. React Native New Architecture (Fabric & TurboModules)
+## 2. New Architecture Stack (Fabric + TurboModules + Hermes)
 
 ```
-                 ┌────────────────────────────────────────────────────────┐
-                 │           REACT NATIVE APP (TYPESCRIPT)                │
-                 └──────────────────────────┬─────────────────────────────┘
-                                            │
-                                            ▼
-                 ┌────────────────────────────────────────────────────────┐
-                 │                  HERMÈS JS ENGINE                      │
-                 │          Ahead-Of-Time (AOT) Bytecode                  │
-                 └──────────────────────────┬─────────────────────────────┘
-                                            │ Direct Memory Binding (C++ JSI)
-                                            ▼
-                 ┌────────────────────────────────────────────────────────┐
-                 │               JAVASCRIPT INTERFACE (JSI)               │
-                 └──────────┬───────────────────────────────────┬─────────┘
-                            │                                   │
-                            ▼                                   ▼
-                 ┌────────────────────┐               ┌────────────────────┐
-                 │  FABRIC RENDERER   │               │   TURBOMODULES     │
-                 │  Synchronous UI    │               │  Direct Native C++ │
-                 │  Thread Mounts     │               │  Device Modules    │
-                 └──────────┬─────────┘               └─────────┬──────────┘
-                            │                                   │
-                            ▼                                   ▼
-                 ┌────────────────────┐               ┌────────────────────┐
-                 │ iOS / Android UI   │               │ Native OS APIs     │
-                 │ (UIKit / AndroidX) │               │ (Camera, Storage)  │
-                 └────────────────────┘               └────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│             REACT NATIVE 0.79–0.81+ / EXPO SDK 53–54+ (TS)              │
+└──────────────────────────────────┬──────────────────────────────────────┘
+                                   │
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                  HERMES AOT BYTECODE JS ENGINE                          │
+└──────────────────────────────────┬──────────────────────────────────────┘
+                                   │ Direct C++ JSI (Zero JSON Bridge)
+                 ┌─────────────────┴─────────────────┐
+                 ▼                                   ▼
+┌─────────────────────────────────┐ ┌─────────────────────────────────────┐
+│        FABRIC RENDERER          │ │   TURBOMODULES / EXPO MODULES API   │
+│ Synchronous Native Layout Tree  │ │ Typed Codegen + Swift/Kotlin Native │
+└────────────────┬────────────────┘ └──────────────────┬──────────────────┘
+                 ▼                                     ▼
+       UIKit (iOS) / AndroidX              Keychain / KeyStore / Camera / SQLite
 ```
+
+### Mandatory New Architecture Rules
+- **No Legacy Bridge**: Keep `newArchEnabled: true` everywhere; audit third-party native packages with `npx expo-doctor@latest` before adding them.
+- **Continuous Native Generation (CNG)**: Treat `ios/` and `android/` as ephemeral generated artifacts via `expo prebuild` + Expo Config Plugins rather than hand-editing Xcode/Gradle files.
+- **Custom Native Code**: Write native bridges with the **Expo Modules API** (idiomatic Swift + Kotlin) instead of raw Objective-C/Java bridge boilerplate — it automatically compiles cleanly for Fabric & TurboModules.
 
 ---
 
-## 3. High-Performance Offline-First State & Storage: MMKV + TanStack Query
-
-Standard `AsyncStorage` is slow and serialized over async storage queues. Production mobile apps mandate **react-native-mmkv** (Tencent's C++ memory-mapped key-value store, up to $30\times$ faster):
-
-```typescript
-// lib/storage.ts
-import { MMKV } from "react-native-mmkv";
-
-export const storage = new MMKV({
-  id: "secure-app-storage",
-  encryptionKey: "secure-hardware-backed-key", // Store key in Expo SecureStore
-});
-
-// Adapter for TanStack Query Persistence
-export const clientPersister = {
-  setItem: (key: string, value: string) => storage.set(key, value),
-  getItem: (key: string) => storage.getString(key) ?? null,
-  removeItem: (key: string) => storage.delete(key),
-};
-```
-
----
-
-## 4. 60/120 FPS Declarative Gesture & Animation Engineering
-
-Animations that calculate frames on the JavaScript thread drop frames whenever network queries or state updates occur. Standardize on **React Native Reanimated 3** and **Gesture Handler**:
+## 3. Typed Navigation with Expo Router (v4 / v5)
 
 ```tsx
-// components/SwipeableCard.tsx
-import React from "react";
-import { StyleSheet, Dimensions } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  runOnJS,
-} from "react-native-reanimated";
+// app/(tabs)/orders/[id].tsx
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { Text, View } from 'react-native';
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
+export default function OrderDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
 
-interface SwipeableCardProps {
-  onDismiss: () => void;
-  children: React.ReactNode;
+  return (
+    <View className="flex-1 p-4">
+      <Stack.Screen options={{ title: `Order #${id}` }} />
+      <Text>Viewing order {id}</Text>
+    </View>
+  );
+}
+```
+- Enable `experiments: { typedRoutes: true }` in `app.json` for compile-time route path checking and automatic Universal Links / Android App Links deep linking.
+
+---
+
+## 4. Secure Hardware-Keyed Offline Storage (MMKV + `expo-secure-store` & `expo-sqlite`)
+
+Never hardcode encryption keys in TypeScript source (violates **R-064**). Generate a random 256-bit key once, store it in hardware-backed **`expo-secure-store`** (iOS Keychain / Android KeyStore), and pass it to **MMKV** (30x faster C++ JSI storage than `AsyncStorage`):
+
+```typescript
+// src/lib/storage.ts
+import * as Crypto from 'expo-crypto';
+import * as SecureStore from 'expo-secure-store';
+import { MMKV } from 'react-native-mmkv';
+
+const KEY_ALIAS = 'mmkv.storage.master.key';
+
+async function getOrCreateEncryptionKey(): Promise<string> {
+  const existing = await SecureStore.getItemAsync(KEY_ALIAS, {
+    keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+  });
+  if (existing) return existing;
+
+  const bytes = await Crypto.getRandomBytesAsync(32);
+  const generated = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  await SecureStore.setItemAsync(KEY_ALIAS, generated, {
+    keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+  });
+  return generated;
 }
 
-export function SwipeableCard({ onDismiss, children }: SwipeableCardProps) {
+export async function createEncryptedStorage(): Promise<MMKV> {
+  const encryptionKey = await getOrCreateEncryptionKey();
+  return new MMKV({ id: 'app-encrypted-cache', encryptionKey });
+}
+```
+- For structured relational offline-first data (sync queues, orders, catalogs), use **`expo-sqlite`** paired with **Drizzle ORM** instead of stuffing large JSON blobs into key-value storage.
+
+---
+
+## 5. 60/120 FPS UI-Thread Gestures & High-Throughput Lists
+
+### 5.1 Reanimated Worklets + Gesture Handler
+```tsx
+// src/components/SwipeableCard.tsx
+import type { ReactNode } from 'react';
+import { Dimensions, StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
+
+export function SwipeableCard({ onDismiss, children }: { onDismiss: () => void; children: ReactNode }) {
   const translateX = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
-      "worklet"; // Executes directly on the native UI thread
+      'worklet';
       translateX.value = event.translationX;
     })
     .onEnd(() => {
-      "worklet";
+      'worklet';
       if (Math.abs(translateX.value) > SWIPE_THRESHOLD) {
         translateX.value = withSpring(Math.sign(translateX.value) * SCREEN_WIDTH, {}, () => {
           runOnJS(onDismiss)();
@@ -121,113 +138,51 @@ export function SwipeableCard({ onDismiss, children }: SwipeableCardProps) {
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[styles.card, animatedStyle]}>
-        {children}
-      </Animated.View>
+      <Animated.View style={[styles.card, animatedStyle]}>{children}</Animated.View>
     </GestureDetector>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    width: "100%",
-    borderRadius: 16,
-    backgroundColor: "#ffffff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
+  card: { width: '100%', borderRadius: 16, backgroundColor: '#ffffff', elevation: 3 },
 });
 ```
 
----
-
-## 5. High-Throughput List Performance: FlashList vs FlatList
-
-Legacy `FlatList` drops frames and produces blank spaces when scrolling thousands of items because of un-recycled native views. Use Shopify's **`@shopify/flash-list`**:
-
-```tsx
-import { FlashList } from "@shopify/flash-list";
-
-export function OrderHistoryList({ orders }: { orders: Order[] }) {
-  return (
-    <FlashList
-      data={orders}
-      renderItem={({ item }) => <OrderItemRow order={item} />}
-      estimatedItemSize={88} // Mandatory for instant recycling
-      keyExtractor={(item) => item.id}
-      getItemType={(item) => item.type} // Multi-layout recycling support
-    />
-  );
-}
-```
+### 5.2 Virtualized Lists (`@shopify/flash-list`)
+Use **`@shopify/flash-list`** (or `LegendList`) instead of `ScrollView` / `FlatList` for large dynamic feeds, providing `keyExtractor`, `getItemType`, and calibrated `estimatedItemSize` (in FlashList v1) so native views recycle with zero blank frames.
 
 ---
 
-## 6. Enterprise EAS Build & OTA Update Strategy
+## 6. EAS Build, Submit & Safe OTA Updates (`eas.json`)
 
-```
-                      ┌──────────────────────────────────────────────┐
-                      │              CODE CHANGE MERGED              │
-                      └──────────────────────┬───────────────────────┘
-                                             │
-                       Is Native Code Changed? (Pods / Gradle)
-                                             │
-                        ┌────────────────────┴────────────────────┐
-                        ▼ YES                                     ▼ NO
-             ┌───────────────────────┐                 ┌───────────────────────┐
-             │       EAS BUILD       │                 │       EAS UPDATE      │
-             │ Full native binary    │                 │ Over-The-Air (OTA)    │
-             │ compiled in cloud     │                 │ JS bundle download    │
-             │ -> App Store & Google │                 │ -> Instant user update│
-             └───────────────────────┘                 └───────────────────────┘
-```
-
-### Production `eas.json` Configuration
-```json
-{
-  "cli": {
-    "version": ">= 12.0.0"
-  },
-  "build": {
-    "production": {
-      "channel": "production",
-      "autoIncrement": true,
-      "env": {
-        "APP_ENV": "production"
-      },
-      "android": {
-        "buildType": "app-bundle"
-      },
-      "ios": {
-        "simulator": false
-      }
-    }
-  }
-}
-```
+- **Native changes (new SDK, Expo Module, permissions)** → **EAS Build** (`eas build --platform all --profile production`).
+- **Pure JS/TS/Asset fixes** → **EAS Update** (`eas update --branch production`) guarded by strict `runtimeVersion: { policy: "appVersion" }` in `app.json` so JS bundles never load onto incompatible native binaries.
 
 ---
 
+## 7. Testing & CI Diagnostics
+
+- **Dependency & Architecture Gate**: `npx expo-doctor@latest` (must exit 0 in CI).
+- **Unit & Component**: Jest (`jest-expo`) + `@testing-library/react-native`.
+- **Native E2E**: **Maestro** (`maestro test .maestro/flows/`) for fast, deterministic YAML user-journey flows on iOS Simulator & Android Emulator without flaky Appium/Detox setup.
 
 ---
 
-## 6. Common Pitfalls & Anti-Patterns
+## 8. Common Pitfalls & Anti-Patterns
 
-| Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
-| :--- | :--- | :--- | :--- |
-| **Animating on JavaScript Thread** | Using standard React state for animations | Heavy frame drops and jitter under network or computational load | Use `react-native-reanimated` worklets running on UI thread |
-| **Unbounded List Rendering** | Using `ScrollView` or un-optimized `FlatList` for 1,000+ items | Memory explosion, app crashes with Out-Of-Memory on mobile devices | Standardize on `@shopify/flash-list` with calibrated `estimatedItemSize` |
-| **Storing Secrets in Plaintext** | Saving JWTs or user tokens in `AsyncStorage` | Accessible to device root exploits and OS backup tools | Store all credentials in hardware-backed `expo-secure-store` |
-| **Over-The-Air (OTA) Native Desync** | Pushing JS updates that require new native pods | Immediate app crash on user launch | Enforce runtime version policies matching native app version |
+| Anti-Pattern | Root Cause | Remediated Standard |
+|---|---|---|
+| **Animating with React `useState`** | Drives layout recalculations on the JS thread | Use `react-native-reanimated` `useSharedValue` + worklets on UI thread |
+| **Hardcoded MMKV encryption key or `AsyncStorage` tokens** | Plaintext key in bundle or unencrypted disk file (R-064) | Store secrets and encryption keys exclusively in `expo-secure-store` |
+| **Unbounded `ScrollView` for 500+ items** | Mounts every native view simultaneously (OOM crash) | Use `@shopify/flash-list` with `keyExtractor` and `getItemType` |
+| **OTA bundle/native mismatch** | Shipping JS requiring a newly installed native module via OTA | Pin `runtimeVersion: { policy: "appVersion" }` and cut an EAS Build for native changes |
 
-## 7. Verification Checklist & Production Audit
+---
 
-- [ ] New Architecture (Fabric + TurboModules) and Hermès engine are enabled in `app.json`.
-- [ ] Large lists standardize on `@shopify/flash-list` with calibrated `estimatedItemSize`.
-- [ ] Animations run exclusively on the UI thread via `react-native-reanimated` worklets.
-- [ ] Offline key-value data is stored in encrypted MMKV rather than legacy `AsyncStorage`.
-- [ ] OTA updates via `eas-cli` are tied to strict semantic runtime versions (`runtimeVersion: { policy: "appVersion" }`).
-- [ ] Secure hardware credentials use `expo-secure-store` backed by Keychain (iOS) and KeyStore (Android).
+## 9. Verification Checklist
+
+- [ ] New Architecture (Fabric + TurboModules + Hermes) active and `npx expo-doctor@latest` passes with 0 errors.
+- [ ] Zero secrets or hardcoded encryption keys in source; credentials stored in `expo-secure-store`.
+- [ ] Large lists virtualized via `@shopify/flash-list`; gestures/animations execute on UI thread via Reanimated.
+- [ ] Expo Router typed routes and Universal/App Links configured and tested on physical devices.
+- [ ] `tsc --noEmit`, Jest/RNTL tests, and Maestro E2E flows pass cleanly in CI.

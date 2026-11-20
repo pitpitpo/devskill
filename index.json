@@ -1,15 +1,15 @@
 {
   "name": "devskill",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "updated": "2026-11-19",
   "spec_standard": "agentskills.io + AAIF AGENTS.md",
   "description": "Production-grade software engineering standards, OWASP 2025 & Agentic AI security, deterministic agent routing, MCP/A2A protocols, framework/language guides, and CI gates.",
   "stats": {
-    "total_documents": 102,
-    "total_lines": 41874,
-    "total_rules": 235,
-    "rule_range": "R-001..R-235",
-    "total_archetypes": 23,
+    "total_documents": 115,
+    "total_lines": 43776,
+    "total_rules": 260,
+    "rule_range": "R-001..R-260",
+    "total_archetypes": 28,
     "total_configs": 6,
     "total_scripts": 5
   },
@@ -74,11 +74,16 @@
       },
       {
         "path": "FRONTEND.md",
-        "title": "FRONTEND.md — Frontend Engineering Standards & Best Practices",
-        "lines": 371,
+        "title": "FRONTEND.md — Universal Frontend Engineering & Design Craft Master Skill",
+        "lines": 198,
         "tags": [
           "frontend",
-          "engineering"
+          "universal",
+          "engineering",
+          "design",
+          "craft",
+          "master",
+          "skill"
         ]
       },
       {
@@ -109,8 +114,8 @@
       },
       {
         "path": "README.md",
-        "title": "🚀 DevSkill v2.0: Autonomous Industry-Grade Engineering Library",
-        "lines": 52,
+        "title": "🚀 DevSkill v2.2: Autonomous Industry-Grade Engineering Library",
+        "lines": 55,
         "tags": [
           "devskill",
           "v2",
@@ -123,7 +128,7 @@
       {
         "path": "ROUTING.md",
         "title": "🧭 Deterministic Agent Routing Matrix (`ROUTING.md`)",
-        "lines": 359,
+        "lines": 424,
         "tags": [
           "routing",
           "deterministic",
@@ -134,7 +139,7 @@
       {
         "path": "RULES.md",
         "title": "📜 Universal Engineering Rules (`RULES.md`)",
-        "lines": 436,
+        "lines": 473,
         "tags": [
           "rules",
           "universal",
@@ -144,7 +149,7 @@
       {
         "path": "SKILL.md",
         "title": "DevSkill: Autonomous Industry-Grade Engineering Library",
-        "lines": 102,
+        "lines": 104,
         "tags": [
           "skill",
           "devskill",
@@ -226,6 +231,21 @@
           "analysis",
           "cross-system",
           "blast-radius-verification"
+        ]
+      },
+      {
+        "path": "agents/code-forensics-interrogation.md",
+        "title": "🔎 Pre-Code Forensics, Interrogation & Architecture Settling (`code-forensics-interrogation.md`)",
+        "lines": 146,
+        "tags": [
+          "agents",
+          "code",
+          "forensics",
+          "interrogation",
+          "pre-code",
+          "architecture",
+          "settling",
+          "code-forensics-interrogation"
         ]
       },
       {
@@ -331,7 +351,7 @@
       {
         "path": "agents/poteto-discipline.md",
         "title": "🥋 Agent Discipline & Execution Rigor (`poteto-discipline.md`)",
-        "lines": 190,
+        "lines": 194,
         "tags": [
           "agents",
           "poteto",
@@ -383,6 +403,21 @@
           "bug",
           "protocol",
           "tdd-reproduction"
+        ]
+      },
+      {
+        "path": "agents/unified-agent-stacks.md",
+        "title": "🧩 Unified AI Coding Agent Stacks & Harness Architecture (`unified-agent-stacks.md`)",
+        "lines": 167,
+        "tags": [
+          "agents",
+          "unified",
+          "agent",
+          "stacks",
+          "ai",
+          "coding",
+          "harness",
+          "architecture"
         ]
       }
     ],
@@ -531,7 +566,7 @@
       {
         "path": "frameworks/README.md",
         "title": "🚀 Frameworks Directory (`frameworks/`)",
-        "lines": 19,
+        "lines": 37,
         "tags": [
           "frameworks",
           "directory"
@@ -635,7 +670,7 @@
       {
         "path": "frameworks/erp/erpnext.md",
         "title": "🚀 Frappe Framework & ERPNext Engineering Guide (`frameworks/erp/erpnext.md`)",
-        "lines": 546,
+        "lines": 581,
         "tags": [
           "frameworks",
           "erp",
@@ -647,13 +682,42 @@
       },
       {
         "path": "frameworks/erp/odoo.md",
-        "title": "📦 Odoo 17 & 18 Enterprise Engineering Guide (`frameworks/erp/odoo.md`)",
-        "lines": 656,
+        "title": "📦 Odoo 18 & 19 Enterprise Engineering Guide (`frameworks/erp/odoo.md`)",
+        "lines": 720,
         "tags": [
           "frameworks",
           "erp",
           "odoo",
           "engineering"
+        ]
+      },
+      {
+        "path": "frameworks/frontend/angular.md",
+        "title": "🅰️ Angular 19 / 20+ Signals-First & Zoneless Production Architecture (`frameworks/frontend/angular.md`)",
+        "lines": 194,
+        "tags": [
+          "frameworks",
+          "frontend",
+          "angular",
+          "20+",
+          "signals-first",
+          "zoneless",
+          "architecture"
+        ]
+      },
+      {
+        "path": "frameworks/frontend/astro.md",
+        "title": "🚀 Astro 5+ Content Layer, Islands & Server Islands Production Guide (`frameworks/frontend/astro.md`)",
+        "lines": 154,
+        "tags": [
+          "frameworks",
+          "frontend",
+          "astro",
+          "5+",
+          "content",
+          "layer",
+          "islands",
+          "server"
         ]
       },
       {
@@ -673,52 +737,67 @@
       },
       {
         "path": "frameworks/frontend/react.md",
-        "title": "⚛️ React Production Guide (`react.md`)",
-        "lines": 1113,
+        "title": "⚛️ React 19.2 & React Compiler Production Guide (`react.md`)",
+        "lines": 1121,
         "tags": [
           "frameworks",
           "frontend",
-          "react"
+          "react",
+          "compiler"
+        ]
+      },
+      {
+        "path": "frameworks/frontend/solidjs.md",
+        "title": "💎 SolidJS & SolidStart Fine-Grained Reactivity Guide (`frameworks/frontend/solidjs.md`)",
+        "lines": 177,
+        "tags": [
+          "frameworks",
+          "frontend",
+          "solidjs",
+          "solidstart",
+          "fine-grained",
+          "reactivity"
         ]
       },
       {
         "path": "frameworks/frontend/sveltekit.md",
-        "title": "🧡 Svelte 5 Runes & SvelteKit Fullstack Production Architecture",
-        "lines": 180,
+        "title": "🧡 Svelte 5 Runes & SvelteKit 2 Full-Stack Production Architecture (`frameworks/frontend/sveltekit.md`)",
+        "lines": 254,
         "tags": [
           "frameworks",
           "frontend",
           "sveltekit",
           "svelte",
           "runes",
-          "fullstack",
+          "full-stack",
           "architecture"
         ]
       },
       {
         "path": "frameworks/frontend/tailwindcss.md",
-        "title": "🎨 Enterprise Tailwind CSS v3/v4 & Design Token Architecture",
-        "lines": 182,
+        "title": "🎨 Tailwind CSS v4 (Oxide Engine) & Semantic Design Token Architecture (`frameworks/frontend/tailwindcss.md`)",
+        "lines": 194,
         "tags": [
           "frameworks",
           "frontend",
           "tailwindcss",
           "tailwind",
           "css",
-          "v3",
           "v4",
-          "design"
+          "oxide",
+          "engine"
         ]
       },
       {
         "path": "frameworks/frontend/vue-nuxt.md",
-        "title": "💚 Vue 3 & Nuxt 3 Production Guide (`vue-nuxt.md`)",
-        "lines": 1438,
+        "title": "💚 Vue 3.5+ & Nuxt 4 Production Guide (`vue-nuxt.md`)",
+        "lines": 1445,
         "tags": [
           "frameworks",
           "frontend",
           "vue",
           "nuxt",
+          "5+",
           "vue-nuxt"
         ]
       },
@@ -738,28 +817,61 @@
         ]
       },
       {
+        "path": "frameworks/mobile/android-kotlin-compose.md",
+        "title": "🤖 Native Android App Engineering: Kotlin 2.x & Jetpack Compose (`frameworks/mobile/android-kotlin-compose.md`)",
+        "lines": 111,
+        "tags": [
+          "frameworks",
+          "mobile",
+          "android",
+          "kotlin",
+          "compose",
+          "native",
+          "app",
+          "engineering"
+        ]
+      },
+      {
         "path": "frameworks/mobile/flutter.md",
-        "title": "📱 Dart/Flutter Production Engineering Guide (`flutter.md`)",
-        "lines": 1305,
+        "title": "📱 Dart / Flutter 3.35+ Production Engineering Guide (`flutter.md`)",
+        "lines": 1314,
         "tags": [
           "frameworks",
           "mobile",
           "flutter",
           "dart",
+          "35+",
           "engineering"
         ]
       },
       {
+        "path": "frameworks/mobile/ios-swiftui.md",
+        "title": "🍎 Native iOS App Engineering: Swift 6 & SwiftUI (`frameworks/mobile/ios-swiftui.md`)",
+        "lines": 147,
+        "tags": [
+          "frameworks",
+          "mobile",
+          "ios",
+          "swiftui",
+          "native",
+          "app",
+          "engineering",
+          "swift"
+        ]
+      },
+      {
         "path": "frameworks/mobile/react-native-expo.md",
-        "title": "📱 Enterprise React Native & Expo Production Engineering Standards",
-        "lines": 233,
+        "title": "📱 React Native 0.79–0.81+ (New Architecture) & Expo SDK 53/54+ Guide (`frameworks/mobile/react-native-expo.md`)",
+        "lines": 188,
         "tags": [
           "frameworks",
           "mobile",
           "react",
           "native",
           "expo",
-          "engineering"
+          "81+",
+          "new",
+          "architecture"
         ]
       }
     ],
@@ -852,7 +964,7 @@
       {
         "path": "sections/README.md",
         "title": "🏗️ Cross-Cutting Architectural Sections (`sections/`)",
-        "lines": 18,
+        "lines": 29,
         "tags": [
           "sections",
           "cross-cutting",
@@ -871,6 +983,66 @@
           "integration",
           "ai-powered",
           "features"
+        ]
+      },
+      {
+        "path": "sections/architecture-foundations/README.md",
+        "title": "📚 Software Engineering Canon & First-Principles Architecture (`sections/architecture-foundations/`)",
+        "lines": 17,
+        "tags": [
+          "sections",
+          "architecture",
+          "foundations",
+          "software",
+          "engineering",
+          "canon",
+          "first-principles",
+          "architecture-foundations"
+        ]
+      },
+      {
+        "path": "sections/architecture-foundations/distributed-systems-reliability.md",
+        "title": "🌐 Distributed Systems, Storage Internals & Production Reliability (`distributed-systems-reliability.md`)",
+        "lines": 97,
+        "tags": [
+          "sections",
+          "architecture",
+          "foundations",
+          "distributed",
+          "reliability",
+          "storage",
+          "internals",
+          "distributed-systems-reliability"
+        ]
+      },
+      {
+        "path": "sections/architecture-foundations/evolutionary-delivery-architecture.md",
+        "title": "🧬 Evolutionary Architecture, Continuous Delivery & Team Cognitive Load (`evolutionary-delivery-architecture.md`)",
+        "lines": 79,
+        "tags": [
+          "sections",
+          "architecture",
+          "foundations",
+          "evolutionary",
+          "delivery",
+          "continuous",
+          "team",
+          "cognitive"
+        ]
+      },
+      {
+        "path": "sections/architecture-foundations/software-design-craft.md",
+        "title": "🏛️ Software Design Craft, Legacy Modernization & Google-Scale Engineering (`software-design-craft.md`)",
+        "lines": 104,
+        "tags": [
+          "sections",
+          "architecture",
+          "foundations",
+          "software",
+          "design",
+          "craft",
+          "legacy",
+          "modernization"
         ]
       },
       {
@@ -995,6 +1167,21 @@
         ]
       },
       {
+        "path": "sections/devops-infrastructure/kstack-cluster-operations.md",
+        "title": "☸️ Agentic Kubernetes Forensics, Auditing & Operations (`kstack-cluster-operations.md`)",
+        "lines": 163,
+        "tags": [
+          "sections",
+          "devops",
+          "infrastructure",
+          "kstack",
+          "cluster",
+          "operations",
+          "agentic",
+          "kubernetes"
+        ]
+      },
+      {
         "path": "sections/devops-infrastructure/kubernetes-cloud.md",
         "title": "Kubernetes & Cloud Infrastructure Guide",
         "lines": 934,
@@ -1090,9 +1277,24 @@
         ]
       },
       {
+        "path": "sections/frontend/design-systems-ui-craft.md",
+        "title": "🎨 Design Systems, Modern CSS Platform & UI Craft (`sections/frontend/design-systems-ui-craft.md`)",
+        "lines": 195,
+        "tags": [
+          "sections",
+          "frontend",
+          "design",
+          "ui",
+          "craft",
+          "modern",
+          "css",
+          "platform"
+        ]
+      },
+      {
         "path": "sections/frontend/state-management.md",
         "title": "🌐 Modern Frontend State Management Architecture",
-        "lines": 165,
+        "lines": 173,
         "tags": [
           "sections",
           "frontend",
@@ -1105,7 +1307,7 @@
       {
         "path": "sections/frontend/web-performance.md",
         "title": "⚡ Web Performance & Core Web Vitals (CWV) Industrial Engineering",
-        "lines": 201,
+        "lines": 210,
         "tags": [
           "sections",
           "frontend",
@@ -1326,7 +1528,7 @@
       {
         "path": "_coordination/STATUS.md",
         "title": "DevSkill Governance & Audit Status (`_coordination/STATUS.md`)",
-        "lines": 21,
+        "lines": 24,
         "tags": [
           "coordination",
           "status",
@@ -1753,6 +1955,102 @@
         "R-229",
         "R-232",
         "R-235"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Pre-Code Discovery, Codebase Forensics & Architecture Review (`/how`, `/why`, `/interrogate`, `/architect`)",
+      "files": [
+        "agents/code-forensics-interrogation.md",
+        "agents/unified-agent-stacks.md",
+        "sections/architecture-foundations/software-design-craft.md",
+        "decisions.md"
+      ],
+      "rules": [
+        "R-003",
+        "R-236",
+        "R-245",
+        "R-248",
+        "R-249",
+        "R-250"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Legacy System Modernization, Safe Refactoring & Architectural Fitness",
+      "files": [
+        "sections/architecture-foundations/software-design-craft.md",
+        "sections/architecture-foundations/evolutionary-delivery-architecture.md",
+        "agents/blast-radius-verification.md",
+        "agents/code-forensics-interrogation.md"
+      ],
+      "rules": [
+        "R-015",
+        "R-236",
+        "R-237",
+        "R-239",
+        "R-240",
+        "R-244",
+        "R-246",
+        "R-247"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Kubernetes Cluster Forensics, Auditing & SRE Operations (`kstack`)",
+      "files": [
+        "sections/devops-infrastructure/kstack-cluster-operations.md",
+        "sections/architecture-foundations/distributed-systems-reliability.md",
+        "sections/devops-infrastructure/kubernetes-cloud.md",
+        "workflows/incident-response.md"
+      ],
+      "rules": [
+        "R-153",
+        "R-162",
+        "R-200",
+        "R-232",
+        "R-241",
+        "R-242",
+        "R-243"
+      ]
+    },
+    {
+      "id": 27,
+      "name": "Universal Frontend Design Systems, Multi-Framework Web UI & Styling",
+      "files": [
+        "FRONTEND.md",
+        "sections/frontend/design-systems-ui-craft.md",
+        "frameworks/frontend/",
+        "sections/frontend/accessibility.md",
+        "sections/frontend/web-performance.md"
+      ],
+      "rules": [
+        "R-129",
+        "R-141",
+        "R-251",
+        "R-252",
+        "R-253",
+        "R-259",
+        "R-260"
+      ]
+    },
+    {
+      "id": 28,
+      "name": "Cross-Platform & Native Mobile Engineering (Flutter, React Native/Expo, Android Kotlin/Compose, iOS SwiftUI)",
+      "files": [
+        "frameworks/mobile/flutter.md",
+        "frameworks/mobile/react-native-expo.md",
+        "frameworks/mobile/android-kotlin-compose.md",
+        "frameworks/mobile/ios-swiftui.md",
+        "security.md",
+        "RULES.md",
+        "DEFINITION_OF_DONE.md"
+      ],
+      "rules": [
+        "R-064",
+        "R-256",
+        "R-257",
+        "R-258"
       ]
     }
   ],

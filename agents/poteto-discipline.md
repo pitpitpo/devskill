@@ -188,3 +188,7 @@ Before declaring completion of any task under Poteto Discipline:
 - [ ] **Reproduction Verified**: For bugfixes, verified that the test failed before the fix was applied.
 - [ ] **Type & Lint Cleanliness**: Zero type errors under `--strict`, zero linter warnings.
 - [ ] **No Regression**: Entire project test suite executed and passed cleanly.
+
+---
+
+*See also*: [`agents/code-forensics-interrogation.md`](code-forensics-interrogation.md) for read-only `/how`, `/why`, `/interrogate`, `/architect`, and failed-theory cleanup (`pstack`), and [`agents/unified-agent-stacks.md`](unified-agent-stacks.md) for the complete cross-stack orchestration matrix.

@@ -262,4 +262,4 @@ workflows/scripts/pr-wait 142 --until ready
 
 ---
 
-*See also*: [`agents/multi-model-council.md`](multi-model-council.md) for adversarial consensus and [`workflows/pr-lifecycle-babysitting.md`](../workflows/pr-lifecycle-babysitting.md) for PR monitoring.
+*See also*: [`agents/unified-agent-stacks.md`](unified-agent-stacks.md) for cross-stack synthesis (`tstack`, `pstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`), [`agents/code-forensics-interrogation.md`](code-forensics-interrogation.md) for problem-first `file-pr` and `leaving-pr-comments`, [`agents/multi-model-council.md`](multi-model-council.md) for adversarial consensus, and [`workflows/pr-lifecycle-babysitting.md`](../workflows/pr-lifecycle-babysitting.md) for PR monitoring.

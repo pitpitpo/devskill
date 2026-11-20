@@ -25,7 +25,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-INDEX_VERSION = "2.0.0"
+INDEX_VERSION = "2.2.0"
 INDEX_UPDATED = "2026-11-19"
 SKILL_NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 RULE_DEF_RE = re.compile(r"^\s*-\s+\*\*(R-(\d{3}))\s+\[([^\]]+)\]\*\*:")

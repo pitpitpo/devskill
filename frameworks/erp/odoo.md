@@ -1,10 +1,10 @@
-# 📦 Odoo 17 & 18 Enterprise Engineering Guide (`frameworks/erp/odoo.md`)
+# 📦 Odoo 18 & 19 Enterprise Engineering Guide (`frameworks/erp/odoo.md`)
 
-> **Classification**: Enterprise ERP Architecture, Module Development, Business Process Engineering  
-> **Target Systems**: Odoo 17.0+ & 18.0+ Community & Enterprise Editions  
-> **Prerequisites**: Python 3.10+, PostgreSQL 14+, JavaScript (ES6+ / OWL), XML, CSS/SCSS, Docker  
-> **Governing Rules**: **R-001** (Zero TODOs), **R-033** (Strict Typing), **R-061** (SQL Parameterization), **R-063** (Access Control / Record Rules), **R-184** (Idempotency)  
-> **Last Updated**: 2026-11-17  
+> **Classification**: Enterprise ERP Architecture, Module Development, OWL 2 Frontend & Business Process Engineering  
+> **Target Systems**: Odoo 18.0 LTS & 19.0 Community & Enterprise Editions  
+> **Prerequisites**: Python 3.11/3.12+, PostgreSQL 15/16/17+, JavaScript (ES6+ / OWL 2), XML/QWeb, SCSS, Docker  
+> **Governing Rules**: **R-001** (Zero TODOs), **R-033** (Strict Typing), **R-061** (SQL Parameterization), **R-063** (Access Control / Record Rules), **R-184** (Idempotency), **R-254** (Odoo 18/19 View, ORM & Security Discipline)  
+> **Last Updated**: 2026-11-19  
 
 ---
 
@@ -12,11 +12,11 @@
 
 | Attribute | Specification |
 |---|---|
-| **Framework Version** | Odoo 17.0 LTS / Odoo 18.0 LTS |
-| **Runtime Environment** | Python 3.10 / 3.11 / 3.12, PostgreSQL 14 / 15 / 16 / 17 |
-| **Frontend Framework** | OWL 2.0 (Odoo Web Library) Component Engine |
-| **Communication Protocols** | JSON-RPC (HTTP `/web/dataset/call_kw`), RESTful JSON, XML-RPC (legacy) |
-| **Key Invariant Rules** | **R-061** (Always use parameterized SQL queries via `self.env.cr.execute(query, params)`), **R-063** (Strict ACLs in `ir.model.access.csv` and multi-company record rules), **R-184** (Idempotent mutation endpoints) |
+| **Framework Version** | Odoo 18.0 LTS / Odoo 19.0 |
+| **Runtime Environment** | Python 3.11 / 3.12, PostgreSQL 15 / 16 / 17 |
+| **Frontend Framework** | OWL 2.0 (Odoo Web Library) Component Engine + QWeb |
+| **Communication Protocols** | JSON-RPC (HTTP `/web/dataset/call_kw`), RESTful JSON, External API Keys (`res.users.apikeys`) |
+| **Key Invariant Rules** | **R-061** (`odoo.tools.SQL` / parameterized `cr.execute`), **R-063** (`ir.model.access.csv` + multi-company `ir.rule` + Odoo 19 `res.groups.privilege`), **R-254** (`<list>`, `<chatter/>`, `Command.*`, `_compute_display_name`, `@api.ondelete`) |
 
 ---
 
@@ -248,6 +248,19 @@ class CustomOrder(models.Model):
             )
         return True
 
+    @api.depends("name", "partner_id.name")
+    def _compute_display_name(self):
+        """Odoo 18/19 standard replacing removed name_get()."""
+        for order in self:
+            partner = order.partner_id.name or _("No Customer")
+            order.display_name = f"[{order.name}] {partner}"
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_confirmed(self):
+        """Odoo 18/19 safe deletion guard (preferred over overriding unlink())."""
+        if any(order.state not in ("draft", "cancelled") for order in self):
+            raise UserError(_("You can only delete draft or cancelled orders."))
+
     def action_cancel(self):
         for order in self:
             if order.state == "done":
@@ -369,17 +382,19 @@ access_custom_order_line_manager,custom.order.line.manager,model_custom_order_li
 
 ---
 
-### 4.3 Declarative XML Views & Action Windows
+### 4.3 Declarative XML Views & Action Windows (Odoo 18/19 `<list>` & `<chatter/>`)
+
+> **Breaking Change Guard (Odoo 18/19)**: `<tree>` is replaced by `<list>`, `view_mode` uses `list,form`, legacy `attrs`/`states` are completely removed (use inline Python expressions `invisible="..."`, `readonly="..."`, `required="..."`), and `<div class="oe_chatter">...</div>` is replaced by `<chatter/>`.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree / List View -->
-    <record id="view_custom_order_tree" model="ir.ui.view">
-        <field name="name">custom.order.tree</field>
+    <!-- List View (Odoo 18/19 uses <list>, never <tree>) -->
+    <record id="view_custom_order_list" model="ir.ui.view">
+        <field name="name">custom.order.list</field>
         <field name="model">custom.order</field>
         <field name="arch" type="xml">
-            <tree string="Customer Orders" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-muted="state == 'cancelled'">
+            <list string="Customer Orders" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-muted="state == 'cancelled'">
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="date_order"/>
@@ -388,7 +403,7 @@ access_custom_order_line_manager,custom.order.line.manager,model_custom_order_li
                 <field name="amount_total" sum="Total Amount" widget="monetary"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'confirmed'" decoration-success="state == 'done'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -422,14 +437,14 @@ access_custom_order_line_manager,custom.order.line.manager,model_custom_order_li
                     <notebook>
                         <page string="Order Lines">
                             <field name="order_line_ids" readonly="state != 'draft'">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="product_id"/>
                                     <field name="product_uom_qty"/>
                                     <field name="price_unit"/>
                                     <field name="tax_rate"/>
                                     <field name="price_subtotal"/>
                                     <field name="currency_id" column_invisible="True"/>
-                                </tree>
+                                </list>
                             </field>
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="amount_untaxed"/>
@@ -442,12 +457,8 @@ access_custom_order_line_manager,custom.order.line.manager,model_custom_order_li
                         </page>
                     </notebook>
                 </sheet>
-                <!-- Chatter for Auditing -->
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <!-- Odoo 18/19 Native Chatter Tag -->
+                <chatter/>
             </form>
         </field>
     </record>
@@ -456,7 +467,7 @@ access_custom_order_line_manager,custom.order.line.manager,model_custom_order_li
     <record id="action_custom_order" model="ir.actions.act_window">
         <field name="name">Customer Orders</field>
         <field name="res_model">custom.order</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first customer order!
@@ -478,7 +489,7 @@ Demonstrates: Bearer Token Auth, Idempotency-Key validation, JSON payload parsin
 RFC 9457 error responses, and atomic record creation.
 """
 
-from odoo import http
+from odoo import Command, http
 from odoo.http import request, Response
 import json
 import hashlib
@@ -510,9 +521,10 @@ class CustomOrderApiController(http.Controller):
         if not auth_header.startswith("Bearer "):
             return self._json_error(401, "Unauthorized", "Missing or invalid Bearer token.")
 
-        token = auth_header.replace("Bearer ", "").strip()
-        user = request.env["res.users"].sudo().search([("api_key", "=", token)], limit=1)
-        if not user:
+        token = auth_header.removeprefix("Bearer ").strip()
+        # Use Odoo's native hashed API key verification (res.users.apikeys) — never plaintext key columns
+        uid = request.env["res.users.apikeys"]._check_credentials(scope="rpc", key=token)
+        if not uid:
             return self._json_error(403, "Forbidden", "Invalid API Key credentials.")
 
         # Enforce Idempotency-Key
@@ -549,19 +561,20 @@ class CustomOrderApiController(http.Controller):
                 headers=[("Content-Type", "application/json")]
             )
 
-        # Execute order creation as authenticated user
-        env = request.env(user=user)
+        # Execute order creation strictly as the authenticated user (enforcing ACLs + ir.rule)
+        env = request.env(user=uid)
         try:
-            order_lines = []
-            for item in lines_data:
-                order_lines.append((0, 0, {
+            order_lines = [
+                Command.create({
                     "product_id": int(item["product_id"]),
                     "product_uom_qty": float(item["quantity"]),
                     "price_unit": float(item["unit_price"]),
-                }))
+                })
+                for item in lines_data
+            ]
 
             order = env["custom.order"].create({
-                "partner_id": partner_id,
+                "partner_id": int(partner_id),
                 "order_line_ids": order_lines,
             })
 
@@ -573,7 +586,7 @@ class CustomOrderApiController(http.Controller):
             }
             resp_str = json.dumps(response_payload)
 
-            # Store Idempotency Entry atomically
+            # Store Idempotency Entry atomically in the same transaction
             request.env["custom.api.idempotency"].sudo().create({
                 "key": idempotency_key,
                 "payload_hash": payload_hash,
@@ -585,8 +598,59 @@ class CustomOrderApiController(http.Controller):
 
         except Exception as exc:
             _logger.exception("Failed to process order creation via API")
-            return self._json_error(500, "Internal Server Error", str(exc))
+            return self._json_error(500, "Internal Server Error", "Order creation failed.")
 ```
+
+---
+
+### 4.5 OWL 2 Client Action Component (`static/src/components/order_kpi_dashboard.js`)
+
+Odoo 18/19's web client is 100% **OWL 2**. Register components in `registry.category("actions")` and declare them in `__manifest__.py` under `assets["web.assets_backend"]`:
+
+```javascript
+/** @odoo-module **/
+import { Component, useState, onWillStart } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
+
+export class OrderKpiDashboard extends Component {
+    static template = "custom_module.OrderKpiDashboard";
+
+    setup() {
+        this.orm = useService("orm");
+        this.action = useService("action");
+        this.state = useState({ loading: true, groups: [] });
+
+        onWillStart(async () => {
+            // Odoo 18/19 prefers formatted_read_group / _read_group over legacy read_group
+            this.state.groups = await this.orm.readGroup(
+                "custom.order",
+                [["state", "!=", "cancelled"]],
+                ["amount_total:sum"],
+                ["state"]
+            );
+            this.state.loading = false;
+        });
+    }
+
+    openStateOrders(stateKey) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: `Orders (${stateKey})`,
+            res_model: "custom.order",
+            views: [[false, "list"], [false, "form"]],
+            domain: [["state", "=", stateKey]],
+        });
+    }
+}
+
+registry.category("actions").add("custom_module.order_kpi_dashboard", OrderKpiDashboard);
+```
+
+### 4.6 Safe Aggregations (`_read_group`), `odoo.tools.SQL` & Automated `TransactionCase` Tests
+- **Grouped Analytics**: In Python, prefer `self.env["custom.order"]._read_group(domain, groupby=["state"], aggregates=["amount_total:sum", "__count"])` over legacy `read_group()`.
+- **Safe Raw SQL Composition**: When bulk analytics genuinely require SQL, compose queries with `from odoo.tools import SQL` (`SQL("SELECT id FROM %s WHERE state = %s", SQL.identifier(self._table), state)`) so identifiers and values are structurally immune to SQL injection.
+- **Automated Testing**: Write `odoo.tests.TransactionCase` tests tagged `@tagged("post_install", "-at_install")` verifying multi-company `AccessError` isolation (`with_user(user_company_b)`), state machine guards, and `@api.ondelete` rejection.
 
 ---
 

@@ -1,10 +1,10 @@
 # 🚀 Frappe Framework & ERPNext Engineering Guide (`frameworks/erp/erpnext.md`)
 
-> **Classification**: Enterprise ERP Architecture, Metadata-Driven DocTypes, Business Process Engineering  
+> **Classification**: Enterprise ERP Architecture, Metadata-Driven DocTypes, Query Builder & Doppio SPA Engineering  
 > **Target Systems**: Frappe Framework v15.0+ & v16.0+, ERPNext v15.0+ & v16.0+  
-> **Prerequisites**: Python 3.10+, MariaDB 10.6+ / PostgreSQL 14+, JavaScript, Redis, Docker / Bench CLI  
-> **Governing Rules**: **R-001** (Zero TODOs), **R-033** (Strict Typing), **R-061** (SQL Parameterization), **R-063** (DocType Role Permissions), **R-184** (Idempotency)  
-> **Last Updated**: 2026-11-17  
+> **Prerequisites**: Python 3.11+, MariaDB 10.6+ / PostgreSQL 15+, JavaScript/TypeScript, Redis, Docker / Bench CLI  
+> **Governing Rules**: **R-001** (Zero TODOs), **R-033** (Strict Typing), **R-061** (SQL Parameterization), **R-063** (DocType Role Permissions), **R-184** (Idempotency), **R-255** (Frappe Query Builder & Permission Discipline)  
+> **Last Updated**: 2026-11-19  
 
 ---
 
@@ -12,11 +12,11 @@
 
 | Attribute | Specification |
 |---|---|
-| **Framework Version** | Frappe Framework v15 LTS / v16 LTS, ERPNext v15 / v16 |
-| **Runtime Environment** | Python 3.10 / 3.11 / 3.12, Node.js 18 / 20, MariaDB 10.6+ / PostgreSQL 14+ |
-| **Frontend Framework** | Frappe Desk UI (Component-based SPA, jQuery, Vue, Tailwind CSS) |
-| **Caching & Message Broker** | Redis (Cache on port 11000, Queue on port 12000, SocketIO on port 13000) |
-| **Key Invariant Rules** | **R-061** (Always parameterize `frappe.db.sql(query, values, as_dict=True)`), **R-063** (Strict Role Permissions & User Permissions), **R-184** (Idempotent background jobs and API webhooks) |
+| **Framework Version** | Frappe Framework v15 LTS / v16, ERPNext v15 / v16 |
+| **Runtime Environment** | Python 3.11 / 3.12, Node.js 20 / 22, MariaDB 10.6+ / PostgreSQL 15+ |
+| **Frontend Framework** | Frappe Desk UI + **Doppio** (Vite React/Vue + TypeScript + Tailwind + `frappe-react-sdk`) |
+| **Caching & Message Broker** | Redis (Cache, RQ Background Queue, SocketIO Pub/Sub) |
+| **Key Invariant Rules** | **R-061** (`frappe.qb` PyPika Query Builder over raw SQL), **R-063** (`frappe.get_list` + explicit `has_permission`), **R-255** (POST-only mutations, Frappe Recorder N+1 checks, idempotent `patches.txt`) |
 
 ---
 
@@ -491,12 +491,47 @@ fixtures = [
 
 ---
 
+### 4.5 Type-Safe, Database-Portable Queries with `frappe.qb` (PyPika)
+
+Prefer `frappe.qb` over raw `frappe.db.sql` for all reporting and relational joins: it is structurally immune to SQL injection and compiles cleanly across both MariaDB and PostgreSQL:
+
+```python
+import frappe
+from frappe.query_builder import DocType
+from frappe.query_builder.functions import Sum
+
+def get_warehouse_stock_valuation(company: str) -> list[dict]:
+    Bin = DocType("Bin")
+    Warehouse = DocType("Warehouse")
+
+    query = (
+        frappe.qb.from_(Bin)
+        .inner_join(Warehouse)
+        .on(Bin.warehouse == Warehouse.name)
+        .select(
+            Warehouse.name.as_("warehouse"),
+            Sum(Bin.stock_value).as_("total_value"),
+        )
+        .where((Warehouse.company == company) & (Warehouse.is_group == 0))
+        .groupby(Warehouse.name)
+    )
+    return query.run(as_dict=True)
+```
+
+### 4.6 Modern Custom SPAs with Doppio & `patches.txt` Discipline
+- **Doppio SPA**: Scaffold rich customer/operator portals inside your Frappe app via `bench add-spa --app custom_erp_app --tailwindcss --typescript`, pairing Vite proxy (`proxyOptions.js`) with `frappe-react-sdk` (SWR cache + SocketIO + cookie auth).
+- **Frappe v16 Hardening**: Mark all state-mutating `@frappe.whitelist(methods=["POST"])` routes explicitly; profile heavy endpoints with **Frappe Recorder** (`/app/recorder`) to catch N+1 queries before merge.
+- **Idempotent Data Migrations (`patches.txt`)**: Register schema/data backfills under `[pre_model_sync]` or `[post_model_sync]` in `patches.txt` and ensure every patch is safe to re-run without duplicating entries.
+
+---
+
 ## 5. Security & Performance Considerations
 
-### 5.1 Strict SQL Parameterization
-Never use Python f-strings or string formatting in `frappe.db.sql()`. Bypassing parameterization introduces severe SQL Injection flaws:
+### 5.1 Query Builder First & Strict SQL Parameterization
+Never use Python f-strings or string formatting in `frappe.db.sql()`. Prefer `frappe.qb` (PyPika); if raw SQL is unavoidable for engine-specific DDL/analytics, parameterize strictly:
 - **Forbidden**: `frappe.db.sql(f"SELECT * FROM tabItem WHERE item_code = '{item}'")`
-- **Mandatory**: `frappe.db.sql("SELECT name, item_name, standard_rate FROM `tabItem` WHERE item_code = %s", (item,), as_dict=True)`
+- **Preferred**: `frappe.qb.from_(Item).select(Item.name, Item.standard_rate).where(Item.item_code == item).run(as_dict=True)`
+- **Parameterized Fallback**: `frappe.db.sql("SELECT name, item_name, standard_rate FROM `tabItem` WHERE item_code = %s", (item,), as_dict=True)`
 
 ### 5.2 Permission Leaks with `frappe.get_all` vs `frappe.get_list`
 - `frappe.get_all`: Retrieves records **bypassing** user role permissions. Use only in internal background workers or trusted system tasks.

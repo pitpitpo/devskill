@@ -13,11 +13,11 @@ compatibility: >-
   and agentskills.io-compliant harnesses. Optional helper scripts require Python 3.10+,
   Git 2.40+, Bash, and GitHub CLI (gh) for PR watching.
 metadata:
-  version: "2.0.0"
+  version: "2.2.0"
   category: "software-engineering"
   author: "DevSkill Core Architecture Team"
   updated: "2026-11-19"
-  standards: "OWASP-2025,OWASP-ASI-2026,NIST-800-63B-4,NIST-PQC-FIPS-203-205,WCAG-2.2-AA,RFC-9457,MCP-2026,A2A"
+  standards: "OWASP-2025,OWASP-ASI-2026,NIST-800-63B-4,NIST-PQC-FIPS-203-205,WCAG-2.2-AA,RFC-9457,MCP-2026,A2A,SE-CANON,UNIFIED-STACKS,FRONTEND-UNIVERSAL"
 ---
 
 # DevSkill: Autonomous Industry-Grade Engineering Library
@@ -34,11 +34,11 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 [Agent Activated]
        │
        ▼
-1. Classify Task Archetype via ROUTING.md (23 archetypes) or query index.json
+1. Classify Task Archetype via ROUTING.md (28 archetypes) or query index.json
        │
        ▼
 2. Load & Enforce Core Constraints:
-   ├── RULES.md       (Non-negotiable engineering law: R-001 through R-235)
+   ├── RULES.md       (Non-negotiable engineering law: R-001 through R-260)
    ├── security.md    (OWASP Top 10:2025, OWASP Agentic ASI01–ASI10, NIST 800-63B-4, PQC)
    └── AGENTS.md / agents.md (Execution safety, Always/Ask/Never boundaries, 3-strike triage)
        │
@@ -75,16 +75,18 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 |---|---|---|
 | **Universal Agent Entrypoint** | [`AGENTS.md`](AGENTS.md) | Concise cross-tool `AGENTS.md` open standard (AAIF) |
 | **Claude Code Harness Config** | [`CLAUDE.md`](CLAUDE.md) | Claude Code Plan Mode, permissions, and `settings.json` Exit-Code-2 hooks |
-| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 23-archetype routing matrix prescribing exact reading lists and test commands |
-| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, ERP, kernel, and agents (R-001–R-235) |
+| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 28-archetype routing matrix prescribing exact reading lists and test commands |
+| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, ERP, kernel, and agents (R-001–R-260) |
+| **Universal Frontend Master** | [`FRONTEND.md`](FRONTEND.md) | Framework-agnostic frontend constitution (framework matrix, OKLCH design tokens, modern CSS, CWV, WCAG 2.2 AA, CSP) |
 | **Security Standards** | [`security.md`](security.md) | OWASP Top 10:2025, Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC |
-| **Agent Protocols** | [`agents.md`](agents.md) & [`agents/`](agents/) | Multi-agent DAGs, MCP/A2A, dynamic model discovery, Ralph loop, Sol loop, TLA+, PR delivery |
+| **Unified Agent Stacks** | [`agents/unified-agent-stacks.md`](agents/unified-agent-stacks.md) & [`agents/`](agents/) | Synthesizes `pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`, `spec-kit`, `Beads`/`Gas Town`, MCP/A2A, councils, TLA+ |
+| **SE Foundations Canon** | [`sections/architecture-foundations/`](sections/architecture-foundations/) | Distilled laws from Ousterhout, Kleppmann, Nygard, Beck, Feathers, Fowler, Evans/Vernon, Petrov, Google SRE, DORA, Team Topologies |
 | **Decision Trees** | [`decisions.md`](decisions.md) | Trade-off matrices for databases, architecture, APIs, state, queues, and MCP/A2A |
 | **Fast Semantic Index** | [`index.json`](index.json) | Machine-readable catalog with tags, archetypes, line counts, and rule summaries |
 | **Repository Specification** | [`specs.md`](specs.md) | System taxonomy, document anatomy, and governance rules |
 | **Definition of Done** | [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) | 100-point Dual-Threshold Ship Gate rubric |
-| **Frameworks** | [`frameworks/`](frameworks/) | Next.js 16, React 19.2, FastAPI, NestJS, Django, Spring Boot, Go/Rust, .NET, Odoo, ERPNext, AOSP, Flutter |
-| **Sections** | [`sections/`](sections/) | Backend, Frontend, Database (PG 18), DevOps, QA, AI/ML, ERP/Ledger, Systems/Kernel |
+| **Frameworks** | [`frameworks/`](frameworks/) | React 19.2, Next.js 16, Vue 3.5/Nuxt 4, Svelte 5/SvelteKit 2, Angular 19/20, Astro 5, SolidJS, Tailwind v4, FastAPI, NestJS, Django, Spring Boot, Go/Rust, .NET, Odoo 18/19, ERPNext v15/v16, Flutter 3.35+, RN/Expo SDK 54, Android Kotlin/Compose, iOS SwiftUI, AOSP |
+| **Sections** | [`sections/`](sections/) | Architecture Foundations, Design Systems & UI Craft, Backend, Frontend, Database (PG 18), DevOps/kstack, QA, AI/ML, ERP/Ledger, Systems/Kernel |
 | **Languages** | [`languages/`](languages/) | TypeScript 6/7 (`tsgo`), Python 3.14, Go 1.25+, Rust 2024, Java 21+, C23/C++23, SQL |
 | **Workflows** | [`workflows/`](workflows/) | 8-phase lifecycle, PR babysitting, modernization/takeover, Git, SemVer, Incidents, Anti-Slop |
 | **Pipelines** | [`pipelines/`](pipelines/) | GitHub Actions, GitLab CI, SAST/DAST/SCA, and progressive deployments |

@@ -1,28 +1,35 @@
-# 💚 Vue 3 & Nuxt 3 Production Guide (`vue-nuxt.md`)
+# 💚 Vue 3.5+ & Nuxt 4 Production Guide (`vue-nuxt.md`)
 
-> **Framework**: Vue 3.4+ / Nuxt 3.13+
-> **Classification**: Full-Stack Frontend Framework with Hybrid Rendering
-> **Core Philosophy**: "Reactivity is Transparent; Conventions Over Configuration; Ship Less JavaScript."
+> **Framework**: Vue 3.5+ (Reactive Props Destructure, Vapor Mode) / Nuxt 4+ (Nitro, Vite)  
+> **Classification**: Full-Stack Frontend Framework with Hybrid Rendering  
+> **Core Philosophy**: "Reactivity is Transparent; Conventions Over Configuration; Ship Less JavaScript."  
+> **Last Updated**: 2026-11-19
 
 ---
 
 ## 1. Overview & When to Use
 
-Vue 3 with Nuxt 3 is a batteries-included full-stack framework built on top of Vue's Composition API, Nitro server engine, and Vite. Use Vue + Nuxt when:
+Vue 3.5 with Nuxt 4 is a batteries-included full-stack framework built on top of Vue's Composition API, Nitro server engine, and Vite. Use Vue + Nuxt when:
 
-- Building full-stack web applications with hybrid rendering (SSR + SPA + SSG per-route)
-- You want file-based routing, auto-imports, and zero-config TypeScript
+- Building full-stack web applications with hybrid rendering (SSR + SPA + SSG + ISR per-route via `routeRules`)
+- You want file-based routing, auto-imports, and zero-config strict TypeScript
 - SEO matters and you need server-rendered HTML with hydration
-- Your team values explicit reactivity (`ref`, `computed`) over implicit magic
+- Your team values explicit reactivity (`ref`, `computed`, `defineModel`) over implicit magic
 - You need a server layer (API routes, middleware) without a separate backend
 
 **Do NOT use Vue + Nuxt** when:
 
-- Building a tiny widget or micro-frontend where the ~50KB runtime is unjustified — use vanilla JS or Svelte
-- You need React Native or a mature cross-platform mobile story — Vue's mobile ecosystem (Capacitor/Ionic) is less mature
+- Building a tiny widget or micro-frontend where the runtime is unjustified — use vanilla JS, Astro, or Svelte
+- You need a native cross-platform mobile runtime — prefer Flutter or React Native/Expo
 - Your project is entirely static with zero interactivity — use Astro or plain HTML/CSS
 - Your team is deeply invested in React's ecosystem and switching cost exceeds benefit
-- You need bleeding-edge streaming SSR with React Server Components–level granularity — Nuxt's model is different
+
+### Vue 3.5+ & Nuxt 4 Standards (2025–2026)
+- **Reactive Props Destructure (Stable in Vue 3.5)**: Destructure `defineProps` directly with native defaults (`const { count = 0 } = defineProps<{ count?: number }>()`) — the compiler preserves reactivity automatically (replaces `withDefaults`).
+- **Modern Vue 3.5 Primitives**: Use `useTemplateRef('inputEl')` for typed DOM refs, `defineModel()` for clean two-way `v-model` bindings, `useId()` for SSR-safe accessible form IDs, and `onWatcherCleanup()` to cancel in-flight fetches inside `watch`/`watchEffect`.
+- **Nuxt 4 `app/` Directory Convention**: Place client code (`pages/`, `components/`, `composables/`, `layouts/`, `app.vue`) inside `app/`, isolating it cleanly from `server/` and `shared/` for faster TypeScript project references and IDE performance.
+- **Nuxt 4 `useAsyncData` / `useFetch` Deduplication**: Shared keys automatically share reactive data/error refs across components and shallow-ref by default for lower memory overhead. Always pass explicit keys and clean up stale payloads.
+- **Vapor Mode (Opt-In Compilation)**: Structure performance-critical leaf components with `<script setup>` so they are ready for Vue's VDOM-less Vapor compilation mode.
 
 ---
 

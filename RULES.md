@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-19 (Rules R-001 through R-235 Active)
+> **Last Updated**: 2026-11-19 (Rules R-001 through R-260 Active)
 
 ---
 
@@ -27,7 +27,9 @@
 16. [Enterprise ERP, Accounting Ledger & Supply Chain Invariants (R-220 to R-223)](#16-enterprise-erp-accounting-ledger--supply-chain-invariants)
 17. [Systems Programming, Linux Kernel & AOSP Invariants (R-224 to R-227)](#17-systems-programming-linux-kernel--aosp-invariants)
 18. [Agentic AI Security, MCP/A2A, NIST 800-63B-4 & Post-Quantum Crypto-Agility (R-228 to R-235)](#18-agentic-ai-security-mcpa2a-nist-800-63b-4--post-quantum-crypto-agility)
-19. [Automated CI Gate Scan Patterns](#19-automated-ci-gate-scan-patterns)
+19. [Canonical Software Engineering Laws & Unified Agent Stack Invariants (R-236 to R-250)](#19-canonical-software-engineering-laws--unified-agent-stack-invariants)
+20. [Universal Frontend Craft & Framework-Specific Invariants (R-251 to R-260)](#20-universal-frontend-craft--framework-specific-invariants)
+21. [Automated CI Gate Scan Patterns](#21-automated-ci-gate-scan-patterns)
 
 ---
 
@@ -356,7 +358,42 @@
 
 ---
 
-## 19. Automated CI Gate Scan Patterns
+## 19. Canonical Software Engineering Laws & Unified Agent Stack Invariants
+
+- **R-236 [Deep Modules Over Shallow Wrappers]**: Modules and services MUST expose narrow, expressive public interfaces that hide substantial internal complexity rather than proliferations of shallow pass-through wrappers or leaky abstractions (Ousterhout, *A Philosophy of Software Design*; see [`sections/architecture-foundations/software-design-craft.md`](sections/architecture-foundations/software-design-craft.md)).
+- **R-237 [Separate Structural Tidying from Behavioral Changes]**: Preparatory structural refactorings (renaming, extracting helpers, reorganizing cohesion) MUST be committed separately from behavioral bug fixes or feature logic so every commit remains trivially reviewable and reversible (Kent Beck, *Tidy First?*).
+- **R-238 [Define Harmless Edge Cases Out of Existence]**: Where domain semantics allow, APIs SHOULD make benign edge cases harmless and well-defined (e.g., idempotent deletes, safe empty-collection handling) to reduce caller branching, while still failing fast on invalid security, authz, or financial invariants (Ousterhout).
+- **R-239 [Characterization Tests Before Legacy Refactors]**: Before modifying untested legacy code, engineers MUST establish seams and write passing characterization tests pinning current runtime behavior before introducing behavioral changes (Michael Feathers, *Working Effectively with Legacy Code*).
+- **R-240 [Test Public Behavior Over Implementation Details]**: Automated tests MUST assert observable public outputs and state transitions rather than brittle private method call orders or internal mocks ("change-detector tests") (*Software Engineering at Google*).
+- **R-241 [Transactional Outbox & Zero Dual-Writes]**: Services MUST NOT perform uncoordinated dual-writes across a database and an external message broker. Persist domain state and outbox events inside the same ACID transaction and relay asynchronously via CDC or an idempotent outbox worker (Kleppmann, *DDIA*; see [`sections/architecture-foundations/distributed-systems-reliability.md`](sections/architecture-foundations/distributed-systems-reliability.md)).
+- **R-242 [Bulkhead Isolation, Load Shedding & Retry Budgets]**: Critical service paths MUST isolate connection/worker pools via bulkheads, bound in-memory queues with explicit load shedding (`429`/`503`), and cap client retry traffic via retry budgets to prevent cascading outages (Nygard, *Release It!*).
+- **R-243 [SLI/SLO Error Budgets & Burn-Rate Alerting]**: Tier-1 production services MUST define measurable SLIs, SLO targets, error-budget release policies, and multi-window burn-rate alerts rather than relying solely on raw host CPU/memory thresholds (Google *SRE*).
+- **R-244 [Automated Architectural Fitness Functions]**: Critical architectural constraints (layer boundaries, acyclic imports, API backward compatibility, migration lock safety, bundle budgets) SHOULD be codified as executable CI fitness functions that fail builds on architectural drift (Ford, Parsons & Kua, *Building Evolutionary Architectures*; see [`sections/architecture-foundations/evolutionary-delivery-architecture.md`](sections/architecture-foundations/evolutionary-delivery-architecture.md)).
+- **R-245 [Chesterton's Fence Git Archaeology Before Deletion]**: Before deleting or rewriting existing guards, retries, locks, or compatibility shims, engineers and agents MUST run read-only archaeology (`git log -S`, `git blame -w -C -C`) to understand the original failure mode and verify whether it still applies (`pstack /why`, [`agents/code-forensics-interrogation.md`](agents/code-forensics-interrogation.md)).
+- **R-246 [Failed-Theory Diff Cleanup]**: When debugging or exploring multiple hypotheses, agents MUST inspect `git diff` hunk-by-hunk and strip 100% of speculative edits, fallback flags, and debug logs left behind by failed theories before committing (`pstack`).
+- **R-247 [Git Worktree Isolation for Parallel & Speculative Work]**: Parallel subagent tracks, multi-approach prototypes (`/arena`, `/swarm`), and high-risk refactors MUST execute in isolated Git worktrees rather than mutating a shared working tree (`superpowers` / `Gas Town`, [`agents/unified-agent-stacks.md`](agents/unified-agent-stacks.md)).
+- **R-248 [Two-Stage Subagent Review: Spec Compliance Before Code Quality]**: Autonomous reviews MUST evaluate Spec Compliance FIRST (verifying everything requested was built and nothing unrequested was added) and Code Quality/Security SECOND—never polishing an implementation that missed the spec (`superpowers`).
+- **R-249 [Explicit Scope Mode & Problem-First PR Narrative]**: Non-trivial initiatives MUST declare an explicit scope mode (`Expansion`, `Selective`, `Hold`, or `Reduction`) before coding (`gstack`), and pull requests MUST lead with the concrete problem, root cause, and CLI proof—never an auto-generated file inventory (`tstack file-pr`); use `full-stop` whenever a human owns the final merge click.
+- **R-250 [Institutional Memory Compounding After Non-Trivial Fixes]**: After resolving a non-trivial bug, subtle library trap, or architectural trade-off, engineers and agents MUST compound the lesson into a durable repository artifact (`MISTAKES.md`, ADR in `decisions.md`, or an automated lint/CI check) so future sessions cannot repeat the failure (`compound-engineering`).
+
+---
+
+## 20. Universal Frontend Craft & Framework-Specific Invariants
+
+- **R-251 [Semantic Design Tokens & Zero-Slop UI Craft]**: Production UIs MUST derive colors, spacing, typography, and z-index layers from semantic CSS tokens (preferring OKLCH), implement all 6 interactive states (`default`, `hover`, `focus-visible`, `active`, `disabled`, `loading/error`), apply `tabular-nums` to numeric columns, and honor `prefers-reduced-motion` (see [`FRONTEND.md`](FRONTEND.md) & [`sections/frontend/design-systems-ui-craft.md`](sections/frontend/design-systems-ui-craft.md)).
+- **R-252 [Web Platform First & Zero-JS Default]**: Prefer semantic HTML and baseline web platform APIs (`<dialog>`, Popover API, CSS `@layer`, `@container`, `:has()`, View Transitions, logical RTL properties) over heavy JavaScript libraries; on content-driven routes (Astro 5), ship 0 KB JS by default and hydrate only isolated islands.
+- **R-253 [Framework-Native Reactivity & SSR Request Isolation]**: Derive computed values with native primitives (`computed`, `$derived`, `createMemo`, React Compiler purity) rather than effect-syncing; NEVER store per-request user or session state in module-scoped singletons on SSR servers (`SvelteKit`, `Next.js`, `Nuxt`, `SolidStart`, `Angular SSR`).
+- **R-254 [Odoo 18/19 View, ORM & Security Discipline]**: Odoo 18/19 modules MUST use `<list>` (never deprecated `<tree>`), `<chatter/>`, inline XML expressions (never `attrs`), `Command.*` ORM operations, `_compute_display_name()`, `@api.ondelete(at_uninstall=False)`, `res.users.apikeys._check_credentials()`, `odoo.tools.SQL`, and `_check_company_auto = True` with multi-company `ir.rule` isolation (see [`frameworks/erp/odoo.md`](frameworks/erp/odoo.md)).
+- **R-255 [Frappe / ERPNext Query Builder & Permission Discipline]**: Frappe/ERPNext v15/v16 apps MUST prefer `frappe.qb` (PyPika) over raw `frappe.db.sql`, enforce explicit `frappe.has_permission()` / `frappe.get_list` on user-facing `@frappe.whitelist(methods=["POST"])` endpoints, and preserve `docstatus` submission/cancellation lifecycle invariants (see [`frameworks/erp/erpnext.md`](frameworks/erp/erpnext.md)).
+- **R-256 [Flutter Impeller, Riverpod 3 & Isolate Hygiene]**: Production Flutter 3.29–3.35+ apps MUST preserve Impeller defaults, use `const` constructors, guard async Riverpod 3 updates with `Ref.mounted` and `AsyncValue.guard` (using `.copyWithPrevious()` to avoid flashes), offload heavy CPU tasks to `Isolate.run()`, prefer `pigeon` for native interop, and store secrets exclusively in `flutter_secure_storage` (see [`frameworks/mobile/flutter.md`](frameworks/mobile/flutter.md)).
+- **R-257 [React Native New Architecture & UI-Thread Hygiene]**: React Native 0.79–0.81+ / Expo SDK 53–54+ apps MUST target the New Architecture (Fabric, TurboModules, Hermes), pass `npx expo-doctor`, run animations on the UI thread via Reanimated worklets, virtualize long lists with `@shopify/flash-list`, and store credentials/encryption keys exclusively in `expo-secure-store` (see [`frameworks/mobile/react-native-expo.md`](frameworks/mobile/react-native-expo.md)).
+- **R-258 [Native Mobile Lifecycle & Concurrency Safety]**: Native iOS apps MUST compile cleanly under Swift 6 strict concurrency (`@MainActor`, `Sendable`, `@Observable`, `.task` cancellation, Keychain storage); native Android apps MUST collect `StateFlow` via `collectAsStateWithLifecycle()`, scope coroutines to `viewModelScope` (never `GlobalScope`), and use stable keys in `LazyColumn` (see [`frameworks/mobile/ios-swiftui.md`](frameworks/mobile/ios-swiftui.md) & [`frameworks/mobile/android-kotlin-compose.md`](frameworks/mobile/android-kotlin-compose.md)).
+- **R-259 [Tailwind CSS v4 CSS-First Tokenization]**: Tailwind CSS v4 projects MUST configure tokens in CSS via `@import "tailwindcss";` and `@theme`, merge dynamic overrides through `cn()` (`tailwind-merge` v3 + `clsx`) with `cva` variants, and NEVER interpolate dynamic utility class strings (`bg-${color}-500`) (see [`frameworks/frontend/tailwindcss.md`](frameworks/frontend/tailwindcss.md)).
+- **R-260 [Frontend Browser Security Hardening]**: Web frontends MUST enforce nonce-based CSP (`script-src 'strict-dynamic'`), sanitize any rendered HTML with DOMPurify/Trusted Types, store session credentials in `HttpOnly; Secure; SameSite` cookies (never `localStorage`), and re-validate every form constraint authoritatively on the server.
+
+---
+
+## 21. Automated CI Gate Scan Patterns
 
 Execute the bundled script [`scripts/ci-gate.sh`](scripts/ci-gate.sh) (supports `--staged` for pre-commit hooks) or embed the equivalent checks in your CI pipeline to enforce non-negotiable coding hygiene rules at commit and merge time.
 

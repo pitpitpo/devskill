@@ -87,17 +87,27 @@ function processLargeDataset(items: DataItem[]) {
   }
 }
 
-// Remediated Standard: Cooperative scheduling with scheduler.yield()
-async function processLargeDatasetResponsive(items: DataItem[]) {
+// Remediated Standard: Cooperative scheduling with scheduler.yield() (strictly typed)
+interface SchedulerWithYield {
+  yield?: () => Promise<void>;
+}
+
+async function yieldToMain(): Promise<void> {
+  const sched = (globalThis as { scheduler?: SchedulerWithYield }).scheduler;
+  if (typeof sched?.yield === 'function') {
+    await sched.yield();
+    return;
+  }
+  await new Promise<void>((resolve) => setTimeout(resolve, 0));
+}
+
+async function processLargeDatasetResponsive(items: DataItem[]): Promise<void> {
   for (let i = 0; i < items.length; i++) {
     expensiveComputation(items[i]);
-    
-    // Every 50 items or when execution exceeds budget, yield to browser
-    if (i % 50 === 0 && 'scheduler' in window && 'yield' in (window as any).scheduler) {
-      await (window as any).scheduler.yield();
-    } else if (i % 50 === 0) {
-      // Fallback for older browsers
-      await new Promise(resolve => setTimeout(resolve, 0));
+
+    // Every 50 items or when execution exceeds frame budget, yield to browser
+    if (i % 50 === 0) {
+      await yieldToMain();
     }
   }
 }
@@ -169,33 +179,32 @@ Integrate **Lighthouse CI (LHCI)** into GitHub Actions to fail PRs that regress 
 
 ---
 
-
----
-
-## 5. Security & Performance Considerations
+## 6. Security & Performance Considerations
 
 | Area | Risk / Focus | Standard Guideline |
 | :--- | :--- | :--- |
-| **Third-Party Script Bloat** | Tag Manager / Analytics | Load non-critical analytics with `next/script` `strategy="lazyOnload"` |
+| **Third-Party Script Bloat** | Tag Manager / Analytics | Load non-critical analytics with `async`/`defer` or `next/script` `strategy="lazyOnload"` |
 | **Font Blocking** | Render Delay | Preload subsetted web fonts (`woff2`) with `font-display: swap` |
 | **CSP Restrictions** | Script Injection | Enforce strict Content Security Policy with nonces; ban `unsafe-inline` |
 
 ---
 
-## 6. Common Pitfalls & Anti-Patterns
+## 7. Common Pitfalls & Anti-Patterns
 
 | Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
 | :--- | :--- | :--- | :--- |
 | **Unsized Media Elements** | Missing `width`/`height` on `<img>` | Massive layout shifts (CLS > 0.25) when image loads | Always declare explicit dimensions or CSS `aspect-ratio` |
-| **Monolithic JS Bundles** | Importing heavy libraries at root | High TBT and INP; users on mobile devices experience unresponsive UI | Use dynamic imports (`next/dynamic`) to lazy load heavy components |
+| **Monolithic JS Bundles** | Importing heavy libraries at root | High TBT and INP; users on mobile devices experience unresponsive UI | Use dynamic `import()` / route code-splitting to lazy load heavy components |
 | **Lazy Loading Hero Image** | Setting `loading="lazy"` on above-the-fold hero | Severely regresses LCP score (> 3.5s) | Set `fetchpriority="high"` and `loading="eager"` on hero image |
 
-## 6. Verification Checklist & Production Audit
+---
+
+## 8. Verification Checklist & Production Audit
 
 - [ ] LCP target ($\le 2.5\text{s}$) verified on simulated mobile 4G network via Chrome DevTools.
 - [ ] Hero visual has `fetchpriority="high"` and is not lazy loaded.
 - [ ] All images specify explicit `width`/`height` or CSS `aspect-ratio`.
 - [ ] Font subsets are self-hosted with `font-display: swap` and preloaded.
 - [ ] Long tasks (> 50ms) yield periodically to the main thread via `scheduler.yield()`.
-- [ ] Vendor bundles are audited with `@next/bundle-analyzer` or `source-map-explorer`.
+- [ ] Vendor bundles are audited with `@next/bundle-analyzer`, `rollup-plugin-visualizer`, or `source-map-explorer`.
 - [ ] Static assets are delivered with `immutable` caching headers and Brotli compression.

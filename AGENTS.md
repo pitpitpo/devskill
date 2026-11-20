@@ -10,10 +10,10 @@
 
 Load ONLY the files needed for your task archetype — do not dump the entire repository into context:
 
-1. **Classify the task** using [ROUTING.md](ROUTING.md) (23 task archetypes → exact 3–5 file reading list + required verification commands).
-2. **Enforce non-negotiable invariants** from [RULES.md](RULES.md) (R-001 through R-235) and [security.md](security.md) (OWASP Top 10:2025, OWASP Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC).
+1. **Classify the task** using [ROUTING.md](ROUTING.md) (28 task archetypes → exact 3–5 file reading list + required verification commands).
+2. **Enforce non-negotiable invariants** from [RULES.md](RULES.md) (R-001 through R-260) and [security.md](security.md) (OWASP Top 10:2025, OWASP Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC).
 3. **Locate domain guides fast** via [index.json](index.json) (machine-readable catalog with tags, archetypes, and exact paths).
-4. **Apply execution rigor** from [agents/poteto-discipline.md](agents/poteto-discipline.md) (minimal surgical diffs, direct CLI proof) and [agents.md](agents.md) (Always/Ask/Never boundaries, 3-strike escalation).
+4. **Apply unified agent stack discipline** from [agents/unified-agent-stacks.md](agents/unified-agent-stacks.md) (`pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`), [agents/code-forensics-interrogation.md](agents/code-forensics-interrogation.md), and [agents.md](agents.md) (Always/Ask/Never boundaries, 3-strike escalation).
 
 ---
 
