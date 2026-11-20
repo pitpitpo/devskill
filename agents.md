@@ -23,18 +23,18 @@ When an agent is initialized in a repository equipped with DevSkill, it MUST con
 
 | Step | File | Purpose & Verification Scope |
 |---|---|---|
-| **1** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md), [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) & [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md) | Self-protocols, personas, boundaries, report formats, orchestrator DAG topologies, minimal diffs (`deslop`), and `prove-it-works` proof. |
-| **2** | [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) | Deterministic task routing matrix prescribing the exact reading list and verification pipeline per task archetype. |
-| **3** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) | Universal non-negotiable engineering rules (R-001 through R-200) and CI scan patterns. |
-| **4** | [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json) | Fast routing map to locate relevant guides across languages, frameworks, and sections. |
-| **5** | [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) & [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) | Architecture decision trees, multi-solution Arena scoring, and trade-off matrices. |
-| **6** | [`agents/tdd-reproduction.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/tdd-reproduction.md) *(If Bug/Defect)* | Mandatory Red-Green test reproduction protocol before modifying production source code. |
-| **7** | [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md) | Project specifications, domain entities, interfaces, schemas, and system requirements. |
-| **8** | [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md) | Threat models, OWASP Top 10 mitigation matrix, and secure coding standards. |
-| **9** | `languages/` & `frameworks/` | Specialized language guides (e.g., `typescript.md`, `python.md`) and framework playbooks (e.g., `nextjs.md`, `fastapi.md`). |
-| **10**| [`workflows/WORKFLOW.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/WORKFLOW.md) | 8-phase development lifecycle and systematic debugging protocols. |
-| **11**| [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) | The 100-point ship gate rubric required before any task can be marked complete. |
-| **12**| [`MISTAKES.md`](file:///home/agy/.t3/userdata/attachments/devskill/MISTAKES.md) | Living log of known AI failure patterns and automated guardrails. |
+| **1** | [`AGENTS.md`](AGENTS.md), [`agents.md`](agents.md), [`agents/poteto-discipline.md`](agents/poteto-discipline.md) & [`agents/orchestrator.md`](agents/orchestrator.md) | Universal AAIF entrypoint, self-protocols, personas, boundaries, orchestrator DAG topologies, minimal diffs (`deslop`), and `prove-it-works` proof. |
+| **2** | [`ROUTING.md`](ROUTING.md) | Deterministic 23-archetype task routing matrix prescribing the exact reading list and verification pipeline per task archetype. |
+| **3** | [`RULES.md`](RULES.md) | Universal non-negotiable engineering rules (R-001 through R-235) and CI scan patterns. |
+| **4** | [`index.json`](index.json) | Fast machine-readable semantic index with tags, archetypes, and line counts across all modules. |
+| **5** | [`decisions.md`](decisions.md) & [`agents/arena-evaluator.md`](agents/arena-evaluator.md) | Architecture decision trees (incl. MCP/A2A), multi-solution Arena scoring, and trade-off matrices. |
+| **6** | [`agents/tdd-reproduction.md`](agents/tdd-reproduction.md) *(If Bug/Defect)* | Mandatory Red-Green test reproduction protocol before modifying production source code. |
+| **7** | [`agents/mcp-a2a-protocols.md`](agents/mcp-a2a-protocols.md) *(If Agentic/MCP/A2A)* | Stateless Streamable HTTP MCP, OAuth 2.1 + RFC 8707 scoping, A2A Agent Cards, OWASP ASI01–ASI10. |
+| **8** | [`specs.md`](specs.md) | Project specifications, domain entities, interfaces, schemas, and system requirements. |
+| **9** | [`security.md`](security.md) | Threat models, OWASP Top 10:2025, Agentic ASI01–ASI10, NIST SP 800-63B-4, and NIST PQC baselines. |
+| **10**| `languages/` & `frameworks/` | Specialized language guides (e.g., `typescript.md`, `python.md`) and framework playbooks (e.g., `nextjs.md`, `fastapi.md`). |
+| **11**| [`workflows/WORKFLOW.md`](workflows/WORKFLOW.md) | 8-phase development lifecycle and systematic debugging protocols. |
+| **12**| [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) & [`MISTAKES.md`](MISTAKES.md) | 100-point Dual-Threshold Ship Gate rubric and living AI failure catalog. |
 
 ---
 
@@ -45,19 +45,18 @@ When an agent is initialized in a repository equipped with DevSkill, it MUST con
 | Attribute | Project Configuration | Verification Source / Command |
 |---|---|---|
 | **Project Name** | *[Enter project name]* | `cat package.json \| grep name` / `pyproject.toml` |
-| **Repository Path** | `/home/agy/.t3/userdata/attachments/devskill` | `pwd` |
-| **Primary Language(s)** | TypeScript 5.6+ (ESM) / Python 3.12+ / Go 1.23+ / Rust 1.80+ | File extensions & manifests |
-| **Runtime Environment** | Node.js v22 LTS (v20) / Python 3.12+ / 3.13 | `node -v`, `python3 --version` |
-| **Web Framework** | Next.js 15+ App Router / FastAPI / NestJS | Manifest dependencies |
-| **Database Engine** | PostgreSQL 16+ / 17+ | `docker-compose.yml` or ORM schema |
-| **ORM / Query Builder** | Prisma / Drizzle / SQLAlchemy 2.0 / SQLModel | Manifest dependencies |
-| **Cache & Queue** | Redis 7+ / BullMQ / Celery | `docker-compose.yml` or config |
-| **Auth Architecture** | JWT (RS256) / Session Cookies / Argon2id | Auth middleware files |
-| **Linter & Formatter** | ESLint / Biome / Ruff | `.eslintrc.*`, `ruff.toml` |
-| **Typecheck Command** | `npm run typecheck` or `mypy --strict .` | Package scripts or tool config |
-| **Test Runner & Command** | `npm test` or `pytest -v` | Test directories & scripts |
-| **One-Step Verify Command** | `make verify` or `npm run verify` | `Makefile` / `package.json` |
-| **Container Engine** | Docker multi-stage (distroless/alpine) | `Dockerfile` |
+| **Repository Path** | `<repo-root>` | `pwd` |
+| **Primary Language(s)** | TypeScript 6/7 (`tsgo`) / Python 3.13–3.14 / Go 1.25+ / Rust 2024 | File extensions & manifests |
+| **Runtime Environment** | Node.js v24 LTS (v22+) / Python 3.13–3.14 / Go 1.25+ | `node -v`, `python3 --version`, `go version` |
+| **Web Framework** | Next.js 16 App Router (React 19.2) / FastAPI / NestJS | Manifest dependencies |
+| **Database Engine** | PostgreSQL 18 (AIO, native `uuidv7()`) | `docker-compose.yml` or ORM schema |
+| **Cache & Queue** | Valkey / Redis 8 / BullMQ / Celery / Kafka | `docker-compose.yml` or config |
+| **Auth Architecture** | Passkeys (WebAuthn) / OAuth 2.1 (RFC 8707) / NIST SP 800-63B-4 / Argon2id | Auth middleware files |
+| **Linter & Formatter** | ESLint / Biome / Ruff | `.eslintrc.*`, `biome.json`, `ruff.toml` |
+| **Typecheck Command** | `npx tsc --noEmit` (or `tsgo --noEmit`) / `mypy --strict .` | Package scripts or tool config |
+| **Test Runner & Command** | `npm test` / `pytest -v` / `go test -race ./...` | Test directories & scripts |
+| **One-Step Verify Command** | `./scripts/ci-gate.sh` & `make verify` / `npm run verify` | `Makefile` / `package.json` |
+| **Container Engine** | Docker multi-stage (distroless/Chainguard/Alpine, digest-pinned) | `Dockerfile` |
 
 ---
 
@@ -91,7 +90,7 @@ Depending on the assigned phase or prompt, the agent must assume one of six expl
         └──────────────────────┘     └──────────────────────┘
 ```
 
-1. **Lead Orchestrator**: Maintains the overall execution DAG, partitions tasks into isolated sub-scopes, budgets context tokens via pointer handoffs, assigns Martin Kleppmann fencing tokens, manages Saga rollbacks, and reconciles desired state per [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md).
+1. **Lead Orchestrator**: Maintains the overall execution DAG, partitions tasks into isolated sub-scopes, budgets context tokens via pointer handoffs, assigns Martin Kleppmann fencing tokens, manages Saga rollbacks, and reconciles desired state per [`agents/orchestrator.md`](agents/orchestrator.md).
 2. **System Architect**: Designs system boundaries, selects architectural patterns using `decisions.md`, defines data schemas and API contracts.
 3. **Core Implementer**: Translates specifications into clean, strictly typed, production-ready code adhering to `RULES.md`.
 4. **Security Auditor**: Scans diffs for injection flaws, authentication lapses, IDOR vulnerabilities, secret leaks, and insecure dependencies.
@@ -127,7 +126,7 @@ Every engineering task performed by an agent MUST progress through the standardi
  verification evidence     & changelog entries    (must score >= 95)         typechecks to green
 ```
 
-*Detailed step-by-step procedures for each phase are defined in [`workflows/WORKFLOW.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/WORKFLOW.md).*
+*Detailed step-by-step procedures for each phase are defined in [`workflows/WORKFLOW.md`](workflows/WORKFLOW.md).*
 
 ---
 
@@ -189,8 +188,9 @@ Before declaring any task complete or delivering the final report, the agent MUS
 - [ ] **R-061 Parameterization**: All database queries parameterized; zero string concatenation.
 - [ ] **R-064 Secrets Scanned**: Pre-commit secret scan executed clean; zero credentials in diff.
 - [ ] **R-085 Test Assertions**: Tests contain meaningful, non-tautological assertions.
-- [ ] **R-086 Red-Green Verified**: Confirmed test failure before applying bugfix where applicable.
+- [ ] **R-005/R-183 Red-Green Verified**: Confirmed test failure before applying bugfix where applicable.
 - [ ] **R-142 Logging Cleanliness**: Structured JSON logging used; raw `console.log` removed.
+- [ ] **R-228/R-232 Fail-Closed & Least Agency**: Exceptional paths fail closed and agent/tool scopes are minimal.
 - [ ] **Scorecard Met**: Self-assessed score against `DEFINITION_OF_DONE.md` is ≥ 95/100, with every category ≥ 9/10 relative.
 - [ ] **Git Cleanliness**: Conventional Commits format applied; diff touches only relevant files.
 

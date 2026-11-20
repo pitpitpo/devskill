@@ -59,6 +59,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, NoReturn
 
+__version__ = "2.0.0"
+
 GATING_BOTS = ("greptile", "macroscope")
 ADVISORY_BOTS = ("coderabbit",)
 # CI and deploy bots report through checks. Their PR comments are status reports.
@@ -73,6 +75,7 @@ TRANSIENT = re.compile(
     r"temporar|could not resolve host|TLS handshake|Something went wrong",
     re.IGNORECASE,
 )
+RATE_LIMIT = re.compile(r"API rate limit exceeded|HTTP 403.*rate limit|HTTP 429", re.IGNORECASE)
 FAILED = ("fail", "cancel")
 # gh pr checks buckets, worst first. Duplicate names (push and pull_request runs
 # of one job) collapse to the worst bucket.
@@ -172,7 +175,7 @@ def verdict(body: str) -> str:
 
 
 def digest(body: str) -> str:
-    return hashlib.sha1(re.sub(r"\s+", " ", plain(body)).encode()).hexdigest()[:12]
+    return hashlib.sha256(re.sub(r"\s+", " ", plain(body)).encode()).hexdigest()[:12]
 
 
 def parse_target(raw: str | None, repo: str | None) -> tuple[str, int]:
@@ -295,14 +298,47 @@ class Watcher:
         self.save()
         sys.exit(code)
 
+    def fetch_pr_rest_fallback(self) -> Json:
+        """Fallback to REST API when GraphQL rate-limit pool is exhausted (Rule R-206)."""
+        pr_raw = json.loads(gh(["api", f"repos/{self.repo}/pulls/{self.pr}"]).stdout)
+        viewer = gh(["api", "user", "--jq", ".login"]).stdout.strip() or "unknown"
+        state_map = {"open": "OPEN", "closed": "MERGED" if pr_raw.get("merged") else "CLOSED"}
+        mergeable_state = (pr_raw.get("mergeable_state") or "unknown").upper()
+        return {
+            "url": pr_raw["html_url"],
+            "state": state_map.get(pr_raw.get("state", "open"), "OPEN"),
+            "headRefOid": pr_raw["head"]["sha"],
+            "baseRefName": pr_raw["base"]["ref"],
+            "mergeStateStatus": mergeable_state,
+            "author": {"login": (pr_raw.get("user") or {}).get("login") or "ghost"},
+            "baseRef": {"target": {"oid": pr_raw["base"]["sha"]}},
+            "comments": {"nodes": []},
+            "reviews": {"nodes": []},
+            "reviewThreads": {"nodes": []},
+            "viewer": viewer,
+        }
+
     def fetch_pr(self) -> Json:
-        proc = gh([
-            "api", "graphql", "-f", f"query={QUERY}",
-            "-f", f"owner={self.owner}", "-f", f"name={self.name}", "-F", f"number={self.pr}",
-        ])
-        data = json.loads(proc.stdout)["data"]
-        pr = data["repository"]["pullRequest"]
-        pr["viewer"] = data["viewer"]["login"]
+        try:
+            proc = gh([
+                "api", "graphql", "-f", f"query={QUERY}",
+                "-f", f"owner={self.owner}", "-f", f"name={self.name}", "-F", f"number={self.pr}",
+            ])
+        except GhError as error:
+            if RATE_LIMIT.search(str(error)):
+                log("GraphQL rate limit hit; falling back to independent REST pool (R-206)")
+                return self.fetch_pr_rest_fallback()
+            raise
+        payload = json.loads(proc.stdout)
+        if payload.get("errors"):
+            msg = "; ".join(e.get("message", "unknown GraphQL error") for e in payload["errors"])
+            raise GhError(f"GraphQL error: {msg}", transient=bool(TRANSIENT.search(msg)))
+        data = payload.get("data") or {}
+        repo_data = data.get("repository") or {}
+        pr = repo_data.get("pullRequest")
+        if pr is None:
+            raise GhError(f"PR {self.repo}#{self.pr} not found or inaccessible", transient=False)
+        pr["viewer"] = (data.get("viewer") or {}).get("login") or "unknown"
         return pr
 
     def fetch_checks(self) -> dict[str, Json]:
@@ -539,6 +575,7 @@ class Watcher:
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog="pr-wait", description="Watch a GitHub PR and print one line per real event.")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("pr", nargs="?", help="PR number or URL")
     parser.add_argument("--repo", help="owner/name (default: from the URL or the current checkout)")
     parser.add_argument("--until", choices=("green", "ready", "any-change"), default="ready")

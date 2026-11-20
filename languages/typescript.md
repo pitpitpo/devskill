@@ -1,7 +1,7 @@
 # 🟦 TypeScript Production Standard (`typescript.md`)
 
-> **Standard**: TypeScript 5.5+ (Strict Type System, ECMAScript 2024+ Target)  
-> **Tooling Stack**: NodeNext / Bundler Resolution, Zod 3.23+ & Valibot 0.36+, ts-reset, Vitest  
+> **Standard**: TypeScript 5.8–6.0 / 7.0 (`tsgo` Native Compiler, Strict Type System, ECMAScript 2024+ Target)  
+> **Tooling Stack**: NodeNext / Bundler Resolution, Zod v4 / Valibot v1, `tsgo` / `tsc`, Vitest  
 > **Classification**: Strict Compile-Time Invariance, Idiomatic Type Systems, & Enterprise Web/Node Architecture  
 > **Applicability**: Fullstack Engineers, Platform Architects, API Gateway & Core Backend Developers  
 > **Prerequisites**: Structural Typing Mechanics, Type Lattice Theory, JavaScript Event Loop & Prototype Model  
@@ -643,15 +643,28 @@ export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 ---
 
-## 7. Verification Checklist
+## 7. TypeScript 6.0 / 7.0 Native Compiler (`tsgo`) & 2026 Migration Rules
+
+TypeScript 6.0 serves as the strict alignment bridge to TypeScript 7.0 (`tsgo`, the native Go-ported compiler delivering 8–12× faster cold type-checking and multi-core project builds).
+
+- **Adopt `tsgo` in CI & Monorepos**: Run `tsgo --noEmit` (or `tsgo --build` with composite project references) for rapid feedback loops. Tune parallelism explicitly on constrained CI runners using `--checkers`, `--builders`, or `--singleThreaded` when memory ceilings are tight.
+- **Eliminate Legacy 5.x Deprecations**:
+  - Remove `moduleResolution: "node"` (Node10) in favor of `"NodeNext"` (backend/libraries) or `"Bundler"` (Vite/Next.js/Turbopack apps).
+  - Avoid relying on standalone `"baseUrl": "."`; specify relative `./` prefixes directly in `"paths"` entries or prefer package.json `"imports"` (`#internal/*`) so Node.js, bundlers, and `tsgo` agree without custom resolvers.
+  - Enable `"erasableSyntaxOnly": true` for Node.js 24 native TypeScript stripping compatibility where applicable (preferring `as const` objects over runtime `enum` and parameter properties).
+- **Explicit Strictness**: Even though TypeScript 6.0+ defaults `"strict": true`, continue declaring `"noUncheckedIndexedAccess": true` and `"exactOptionalPropertyTypes": true` explicitly in `tsconfig.base.json`.
+
+---
+
+## 8. Verification Checklist
 
 Before deploying TypeScript code to production, ensure every gate in this checklist is verified:
 
-- [ ] **Compiler Strictness**: `tsc --noEmit` runs with 0 errors under `strict: true` and `noUncheckedIndexedAccess: true`.
+- [ ] **Compiler Strictness**: `tsc --noEmit` (or `tsgo --noEmit`) runs with 0 errors under `strict: true` and `noUncheckedIndexedAccess: true`.
 - [ ] **Zero `any` Occurrences**: `eslint` rule `@typescript-eslint/no-explicit-any` is configured as `error` with no global overrides.
 - [ ] **Runtime Boundary Verification**: Every HTTP endpoint, environment variable, and message handler decodes payloads using `Zod` or `Valibot`.
 - [ ] **Exhaustive Unions**: All `switch` statements over discriminated unions contain an exhaustive `default: assertNever(val)` branch.
 - [ ] **Explicit Domain Branding**: IDs and financial values use nominal brands (`Brand<string, "Id">`) to prevent primitive obsession.
 - [ ] **Functional Error Handling**: Critical domain workflows return `Result<T, E>` rather than throwing untyped runtime exceptions.
 - [ ] **Prototype Pollution Guard**: Dynamic object merges are validated against strict schemas or run on `Object.create(null)` maps.
-- [ ] **Build Time Verification**: `tsc --build` completes within the established CI timeout without unbounded memory growth.
+- [ ] **Build Time Verification**: `tsc --build` / `tsgo --build` completes within the established CI timeout without unbounded memory growth.

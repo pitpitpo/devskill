@@ -21,6 +21,7 @@
 - [Observability](#observability)
 - [Common Mistakes](#common-mistakes)
 - [Decision Matrix](#decision-matrix)
+- [2026 Production Standards: MCP, A2A, OWASP Agentic & OTel GenAI](#2026-production-standards-mcp-a2a-owasp-agentic--otel-genai)
 
 ---
 
@@ -1146,31 +1147,46 @@ interface LLMLogEntry {
 
 ---
 
+## 2026 Production Standards: MCP, A2A, OWASP Agentic & OTel GenAI
+
+Modern production AI features have moved beyond single-turn chat completions to **tool-calling agents, standardized protocol boundaries, and observable telemetry**:
+
+1. **Capability-Tiered Model Routing (No Hardcoded Legacy Model IDs)**:
+   - Never scatter hardcoded provider model strings across business code. Route via a configuration-driven capability tier (`fast-classifier`, `balanced-synthesis`, `deep-reasoning`, `multimodal`) backed by provider adapters and circuit-broken fallbacks (see [`agents/model-capability-orchestration.md`](../../agents/model-capability-orchestration.md)).
+   - Validate all structured outputs against strict JSON Schema / Zod / Pydantic models (`R-060`), retrying with schema-validation error feedback or falling back deterministically.
+2. **Protocol-First Tool & Agent Integration (MCP + A2A)**:
+   - Expose internal data sources and tools via **Model Context Protocol (MCP)** over stateless **Streamable HTTP** secured with **OAuth 2.1 + RFC 8707 Resource Indicators**—never trust unauthenticated remote MCP servers or pass raw user credentials into tool prompts (`R-228`, `R-229`).
+   - Delegate cross-service multi-agent tasks over **Agent2Agent (A2A)** using signed `/.well-known/agent-card.json` discovery and async task handles. See the full blueprint in [`agents/mcp-a2a-protocols.md`](../../agents/mcp-a2a-protocols.md).
+3. **OWASP Top 10 for Agentic Applications (ASI01–ASI10) & AST10**:
+   - Treat every retrieved document, web page, email, and MCP tool response as **untrusted data** capable of indirect prompt injection (`ASI01`).
+   - Enforce **least-privilege scoped tool permissions** (`ASI02`), **explicit human-in-the-loop approval** for state-mutating/financial/destructive tools (`ASI09`), **ephemeral container/Wasm sandboxing** for generated code (`ASI05`), and **cryptographic pinning** of third-party skills/tools (`AST10`). See [`security.md`](../../security.md).
+4. **OpenTelemetry GenAI Semantic Conventions (`R-151`)**:
+   - Emit standardized OTel spans for every LLM and tool invocation (`gen_ai.system`, `gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`, `gen_ai.response.finish_reasons`), redacting PII and secrets before telemetry export.
+
+---
+
 ## Production Checklist
 
-- [ ] Multi-provider fallback configured
-- [ ] Rate limiting per user/API key
-- [ ] Budget controls and alerting
-- [ ] Input sanitization (prompt injection)
-- [ ] Output validation
-- [ ] PII redaction in logs
-- [ ] Streaming for user-facing responses
-- [ ] Retry with exponential backoff
-- [ ] Timeout configuration (10-30s)
-- [ ] Structured logging for all LLM calls
-- [ ] Evaluation suite in CI/CD
-- [ ] Cache layer for deterministic queries
-- [ ] Token counting before requests
-- [ ] Error handling for all failure modes
-- [ ] Model version pinning
-- [ ] Graceful degradation when LLM unavailable
+- [ ] Capability-tiered model routing configured with multi-provider fallback (no scattered hardcoded model IDs)
+- [ ] Rate limiting per user/tenant/API key + hard budget circuit breakers
+- [ ] Input sanitization and indirect prompt-injection isolation (OWASP Agentic ASI01)
+- [ ] Strict JSON Schema / Zod / Pydantic output validation
+- [ ] PII & secret redaction in logs and telemetry
+- [ ] Streaming (SSE / Streamable HTTP) for user-facing responses
+- [ ] Retry with exponential backoff + jitter + strict request timeout (10–30s)
+- [ ] OpenTelemetry GenAI spans (`gen_ai.*`) exported with token usage & latency (`R-151`)
+- [ ] Automated regression evaluation suite running in CI/CD
+- [ ] Scoped least-privilege MCP tool permissions & human-in-the-loop gates on destructive actions (`R-228`, `R-229`)
+- [ ] Graceful degradation when upstream LLM providers are unavailable
 
 ---
 
 ## References
 
-- [OpenAI API Best Practices](https://platform.openai.com/docs/guides/production-best-practices)
-- [Anthropic Prompt Engineering Guide](https://docs.anthropic.com/claude/docs/prompt-engineering)
-- [LangChain Documentation](https://js.langchain.com/docs/)
+- [DevSkill MCP & A2A Protocol Blueprint](../../agents/mcp-a2a-protocols.md)
+- [DevSkill Security Standard (OWASP 2025 & Agentic ASI01–ASI10)](../../security.md)
+- [Model Context Protocol Specification](https://modelcontextprotocol.io/)
+- [Agent2Agent (A2A) Protocol](https://a2a-protocol.org/)
+- [OpenTelemetry GenAI Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/)
+- [OWASP Top 10 for LLM & Agentic Applications](https://genai.owasp.org/)
 - [pgvector Documentation](https://github.com/pgvector/pgvector)
-- [OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/)

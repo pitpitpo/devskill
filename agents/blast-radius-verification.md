@@ -238,4 +238,4 @@ if __name__ == "__main__":
 
 ---
 
-*See also*: [`agents/full-send-delivery.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/full-send-delivery.md) for delivery merge gates and [`agents/tdd-reproduction.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/tdd-reproduction.md) for bug reproduction protocols.
+*See also*: [`agents/full-send-delivery.md`](full-send-delivery.md) for delivery merge gates and [`agents/tdd-reproduction.md`](tdd-reproduction.md) for bug reproduction protocols.

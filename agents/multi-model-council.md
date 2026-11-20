@@ -278,4 +278,4 @@ Lead Agent: "Declined finding F-04: The task scope is single-node SQLite persist
 
 ---
 
-*See also*: [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) for architectural trade-off evaluations and [`workflows/pr-lifecycle-babysitting.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/pr-lifecycle-babysitting.md) for PR submission and bot monitoring.
+*See also*: [`agents/arena-evaluator.md`](arena-evaluator.md) for architectural trade-off evaluations and [`workflows/pr-lifecycle-babysitting.md`](../workflows/pr-lifecycle-babysitting.md) for PR submission and bot monitoring.

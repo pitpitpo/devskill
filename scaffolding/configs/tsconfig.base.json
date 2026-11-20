@@ -3,7 +3,7 @@
   "_comment": [
     "Enterprise TypeScript Base Configuration — tsconfig.base.json",
     "Extend this from per-package tsconfig.json files in a monorepo.",
-    "Target: TypeScript 5.4+ | Node 20+ | ES2022",
+    "Target: TypeScript 5.8–6.0 / 7.0 (tsgo) | Node 24 LTS | ES2024",
     "",
     "Usage in child packages:",
     "  { \"extends\": \"../../tsconfig.base.json\",",
@@ -15,8 +15,8 @@
 
   "compilerOptions": {
     // ── Emit & Module ─────────────────────────────────────────────────────
-    "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ES2022", "ES2023.Array"],
+    "target": "ES2024",
+    "lib": ["DOM", "DOM.Iterable", "ES2024"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "moduleDetection": "force",
@@ -66,9 +66,8 @@
     "incremental": true,
     "tsBuildInfoFile": "./.tsbuildinfo",
 
-    // ── Path Aliases ──────────────────────────────────────────────────────
-    // Override in child tsconfig.json as needed
-    "baseUrl": ".",
+    // ── Path Aliases (TS 6/7 compatible: no deprecated baseUrl) ───────────
+    // Override in child tsconfig.json or prefer package.json "imports" (#internal/*)
     "paths": {
       "@/*": ["./src/*"],
       "@shared/*": ["./packages/shared/src/*"],

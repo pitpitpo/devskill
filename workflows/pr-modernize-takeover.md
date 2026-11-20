@@ -16,7 +16,7 @@
 | **Skill Name** | `workflows/pr-modernize-takeover.md` |
 | **Capability Archetypes** | Stale PR Triage, Concept Rebase, Contributor Credit Preservation, Range-Diff Verification, Autonomous PR Takeover |
 | **Trigger Phrases** | `"modernize pr"`, `"takeover pr"`, `"rebase stale branch"`, `"triage old pr"`, `"take over this work"` |
-| **Governing Rules** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) (R-018 Backward Compatibility, R-163 Trunk Development, R-207 PR Modernization Disposition, R-208 Git Authorship & Co-Author Preservation, R-218 Stale PR Disposition) |
+| **Governing Rules** | [`RULES.md`](../RULES.md) (R-018 Backward Compatibility, R-163 Trunk Development, R-207 PR Modernization Disposition, R-208 Git Authorship & Co-Author Preservation, R-218 Stale PR Disposition) |
 | **Prerequisites** | Git 2.40+ (supporting `git range-diff` and `--force-with-lease`), GitHub CLI (`gh`), clean or disposable worktrees |
 
 In active engineering repositories, pull requests frequently languish, fall behind `main`, or become orphaned by human contributors or previous AI agent sessions. Mechanical rebasing (`git rebase main`) without understanding the evolving codebase causes catastrophic regressions: landing obsolete features, reviving deleted APIs, or creating duplicate pathways.

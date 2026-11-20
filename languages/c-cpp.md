@@ -333,4 +333,4 @@ MyClass& operator=(MyClass other) noexcept {
 
 ---
 
-*See also*: [`sections/systems-kernel/linux-kernel-driver.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/systems-kernel/linux-kernel-driver.md) for kernel-space C programming, and [`languages/rust.md`](file:///home/agy/.t3/userdata/attachments/devskill/languages/rust.md) for memory-safe systems programming.
+*See also*: [`sections/systems-kernel/linux-kernel-driver.md`](../sections/systems-kernel/linux-kernel-driver.md) for kernel-space C programming, and [`languages/rust.md`](rust.md) for memory-safe systems programming.

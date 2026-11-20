@@ -31,8 +31,8 @@ Does the team have < 15 engineers?
 
 ```
 What is your primary data model & access pattern?
- ├── Relational, ACID, Structured, Financial, Relational Joins ──► POSTGRESQL (The Universal Default)
- ├── In-memory, sub-millisecond, session cache, rate-limiting   ──► REDIS / VALKEY
+ ├── Relational, ACID, Structured, Financial, Relational Joins ──► POSTGRESQL 18 (The Universal Default: AIO, native uuidv7())
+ ├── In-memory, sub-millisecond, session cache, rate-limiting   ──► VALKEY / REDIS 8
  ├── Unstructured polymorphic documents, dynamic schema        ──► MONGODB
  ├── Massive scale (>100k writes/sec), key-value lookups       ──► DYNAMODB / SCYLLADB
  ├── AI Vector Embeddings, Semantic Search, RAG                ──► PGVECTOR (if using Postgres) or QDRANT
@@ -98,11 +98,11 @@ What are the SEO, performance, and application requirements?
 
 ```
 What is the primary constraint?
- ├── High Developer Velocity, Rich AI/ML Ecosystem, Data Pipelines ──► FASTAPI (Python 3.12+)
- ├── Enterprise Node.js, Angular-like DI, Hexagonal Architecture  ──► NESTJS (TypeScript)
- ├── Robust Battery-Included, Admin Panel, Rapid CRUD SaaS         ──► DJANGO + DRF / NINJA
- ├── Maximum Concurrency, Ultra-Low Latency, Low Memory Footprint ──► GO (GIN / AXUM in Rust)
- └── Enterprise Corporate Systems, Strong Typings, Massive Scale   ──► SPRING BOOT 3 (Java 21)
+ ├── High Developer Velocity, Rich AI/ML Ecosystem, Data Pipelines ──► FASTAPI (Python 3.13/3.14, uv, Pydantic v2)
+ ├── Enterprise Node.js, Modular DI, Hexagonal Architecture      ──► NESTJS (TypeScript 6/7, Node 24 LTS)
+ ├── Robust Battery-Included, Admin Panel, Rapid CRUD SaaS       ──► DJANGO 5.2+ + DRF / NINJA
+ ├── Maximum Concurrency, Ultra-Low Latency, Low Memory Footprint ──► GO 1.25+ (GIN/CHI) or RUST 2024 (AXUM)
+ └── Enterprise Corporate Systems, Strong Typings, Massive Scale  ──► SPRING BOOT 3.4+ (Java 21+ Virtual Threads)
 ```
 
 ---
@@ -129,3 +129,22 @@ What type of state are you handling?
 | **Complex routing, AMQP standards, DLQs** | **RabbitMQ** | Reliable routing exchanges, persistent queues |
 | **Event streaming, high throughput (>50k/sec), replay** | **Apache Kafka** | Distributed partition log, immutable event store |
 | **Cloud-native serverless queuing** | **AWS SQS + SNS / Google Cloud Pub/Sub** | Zero maintenance, infinite horizontal auto-scaling |
+
+---
+
+## 8. Agentic AI Interoperability Protocol Selector (2026)
+
+```
+What boundary is your AI agent crossing?
+ ├── Agent invoking external tools, APIs, or structured data sources ──► MCP (Stateless Streamable HTTP + OAuth 2.1 RFC 8707)
+ ├── Agent delegating async multi-step tasks to opaque peer agents   ──► A2A (Agent Cards at /.well-known/agent-card.json)
+ ├── Packaging portable procedural expertise & repo rules for agents ──► Agent Skills (SKILL.md) + AGENTS.md (AAIF standard)
+ └── Single in-process model call with deterministic JSON extraction ──► Native Structured Outputs / Direct Function Calling
+```
+
+| Protocol | Best Fit | Security Baseline | Avoid When |
+|---|---|---|---|
+| **MCP (Streamable HTTP)** | Exposing typed tools/resources to multiple AI hosts/IDEs | OAuth 2.1 + RFC 8707 Resource Indicators, Zod/Pydantic schemas | Simple single-app private helper function |
+| **A2A (Agent2Agent)** | Cross-team or cross-vendor async agent delegation | TLS 1.3 + mTLS/OAuth 2.1, hop limits, W3C `traceparent` | Tight synchronous sub-10ms RPC loops |
+| **Agent Skills (`SKILL.md`)** | Reusable workflows, playbooks, and verifiable scripts | Progressive disclosure, AST10 script audit | Runtime secrets or dynamic user state |
+

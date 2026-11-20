@@ -1,11 +1,11 @@
-# ⚡ Production Next.js 15 App Router & React Server Components Mastery (`nextjs.md`)
+# ⚡ Production Next.js 15/16 App Router & React Server Components Mastery (`nextjs.md`)
 
 > **Standard Identifier**: `FW-FRONTEND-NEXTJS-001`  
-> **Status**: Active / Production Standard  
+> **Status**: Active / Production Standard (Updated for Next.js 16 & React 19.2)  
 > **Target Audience**: Fullstack React Developers, Frontend Architects, Performance Engineers  
 > **Classification**: Level 4 Framework Mastery Guide  
-> **Runtime Target**: Next.js 15+ / React 19 / Node.js 20 LTS / Edge Runtime  
-> **Prerequisites**: React 19 Hooks (`useActionState`, `useOptimistic`), TypeScript 5.5+, HTTP Streaming, Web Vitals  
+> **Runtime Target**: Next.js 15/16 / React 19.2 / Node.js 24 LTS / Edge Runtime  
+> **Prerequisites**: React 19.2 Hooks (`useActionState`, `useOptimistic`, `useEffectEvent`, `<Activity />`), TypeScript 6.0/7.0, HTTP Streaming, Web Vitals  
 
 ---
 
@@ -470,14 +470,30 @@ export const config = {
 
 ---
 
-## 7. Verification Checklist & Production Audit
+## 7. Next.js 16 & React 19.2 Production Baseline (2026)
 
-Before shipping a Next.js 15 application to production:
+Teams starting new repositories or upgrading from Next.js 15 MUST adopt the Next.js 16 + React 19.2 execution model:
+
+1. **Turbopack as Default Bundler**: Turbopack is the default bundler for both `next dev` and `next build` with persistent filesystem caching. Keep custom Webpack plugins out of the critical path or isolate them behind explicit fallback flags only when strictly required.
+2. **Explicit Cache Components (`'use cache'`)**: Next.js 16 replaces implicit caching heuristics with opt-in `'use cache'` directives at page, component, or function granularity (`cacheComponents: true`). Pair with `cacheLife()` profiles and `updateTag()` inside Server Actions for immediate read-your-own-writes invalidation (reserving `revalidateTag(tag, profile)` for stale-while-revalidate background refreshes).
+3. **`proxy.ts` Network Boundary**: Next.js 16 standardizes the request interception boundary as `proxy.ts` (running on the Node.js runtime with predictable routing semantics) rather than ambiguous `middleware.ts` naming. Never perform heavy database lookups inside `proxy.ts`; treat it strictly as a lightweight header, locale, and session-token routing boundary, and ALWAYS enforce authorization inside Data Access Layer functions (`R-062`, `R-063`).
+4. **React Compiler Enabled by Default**: Eliminate manual `useMemo`/`useCallback` cargo-culting by enabling `reactCompiler: true` in `next.config.ts`, while still profiling re-render hot paths with React DevTools Performance Tracks.
+5. **React 19.2 Primitives**:
+   - **`<Activity mode="visible" | "hidden">`**: Pre-render or preserve background UI tabs/panels without unmounting state and without firing active effects while hidden.
+   - **`useEffectEvent`**: Extract non-reactive callbacks out of `useEffect` dependency arrays so subscriptions/sockets do not tear down on incidental prop changes.
+   - **`cacheSignal`**: Attach cancellation signals to React Server Component cached fetches so abandoned renders abort upstream database/HTTP work cleanly.
+6. **Next.js DevTools MCP**: Expose structured build diagnostics, route graphs, and runtime error traces to coding agents via the built-in Next.js DevTools MCP server during local verification.
+
+---
+
+## 8. Verification Checklist & Production Audit
+
+Before shipping a Next.js 15/16 application to production:
 
 - [ ] **RSC Default Checked**: No unnecessary `'use client'` directives on layouts, pages, or data-fetching wrappers.
 - [ ] **Secret Isolation**: All database modules, encryption helpers, and private API adapters import `'server-only'`.
 - [ ] **Schema Parsed Actions**: Every Server Action validates parameters using Zod or Valibot schemas before mutations.
-- [ ] **Authentication Gated**: Server Actions verify user authentication sessions before applying database changes.
-- [ ] **Granular Invalidation**: Data updates use `revalidateTag` targeting specific entities, not global `revalidatePath('/')`.
+- [ ] **Authentication Gated**: Server Actions and Data Access Layer functions verify user authentication & tenant authorization before applying database changes (`R-062`, `R-063`).
+- [ ] **Granular Invalidation**: Data updates use `'use cache'` + `updateTag()` / `revalidateTag()` targeting specific entities, not global `revalidatePath('/')`.
 - [ ] **Streaming Fallbacks**: Dynamic routes wrap slow data components in `<Suspense fallback={<Skeleton />}>`.
 - [ ] **Clean Build**: `npm run build` succeeds with zero TypeScript type errors and zero hydration mismatch warnings.

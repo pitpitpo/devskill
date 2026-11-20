@@ -1,24 +1,21 @@
-# DevSkill Agent Coordination
+# DevSkill Governance & Audit Status (`_coordination/STATUS.md`)
 
-## Shared Rules for All Agents
-1. **NO HALLUCINATION**: Only write facts you can verify from files you've read or web searches you've done. If unsure, say "UNVERIFIED" and skip.
-2. **CITE SOURCES**: Every rule or standard must reference its source (OWASP, 12-Factor, RFC, etc.)
-3. **READ BEFORE WRITE**: Always read the existing file before overwriting. Merge, don't replace blindly.
-4. **COORDINATE VIA THIS FILE**: Write your status here when done so other agents can pick up.
-5. **NO PLACEHOLDERS**: Never write "TODO", "TBD", or "coming soon". If you can't complete it, leave it out.
+> **Release**: `v2.0.0`  
+> **Last Verified**: `2026-11-19`  
+> **Validator Command**: `python3 scripts/validate-skill.py && python3 -m unittest discover -s scripts -p "test_*.py" -v`
 
-## Agent Assignments
-- Agent 1 (RESEARCHER): Read all existing files + ref_zip, produce gap analysis → write to _coordination/GAP_ANALYSIS.md
-- Agent 2 (CORE-WRITER): Write RULES.md, AGENTS.md, WORKFLOW.md, DEFINITION_OF_DONE.md, MISTAKES.md, CLAUDE.md
-- Agent 3 (STANDARDS-WRITER): Write SECURITY.md, ARCHITECTURE.md, TESTING.md, BACKEND_DATA.md  
-- Agent 4 (PLATFORM-WRITER): Write FRONTEND.md, DEPLOYMENT.md, OBSERVABILITY.md, FRAMEWORKS.md, GLOSSARY.md
-- Agent 5 (REVIEWER): Read all output files, validate quality, flag issues → write to _coordination/REVIEW.md
+## Shared Governance Invariants
+1. **Verified Truth Only**: Every standard, version, and rule cites authoritative specifications (OWASP 2025, OWASP ASI/AST10, NIST SP 800-63B-4, NIST FIPS 203–205, RFC 9457, RFC 8707, MCP 2026, A2A, `agentskills.io`).
+2. **Zero Hardcoded Host Paths**: All internal markdown references use portable relative links verified by `scripts/validate-skill.py`.
+3. **Rule Citation Integrity**: All 235 rules (`R-001`–`R-235`) have unique IDs and titles, and every `ROUTING.md` archetype citation is cross-checked programmatically.
+4. **Executable Verification**: Bundled scripts (`ci-gate.sh`, `validate-skill.py`, `pr-wait.py`) are syntax-checked and unit-tested.
 
-## Status Tracker
-| Agent | Status | Files Done |
-|-------|--------|-----------|
-| Researcher | PENDING | - |
-| Core Writer | COMPLETED | RULES.md, agents.md, workflows/WORKFLOW.md, DEFINITION_OF_DONE.md, MISTAKES.md, CLAUDE.md |
-| Standards Writer | PENDING | - |
-| Platform Writer | PENDING | - |
-| Reviewer | PENDING | - |
+## Module Audit Ledger
+
+| Domain | Status | Key Artifacts Verified |
+|---|---|---|
+| Core Entrypoints & Governance | COMPLETED | `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `RULES.md` (R-001–R-235), `ROUTING.md` (23 archetypes), `specs.md`, `DEFINITION_OF_DONE.md`, `decisions.md` |
+| Security & Agentic Protocols | COMPLETED | `security.md` (OWASP 2025 + ASI01–ASI10 + NIST 800-63B-4 + PQC), `agents.md`, `agents/mcp-a2a-protocols.md`, `agents/*.md` |
+| Languages, Frameworks & Data | COMPLETED | `frameworks/frontend/nextjs.md` (15/16 + React 19.2), `languages/typescript.md` (6/7 `tsgo`), `languages/python.md` (3.13/3.14), `sections/database/postgresql-mastery.md` (PG 18), `sections/ai-ml/llm-integration.md` |
+| Scaffolding & Pipelines | COMPLETED | `scaffolding/configs/.claude-settings.json`, `tsconfig.base.json`, `ruff.toml`, `docker-compose.yml`, `.github-ci-template.yml` |
+| Executable Scripts & Index | COMPLETED | `scripts/ci-gate.sh`, `scripts/validate-skill.py`, `scripts/pr-wait.py`, `scripts/test_devskill.py`, `workflows/scripts/pr-wait`, `index.json` |

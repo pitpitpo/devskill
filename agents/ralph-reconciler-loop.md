@@ -16,7 +16,7 @@
 | **Skill Name** | `agents/ralph-reconciler-loop.md` |
 | **Capability Archetypes** | Autonomous Reconciler Loop, Non-Stop Execution, Git-Backed Task Progress, Fresh-Context Iteration |
 | **Trigger Phrases** | `"ralph loop"`, `"run until finished"`, `"no stop"`, `"loop until done"`, `"reconcile to completion"` |
-| **Governing Rules** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) (R-001 No TODOs, R-004 Anti-Fake Green, R-181 Zero Hallucinated Commands, R-201 5-Point Gate, R-215 Non-Stop Reconciler Invariant) |
+| **Governing Rules** | [`RULES.md`](../RULES.md) (R-001 No TODOs, R-004 Anti-Fake Green, R-181 Zero Hallucinated Commands, R-201 5-Point Gate, R-215 Non-Stop Reconciler Invariant) |
 | **Prerequisites** | Shell CLI execution (`bash`), Git repository, project task backlog (`IMPLEMENTATION_PLAN.md` or `prd.json`), test runner |
 
 In standard interactive sessions, AI agents suffer from **context rot and conversational degradation**: as tokens accumulate, models lose prompt instructions, hallucinate phantom implementations, or stop prematurely with conversational excuses ("It should work now!").

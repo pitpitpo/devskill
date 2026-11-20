@@ -1,63 +1,91 @@
 # 🔒 Production Security Standards (`security.md`)
 
-> **Classification**: Production Security Baseline  
-> **Applicability**: All services, APIs, web applications, and database layers  
-> **Compliance Targets**: OWASP Top 10, SOC 2 Type II, ISO 27001, GDPR, HIPAA
+> **Classification**: Production Security Baseline (v2.0.0)  
+> **Applicability**: All services, APIs, web applications, database layers, CI/CD pipelines, and agentic AI systems  
+> **Compliance Targets**: OWASP Top 10:2025, OWASP Top 10 for Agentic Applications (ASI01–ASI10), OWASP Agentic Skills Top 10 (AST10), NIST SP 800-63B-4 (2025), NIST PQC (FIPS 203/204/205), NIST SP 800-207 (Zero Trust), SOC 2 Type II, ISO 27001, GDPR  
+> **Last Updated**: 2026-11-19
 
 ---
 
 ## 1. Core Security Principles
 
-1. **Zero Trust Architecture**:
-   - Never trust network locality. Authenticate and authorize every request, whether incoming from the public internet or an internal VPC microservice.
-   - Mutual TLS (mTLS) for all service-to-service communication within service meshes.
+1. **Zero Trust Architecture (NIST SP 800-207)**:
+   - Never trust network locality. Authenticate and authorize every request, whether arriving from the public internet or an internal cluster mesh.
+   - Enforce Mutual TLS (mTLS) with TLS 1.3 (hybrid post-quantum key exchange where supported) for all service-to-service traffic.
 2. **Defense in Depth**:
-   - Implement overlapping security controls at the Edge (WAF, DDoS mitigation), Transport (TLS 1.3), Application (Schema validation, RBAC/ABAC), and Data layers (Encryption at rest, column masking).
-3. **Fail Closed**:
-   - If an authorization service, rate limiter, or signature check fails or times out, the request MUST be rejected (`401 Unauthorized` or `503 Service Unavailable`), never permitted by default.
-4. **Least Privilege**:
-   - IAM roles, service accounts, and database users must have the bare minimum permissions required for their specific function.
+   - Layer independent security controls across Edge (WAF, rate limits), Transport (TLS 1.3 + HSTS), Application (strict boundary schemas, RBAC/ABAC, CSP), Data (envelope encryption, PostgreSQL RLS, column masking), and Agentic Harness (`PreToolUse` / OAuth 2.1 RFC 8707 audience scoping).
+3. **Fail Closed (OWASP A10:2025 / R-232)**:
+   - If an authorization service, signature verifier, rate limiter, schema parser, or dependency times out or throws an unexpected exception, the system MUST reject the request (`401`/`403`/`503`) and leave state unchanged — never fail open.
+4. **Least Privilege & Least Agency (R-067, R-228)**:
+   - Grant IAM roles, DB accounts, MCP servers, and autonomous agents the bare minimum permissions and tool capabilities needed for their exact task.
 
 ---
 
-## 2. OWASP Top 10 Mitigation Matrix & Code Guidelines
+## 2. OWASP Top 10:2025 Mitigation Matrix & Code Guidelines
 
-### A01: Broken Access Control
-- **Risk**: Unauthorized users accessing objects, endpoints, or data belonging to other tenants/users (IDOR - Insecure Direct Object Reference).
-- **Rule**: Never trust client-supplied entity IDs without verifying ownership or tenancy in the authorization context.
+### A01:2025 – Broken Access Control *(Includes SSRF)*
+- **Risk**: Unauthorized users accessing objects belonging to other tenants/users (IDOR), privilege escalation, missing function-level access control, or Server-Side Request Forgery (SSRF) probing internal VPCs/metadata endpoints.
+- **Rules**:
+  - Verify ownership or tenant membership on every object lookup (`WHERE id = $1 AND tenant_id = $2` or PostgreSQL Row-Level Security).
+  - For any server-side outbound URL fetch, allowlist `https` scheme + explicit domains, resolve DNS prior to connect (blocking DNS rebinding), and reject loopback (`127.0.0.0/8`, `::1`), RFC 1918 private networks (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), and link-local/cloud metadata (`169.254.0.0/16`, `fd00::/8`).
 - **Pattern**:
   ```python
-  # BAD: IDOR vulnerability
+  # BAD: IDOR vulnerability (no tenant check)
   @app.get("/invoices/{invoice_id}")
   async def get_invoice(invoice_id: str, db: Session = Depends(get_db)):
       return db.query(Invoice).filter(Invoice.id == invoice_id).first()
 
-  # GOOD: Tenant-scoped lookup
+  # GOOD: Tenant-scoped lookup failing closed with 404
   @app.get("/invoices/{invoice_id}")
   async def get_invoice(
-      invoice_id: str, 
+      invoice_id: str,
       current_user: User = Depends(get_current_active_user),
-      db: Session = Depends(get_db)
+      db: Session = Depends(get_db),
   ):
-      invoice = db.query(Invoice).filter(
-          Invoice.id == invoice_id, 
-          Invoice.organization_id == current_user.org_id
-      ).first()
+      invoice = (
+          db.query(Invoice)
+          .filter(
+              Invoice.id == invoice_id,
+              Invoice.organization_id == current_user.org_id,
+          )
+          .first()
+      )
       if not invoice:
           raise HTTPException(status_code=404, detail="Invoice not found")
       return invoice
   ```
 
-### A02: Cryptographic Failures
-- **Risk**: Weak algorithms, plaintext passwords, unencrypted sensitive data at rest or in transit.
-- **Rules**:
-  - Passwords: Hash using **Argon2id** (memory: 64MB, iterations: 3, parallelism: 4) or **bcrypt** (work factor ≥ 12). Never use MD5, SHA-1, or plain SHA-256.
-  - Symmetric Encryption: Use **AES-256-GCM** or **ChaCha20-Poly1305** (authenticated encryption with associated data).
-  - Transit: Enforce **TLS 1.3** (minimum TLS 1.2 with strong cipher suites). Strict Transport Security (`HSTS: max-age=63072000; includeSubDomains; preload`).
+### A02:2025 – Security Misconfiguration
+- **Mandatory HTTP Security Headers**:
+  ```http
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  ```
+- Disable debug flags (`DEBUG=False`), directory listings, verbose error pages, and server version headers (`Server`, `X-Powered-By`). Never return `Access-Control-Allow-Origin: *` alongside `Access-Control-Allow-Credentials: true` (R-079).
 
-### A03: Injection (SQL, Command, LDAP, NoSQL)
-- **Risk**: Untrusted user inputs concatenated into query interpreters.
-- **Rule**: Parameterized queries only. Zero dynamic string concatenation.
+### A03:2025 – Software Supply Chain Failures
+- **Risk**: Compromised transitive packages, malicious install hooks, slopsquatted AI-hallucinated packages, unverified container layers, and poisoned CI actions.
+- **Rules**:
+  - Commit lockfiles and enforce frozen installs (`npm ci --ignore-scripts`, `uv sync --frozen`, `cargo fetch --locked`) (R-117–R-119).
+  - Pin container base images and GitHub Actions by full **SHA-256 / commit SHA** digest rather than mutable tags (R-156).
+  - Generate CycloneDX/SPDX SBOMs (`syft`), scan via `trivy`/`grype`/`cargo-audit`/`pip-audit` blocking CVSS ≥ 7.0, and sign release artifacts with **Cosign / Sigstore + SLSA Provenance Level 3** (R-120, R-124, R-125).
+  - Verify package provenance, download velocity, maintainer reputation, and license before adding any dependency (R-007, R-126).
+
+### A04:2025 – Cryptographic Failures
+- **Password Hashing**: **Argon2id** (RFC 9106: 64 MiB memory, 3 iterations, parallelism 4) or bcrypt (cost ≥ 12). MD5, SHA-1, SHA-256, and DES are strictly banned for password storage (R-065).
+- **Symmetric Encryption**: Authenticated encryption only — **AES-256-GCM** or **ChaCha20-Poly1305** with unique CSPRNG nonces (R-066, R-082).
+- **Asymmetric & Post-Quantum Readiness (NIST FIPS 203/204/205 & NISTIR 8547 / R-231)**:
+  - Classical baseline: **Ed25519** / **ECDSA P-256+** / **RSA-3072+**.
+  - **Hybrid Post-Quantum TLS**: Enable hybrid key exchange (`X25519MLKEM768` per FIPS 203 ML-KEM) on edge gateways, ingress controllers, and TLS 1.3 stacks to mitigate *harvest-now, decrypt-later* threats.
+  - **Crypto-Agility**: Abstract cipher/key-exchange suites behind configuration interfaces and maintain a Cryptographic Bill of Materials (CBOM) tracking transition readiness toward FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA).
+- **Constant-Time Verification**: Always compare HMACs, API keys, and tokens using `crypto.timingSafeEqual` / `hmac.compare_digest` after checking equal byte lengths (R-076).
+
+### A05:2025 – Injection (SQL, NoSQL, Command, LDAP, Template, Prompt)
+- **Rule**: 100% parameterized queries and safe structured templates (e.g., Python 3.14 PEP 750 `t`-strings with parameterized processors, prepared SQL statements). Zero string interpolation into interpreters or shells (R-061).
 - **Pattern**:
   ```typescript
   // BAD: SQL Injection
@@ -65,91 +93,79 @@
 
   // GOOD: Parameterized query
   const user = await db.query(
-    'SELECT id, email, role FROM users WHERE email = $1', 
+    "SELECT id, email, role FROM users WHERE email = $1",
     [email]
   );
   ```
 
-### A04: Insecure Design & Threat Modeling
-- **Risk**: Omitting security considerations during architecture design.
-- **Requirement**: Use **STRIDE** (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) threat modeling on all new system architecture diagrams.
-- Rate limit all authentication endpoints (Max 5 failed attempts per 15-minute window with IP/account throttling).
+### A06:2025 – Insecure Design
+- Perform **STRIDE** threat modeling (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) on every new architecture diagram or sensitive workflow.
+- Enforce distributed rate limiting (Redis Token/Leaky Bucket) on auth, password reset, OTP, and expensive endpoints (R-068).
+- Design business invariants into database constraints, atomic transactions, idempotency keys, and state machines rather than relying on UI checks.
 
-### A05: Security Misconfiguration
-- **Headers to Enforce on Every HTTP Response**:
-  ```http
-  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none';
-  ```
-- Disable directory listing, suppress server identification headers (`Server:`, `X-Powered-By:`), and disable debug modes in production (`DEBUG=False`).
+### A07:2025 – Authentication Failures (Aligned with NIST SP 800-63B-4, July 2025)
+- **NIST SP 800-63B-4 Password Policy (R-230)**:
+  - **Minimum length**: **≥ 15 characters** when used as a single factor; **≥ 8 characters** when combined with MFA.
+  - **Maximum length**: Support **≥ 64 characters**, all printable ASCII, spaces, and Unicode (supporting passphrases and password managers).
+  - **PROHIBITED**: Do NOT enforce arbitrary composition rules (mandatory uppercase/symbol mixes) and do NOT force periodic password rotation (e.g., every 90 days) absent compromise evidence.
+  - **REQUIRED**: Screen every new/changed password against dynamic breach/compromised-credential blocklists and context-specific terms; allow copy-and-paste in password fields; cap consecutive failed attempts (max 100 with exponential throttling).
+- **Phishing-Resistant MFA (AAL2+)**: Offer **WebAuthn / FIDO2 Passkeys** as a primary phishing-resistant authenticator alongside TOTP.
+- **Sessions & JWTs**:
+  - Cookies: `HttpOnly; Secure; SameSite=Strict` (or `Lax` where cross-site GET navigation requires it); explicit idle + absolute expiration.
+  - JWTs: Asymmetric signing (`EdDSA`/`RS256`), explicitly reject `alg: none`, short-lived access tokens (5–15 min), and hashed single-use rotating refresh tokens with reuse detection.
 
-### A06: Vulnerable and Outdated Components
-- Pin all dependency versions using lockfiles (`package-lock.json`, `poetry.lock`, `Cargo.lock`, `go.sum`).
-- Integrate automated CVE scanning in CI/CD via `trivy`, `snyk`, or `cargo audit`. Block builds on CVSS score ≥ 7.0 (High/Critical).
+### A08:2025 – Software or Data Integrity Failures
+- Ban unsafe deserialization (`pickle.loads`, `yaml.load`, Java native serialization, `eval()`). Use strictly validated JSON or Protocol Buffers (R-081).
+- Verify webhook HMAC-SHA256 signatures with a ≤ 300s timestamp replay window (R-185).
+- Verify artifact digests and Cosign signatures before production deployment.
 
-### A07: Identification & Authentication Failures
-- Enforce Multi-Factor Authentication (MFA) via TOTP or WebAuthn/FIDO2.
-- Session Management:
-  - Session cookies must be `HttpOnly; Secure; SameSite=Strict; Path=/`.
-  - Max session lifetime: 8 hours; Idle timeout: 30 minutes.
-- JWT Standards:
-  - Sign tokens with asymmetric keys (**RS256** or **Ed25519**). Reject the `none` algorithm explicitly.
-  - Short-lived Access Tokens (5–15 minutes).
-  - Refresh Tokens must be stored hashed in the database and rotated on each use with automatic reuse detection.
+### A09:2025 – Security Logging and Alerting Failures
+- Emit immutable, append-only structured JSON audit logs for auth successes/failures, MFA changes, privilege escalations, administrative actions, and bulk exports (R-083, R-142, R-152).
+- Scrub all PII, passwords, Bearer tokens, and secrets prior to emission (R-144).
+- Route security logs to a SIEM with automated symptom-based alerting on credential stuffing, impossible travel, or authorization spike anomalies.
 
-### A08: Software & Data Integrity Failures
-- Protect against untrusted deserialization: Never use Python `pickle`, Java native deserialization, or PHP `unserialize` on user input. Use JSON or Protocol Buffers.
-- Verify software artifact hashes and sign container images using `Cosign`.
-
-### A09: Security Logging & Monitoring Failures
-- Log all security events: login attempts (success and failure), password resets, permission changes, administrative actions, and high-value data exports.
-- Centralize logs into a SIEM (Datadog, Splunk, Elastic) with automated alerts on suspicious anomalies (e.g., 20+ failed logins across multiple IPs in 1 minute).
-
-### A10: Server-Side Request Forgery (SSRF)
-- **Risk**: Application fetches a remote URL provided by the user, enabling attackers to scan internal VPC networks, query AWS metadata (`http://169.254.169.254`), or hit local loopback services.
-- **Mitigation**:
-  - Restrict user-provided URLs to an explicit allowlist of schemes (`https` only) and domains.
-  - Resolve DNS before request and explicitly reject private IP ranges:
-    - Loopback: `127.0.0.0/8`, `::1`
-    - RFC 1918 Private: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`
-    - Link-Local / Cloud Metadata: `169.254.0.0/16`
+### A10:2025 – Mishandling of Exceptional Conditions
+- **Risk**: Catch blocks that silently return `true`, bypass auth checks, leak stack traces/SQL schemas, leave partial uncommitted transactions, or crash without releasing locks/connections.
+- **Rules (R-046, R-057, R-059, R-232)**:
+  - Every `try/catch` MUST fail closed, preserve root causes (`cause` / `%w`), release resources deterministically (`finally`/`defer`/`using`), and return standardized RFC 9457 `application/problem+json` without internal traces.
+  - Never fall back to permissive defaults when a policy engine, feature flag store, or JWT JWKS endpoint is unreachable.
 
 ---
 
-## 3. Secrets Management & Cryptography
+## 3. OWASP Top 10 for Agentic Applications (ASI01–ASI10) & Skills (AST10)
 
-1. **Vault & Cloud KMS Integration**:
-   - Production secrets must never reside in source code or `.env` files checked into git.
-   - Use centralized Secret Vaults (HashiCorp Vault, AWS Secrets Manager, GCP Secret Manager) with automatic rotation every 90 days.
-2. **Envelope Encryption Pattern**:
-   - Encrypt sensitive database columns (SSN, credit card tokens, health records) using a Data Encryption Key (DEK) protected by a Key Encryption Key (KEK) inside a hardware security module (HSM).
-3. **Environment Isolation**:
-   - Staging and development environments must NEVER have access to production databases, third-party production credentials, or real customer data.
+When building AI agents, tool servers (MCP), or multi-agent pipelines (A2A), enforce [`agents/mcp-a2a-protocols.md`](agents/mcp-a2a-protocols.md) and these controls:
+
+| ID | Risk | Mandatory Mitigation |
+|---|---|---|
+| **ASI01** | Agent Goal Hijack | Separate untrusted user/document data from system instructions; enforce authorization deterministically outside the LLM. |
+| **ASI02** | Tool Misuse & Exploitation | Narrow domain-specific tool schemas (Zod/Pydantic `.strict()`); ban generic raw-SQL/shell tools on remote MCP servers. |
+| **ASI03** | Identity & Privilege Abuse | Enforce **OAuth 2.1 + RFC 8707 Resource Indicators** per MCP server; never pass through ambient user admin tokens (R-229). |
+| **ASI04** | Agentic Supply Chain Vulnerabilities | Pin MCP servers, model endpoints, and `SKILL.md` dependencies by immutable hash/version; audit scripts (AST10) before running. |
+| **ASI05** | Unexpected Code Execution | Sandbox all dynamic code execution in ephemeral, non-root, network-isolated containers/microVMs with CPU/RAM/timeout bounds. |
+| **ASI06** | Memory & Context Poisoning | Isolate RAG/vector indexes by `tenant_id`, track source provenance, expire stale memory with TTLs, and sanitize retrieved text. |
+| **ASI07** | Insecure Inter-Agent Communication | Authenticate A2A peers via mTLS or OAuth 2.1, verify `/.well-known/agent-card.json` over TLS 1.3, propagate `traceparent`. |
+| **ASI08** | Cascading Failures | Bound worker fan-out ($K \le 4$), cycle ceilings ($\le 3$ rounds), hop limits, timeouts, and Saga rollbacks (R-194–R-197). |
+| **ASI09** | Human-Agent Trust Exploitation | Display raw diffs, exact target commands, and concrete blast radius in HITL prompts — never persuasive summaries alone. |
+| **ASI10** | Rogue Agents | Enforce deterministic harness hooks (`PreToolUse`/`Stop` Exit Code 2), immutable tool-call audit logs, and instant token revocation. |
 
 ---
 
-## 4. Supply Chain & Container Security
+## 4. Secrets Management, Cryptography & Container Hardening
 
-1. **Non-Root Containers**:
+1. **Centralized Vault & KMS**: Never commit secrets to git or `.env` files in VCS. Use AWS Secrets Manager, GCP Secret Manager, or HashiCorp Vault with automated rotation and short-lived OIDC workload identities (zero static CI cloud keys).
+2. **Envelope Encryption**: Encrypt sensitive columns (PII, payment tokens, PHI) with per-record/per-tenant DEKs wrapped by cloud HSM KEKs.
+3. **Environment Isolation**: Development and staging MUST NEVER connect to production databases or use real customer PII.
+4. **Hardened Non-Root Containers (R-154–R-156, R-162)**:
    ```dockerfile
-   # Example secure non-root Dockerfile snippet
-   FROM alpine:3.20 AS builder
-   # ... build steps ...
-   
-   FROM alpine:3.20
-   RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-   USER appuser
+   # Pin base images by immutable SHA-256 digest in production
+   FROM cgr.dev/chainguard/static:latest@sha256:<pinned-digest>
+   USER 10001:10001
+   COPY --from=builder --chown=10001:10001 /app/service /service
    EXPOSE 8080
-   CMD ["./service"]
+   ENTRYPOINT ["/service"]
    ```
-2. **Minimal Base Images**:
-   - Use Distroless (`gcr.io/distroless/static-debian12`) or Alpine minimal images to minimize attack surface and OS-level vulnerabilities.
-3. **Software Bill of Materials (SBOM)**:
-   - Generate an SBOM during build (`syft`) and scan against current vulnerability databases (`grype`).
+   Mount root filesystem read-only (`readOnlyRootFilesystem: true`), drop all Linux capabilities (`capabilities.drop: ["ALL"]`), and disallow privilege escalation (`allowPrivilegeEscalation: false`).
 
 ---
 
@@ -157,10 +173,10 @@
 
 | Security Gate | Criteria | Verification Tool |
 |---|---|---|
-| **Static Code Analysis** | Zero High/Critical findings | Semgrep / SonarQube |
-| **Dependency Audit** | Zero vulnerable dependencies (CVSS ≥ 7) | Snyk / Trivy / Dependabot |
-| **Secret Detection** | Zero credentials or private keys in git | Gitleaks / GitGuardian |
-| **Container Image Scan** | Zero OS or library vulnerabilities | Trivy image scanner |
-| **Dynamic API Scan** | Input fuzzing, injection checks | OWASP ZAP / DAST |
-| **Permission Audit** | Non-root container, minimal IAM roles | Kube-linter / Checkov |
-| **Security Headers** | A+ rating on securityheaders.com | curl / automated test suite |
+| **Static Code Analysis (SAST)** | Zero High/Critical findings | Semgrep / CodeQL |
+| **Supply Chain & SCA (A03:2025)** | Zero CVSS ≥ 7.0 vulns; CycloneDX SBOM + Cosign attestation | Trivy / Grype / Syft / Cosign |
+| **Secret Detection** | Zero credentials or private keys in git history or diff | Gitleaks / TruffleHog / `./scripts/ci-gate.sh` |
+| **Container Image Hardening** | Non-root UID, digest-pinned, read-only rootfs, 0 Critical CVEs | Trivy image / Kube-linter / Checkov |
+| **Dynamic API Scan (DAST)** | Input fuzzing, IDOR/SSRF/injection checks, RFC 9457 error hygiene | OWASP ZAP / Nuclei |
+| **Auth & Crypto Compliance** | NIST SP 800-63B-4 blocklist + 15-char single-factor, Argon2id, TLS 1.3 hybrid PQC | Auth integration suite / `testssl.sh` |
+| **Agentic & MCP Audit (ASI/AST10)** | RFC 8707 audience check, strict tool schemas, sandboxed execution | MCP contract tests / prompt-injection evals |

@@ -43,13 +43,13 @@ permissions:
 
 # ── Environment Variables ────────────────────────────────────────────────────
 env:
-  NODE_VERSION: "20"
-  PYTHON_VERSION: "3.12"
-  GO_VERSION: "1.22"
+  NODE_VERSION: "24"
+  PYTHON_VERSION: "3.13"
+  GO_VERSION: "1.25"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   # Cache keys
-  CACHE_PREFIX: v1
+  CACHE_PREFIX: v2
 
 # ══════════════════════════════════════════════════════════════════════════════
 # JOBS
@@ -79,9 +79,12 @@ jobs:
         run: npm ci --ignore-scripts
         # run: pnpm install --frozen-lockfile   # Uncomment if using pnpm
 
+      - name: DevSkill Quality Gate (R-001, R-002, R-034, R-046, R-064, R-142)
+        if: hashFiles('scripts/ci-gate.sh') != ''
+        run: bash ./scripts/ci-gate.sh
+
       - name: ESLint
-        run: npx eslint . --max-warnings=0 --format=json --output-file=eslint-report.json
-        continue-on-error: true
+        run: npx eslint . --max-warnings=0
 
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,js,jsx,json,yaml,yml,md,css,scss}"
@@ -94,7 +97,7 @@ jobs:
 
       - name: Ruff lint + format check
         run: |
-          pip install ruff>=0.8.0
+          pip install "ruff>=0.11.0"
           ruff check . --output-format=github
           ruff format . --check
 
@@ -110,13 +113,13 @@ jobs:
           version: latest
           args: --timeout=5m
 
-      # ── Commit message lint ────────────────────────────────────────────
+      # ── Commit message lint (zero global npm installs — R-174) ─────────
       - name: Commitlint (Conventional Commits)
         if: github.event_name == 'pull_request'
         run: |
-          npm install -g @commitlint/cli @commitlint/config-conventional
           echo 'module.exports = { extends: ["@commitlint/config-conventional"] };' > commitlint.config.cjs
-          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+          npx --yes --package=@commitlint/cli --package=@commitlint/config-conventional \
+            commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}"
 
   # ── 2. Typecheck ─────────────────────────────────────────────────────────
   typecheck:
@@ -151,7 +154,6 @@ jobs:
           pip install mypy>=1.11
       - name: mypy strict typecheck
         run: mypy . --strict --ignore-missing-imports
-        continue-on-error: true  # Remove once all stubs are in place
 
   # ── 3. Test (Matrix Strategy) ────────────────────────────────────────────
   test:
@@ -183,7 +185,7 @@ jobs:
     # ── Test services (PostgreSQL + Redis) ─────────────────────────────────
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -196,7 +198,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
         ports:
           - 6379:6379
         options: >-

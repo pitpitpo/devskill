@@ -1,7 +1,7 @@
 # 🐍 Python Production Standard (`python.md`)
 
-> **Standard**: Python 3.12+ (CPython internals, PEP 695 type parameter syntax, PEP 703 free-threaded GIL evolution)  
-> **Tooling Stack**: `uv` (hermetic fast packaging & resolver), `ruff` (linter & formatter), `mypy --strict`  
+> **Standard**: Python 3.13 / 3.14+ (CPython internals, PEP 695 generics, PEP 649 deferred annotations, PEP 750 t-strings, PEP 779 supported free-threading)  
+> **Tooling Stack**: `uv` (hermetic fast packaging & resolver), `ruff` (linter & formatter), `mypy --strict` / `pyright` / `ty`  
 > **Classification**: Idiomatic Type-Safe Systems, Asynchronous Runtimes, & Enterprise Engineering  
 > **Applicability**: Platform Engineers, Backend Core Architects, High-Throughput Service Developers  
 > **Prerequisites**: Python Object Model, OS Threading Models, Event Loop Mechanics, Type Variance  
@@ -74,7 +74,7 @@ CPython manages memory using two core mechanisms:
 - In standard CPython (prior to PEP 703 free-threaded builds), the GIL is a mutual exclusion lock that prevents multiple native OS threads from executing Python bytecodes concurrently.
 - **I/O-Bound Tasks**: When a thread initiates network I/O, disk I/O, or enters a C extension (e.g., NumPy vectorized kernels, cryptographic hashing), it explicitly releases the GIL, allowing other threads to run.
 - **CPU-Bound Tasks**: Multiple Python threads attempting to compute math or process strings fight for the single GIL, resulting in context-switch overhead (GIL thrashing via OS condition variables) and execution times worse than a single thread.
-- **Python 3.13+ Free-Threaded Mode**: Experimental builds disable the GIL using mimalloc memory pools and biased reference counting. Until ecosystem-wide C-extension support stabilizes, multiprocessing remains the mandated production standard for CPU-parallel workloads.
+- **Python 3.13/3.14 Free-Threaded Mode (PEP 703 / PEP 779)**: Python 3.14 promotes the free-threaded build (`python3.14t`, GIL disabled via mimalloc and biased reference counting) from experimental to officially supported. Use `python3.14t` ONLY after verifying every native C/Rust extension in your lockfile declares `Py_MOD_GIL_NOT_USED` (otherwise importing an incompatible extension silently re-enables the GIL). For mixed native ecosystems, `concurrent.interpreters` (PEP 734 subinterpreters) or `ProcessPoolExecutor` remain reliable CPU-parallel primitives.
 
 ### 3.2 AsyncIO Architecture: Epoll Event Loops and Cooperative Scheduling
 
@@ -807,12 +807,23 @@ async def sync_bounded(urls: list[str], concurrency_limit: int = 50):
 
 ---
 
-## 7. Verification Checklist
+## 7. Python 3.13 / 3.14 Production Features (2026 Baseline)
+
+1. **Template Strings (`t`-strings, PEP 750 in Python 3.14)**: Unlike `f`-strings (which eagerly evaluate to raw `str` and cause SQL/HTML/shell injection if misused), `t`-strings evaluate to a structured `string.templatelib.Template` separating static literal segments from interpolated `Interpolation` values. Use `t`-strings with typed sanitizers for HTML rendering, structured logging, and safe query builders—never interpolate untrusted user input into `f`-strings (`R-061`, `R-069`).
+2. **Deferred Annotation Evaluation by Default (PEP 649 / PEP 749 in Python 3.14)**: Annotations are evaluated lazily via `__annotate__` functions and inspected safely via `annotationlib.get_annotations()`, eliminating forward-reference string quoting hacks and cyclic import traps without legacy `from __future__ import annotations` pitfalls (keep `from __future__ import annotations` only when supporting Python 3.10–3.13 runtimes).
+3. **Supported Free-Threading (`python3.14t`) & Subinterpreters (PEP 734)**:
+   - Audit thread-safety before adopting `python3.14t`: prefer immutable dataclasses, explicit `threading.Lock` / `queue.Queue`, and verify `sys._is_gil_enabled() is False` in startup self-checks when free-threading is required.
+   - Use `concurrent.interpreters` when isolated per-worker state with lower memory overhead than OS processes is desired.
+4. **Hermetic `uv` + `ruff` Toolchain**: Run all CI jobs with `uv sync --frozen --no-dev` (or `--locked` for tests), `ruff check .`, `ruff format --check .`, and strict static type checking (`mypy --strict` or `pyright`).
+
+---
+
+## 8. Verification Checklist
 
 Before shipping Python code to production, execute this automated verification sequence:
 
-- [ ] **Static Type Analysis**: `mypy --strict .` passes with 0 errors across all production modules.
-- [ ] **Linter & Formatting Conformity**: `ruff check .` and `ruff format --check .` return cleanly.
+- [ ] **Static Type Analysis**: `mypy --strict .` (or `pyright`) passes with 0 errors across all production modules.
+- [ ] **Linter & Formatting Conformity**: `ruff check .` and `ruff format --check .` return cleanly with zero deprecation warnings.
 - [ ] **Test Coverage Baseline**: `pytest` executes with `--cov-fail-under=90`, all unit and integration tests green.
 - [ ] **Event Loop Hygiene**: No synchronous file I/O (`open()`), network calls (`requests.*`), or `time.sleep()` in any `async def` function.
 - [ ] **Data Model Validation**: All external payloads (HTTP requests, message broker events) are parsed through Pydantic v2 schemas configured with `extra="forbid"`.

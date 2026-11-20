@@ -16,10 +16,10 @@
 | **Skill Name** | `agents/sol-loop.md` |
 | **Capability Archetypes** | Single-Model Adversarial Review, Iterative Code Hardening, Scope-Creep Defense, Finding Ledger Governance |
 | **Trigger Phrases** | `"sol loop"`, `"run sol loop"`, `"adversarial review loop"`, `"tight review cycle"` |
-| **Governing Rules** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) (R-015 Minimal Diffs, R-182 Surgical Interventions, R-204 Scope-Creep Defense, R-216 Sol Review Ledger) |
+| **Governing Rules** | [`RULES.md`](../RULES.md) (R-015 Minimal Diffs, R-182 Surgical Interventions, R-204 Scope-Creep Defense, R-216 Sol Review Ledger) |
 | **Prerequisites** | Git repository, diff engine, strong reasoning model (OpenAI o1/o3-mini/Sol, Anthropic Claude Opus, or Gemini Pro), T3 Code orchestrator or CLI harness |
 
-While the **Tri-Provider Model Council** ([`agents/multi-model-council.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/multi-model-council.md)) is reserved for high-stakes architectural pivots, schema migrations, and security consensus, day-to-day engineering requires a faster, tighter, and cost-effective review loop.
+While the **Tri-Provider Model Council** ([`agents/multi-model-council.md`](multi-model-council.md)) is reserved for high-stakes architectural pivots, schema migrations, and security consensus, day-to-day engineering requires a faster, tighter, and cost-effective review loop.
 
 The **Sol Loop Protocol** deploys a single, highly critical reviewer model across iterative rounds with strict turn budgeting, an immutable findings ledger, and uncompromising resistance against review-induced scope creep.
 
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 #### Round 1: Initial Adversarial Audit Prompt
 ```text
 Review only. Do not edit, commit, push, comment on PRs, or start subagents.
-Repository: /home/agy/.t3/userdata/attachments/project
+Repository: <repo-root>
 Base Commit: 3a7f8b9 | Target Paths: src/services/billing/
 Intent: Fix Stripe subscription proration webhook race condition.
 Out of scope: Refactoring invoice PDF generator or tax calculation.

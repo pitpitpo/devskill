@@ -260,4 +260,4 @@ git commit -m "perf: add redis cache, rewrite query in raw SQL, use uvloop, and 
 
 ---
 
-*See also*: [`sections/frontend/web-performance.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/frontend/web-performance.md) for Core Web Vitals and [`agents/blast-radius-verification.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/blast-radius-verification.md) for verifying change safety.
+*See also*: [`sections/frontend/web-performance.md`](../sections/frontend/web-performance.md) for Core Web Vitals and [`agents/blast-radius-verification.md`](blast-radius-verification.md) for verifying change safety.

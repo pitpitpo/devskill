@@ -1,85 +1,52 @@
-# 🚀 DevSkill: Autonomous Industry-Grade Engineering Library
+# 🚀 DevSkill v2.0: Autonomous Industry-Grade Engineering Library
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Quality Gate: Enterprise](https://img.shields.io/badge/Quality%20Gate-Enterprise-blue.svg)](#)
-[![Security: OWASP Top 10](https://img.shields.io/badge/Security-OWASP%20Compliant-green.svg)](file:///home/agy/.t3/userdata/attachments/devskill/security.md)
-[![Agents: Guardrails Active](https://img.shields.io/badge/Agents-Deterministic-purple.svg)](file:///home/agy/.t3/userdata/attachments/devskill/agents.md)
+[![Quality Gate: Enterprise](https://img.shields.io/badge/Quality%20Gate-Enterprise%20v2.0-blue.svg)](DEFINITION_OF_DONE.md)
+[![Security: OWASP 2025 + ASI](https://img.shields.io/badge/Security-OWASP%202025%20%2B%20ASI-green.svg)](security.md)
+[![Agent Skills: Open Standard](https://img.shields.io/badge/Standard-agentskills.io%20%2B%20AGENTS.md-purple.svg)](SKILL.md)
 
-`devskill` is an open standard and operational knowledge repository engineered for autonomous AI agents and senior development teams shipping production-grade software. It bridges the gap between raw code completion and resilient, high-performance, enterprise-ready systems.
-
----
-
-## 📚 What DevSkill Provides
-
-- **Deterministic Rules & Quality Gates**: [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) enforces non-negotiable coding, architecture, typing, and testing laws.
-- **Production Security Standard**: [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md) delivers complete OWASP Top 10 mitigation, token handling, secrets management, and defense-in-depth guidelines.
-- **Autonomous Agent Safety**: [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) defines agent personas, sandboxing rules, self-correction loops, and context hygiene.
-- **Architectural Decision Matrix**: [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) guides choices across databases, frameworks, APIs, and state managers.
-- **Comprehensive Technical Guides**: Deep production manuals organized into modular folders:
-  - [`frameworks/`](file:///home/agy/.t3/userdata/attachments/devskill/frameworks/) (Next.js, React, FastAPI, NestJS, Django, Spring Boot, Go Gin, Odoo, ERPNext, Android AOSP, etc.)
-  - [`sections/`](file:///home/agy/.t3/userdata/attachments/devskill/sections/) (Backend, Frontend, Database, DevOps, Testing & QA, Enterprise ERP/Ledger, Systems & Kernel Drivers)
-  - [`languages/`](file:///home/agy/.t3/userdata/attachments/devskill/languages/) (TypeScript, Python, Go, Rust, Java, C/C++, SQL)
-  - [`workflows/`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/) (PR babysitting, modernization, takeover, Git branching, SemVer, Incident response)
-  - [`pipelines/`](file:///home/agy/.t3/userdata/attachments/devskill/pipelines/) (CI/CD GitHub Actions, GitLab CI, SAST/DAST)
-  - [`scaffolding/`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/) (Production starter configs and architecture templates)
+`devskill` is an open-standard (`agentskills.io` + Linux Foundation AAIF `AGENTS.md`) engineering library and operational governance system built for autonomous AI coding agents and senior software engineering teams. It eliminates hallucinated defaults, enforces deterministic verification loops, embeds **OWASP Top 10:2025**, **OWASP Agentic Applications (ASI01–ASI10)**, **NIST SP 800-63B-4**, **NIST Post-Quantum Cryptography (FIPS 203–205)**, and **MCP 2026 / A2A** protocols, and provides executable validation and PR-watching scripts.
 
 ---
 
-## ⚡ Quick Navigation
+## 📚 What DevSkill v2.0 Provides
 
-```
-devskill/
-├── SKILL.md                          # Top-level AI Agent Skill Specification
-├── specs.md                          # System Specification & Architecture Schema
-├── RULES.md                          # Non-Negotiable Universal Engineering Rules
-├── ROUTING.md                        # Deterministic Task-Archetype Decision Matrix
-├── security.md                       # Production Security Standards & OWASP Checklist
-├── agents.md                         # Autonomous Agent Protocols & Guardrails
-├── decisions.md                      # Technology Selection Decision Trees
-├── index.json                        # Machine-Readable Fast Topic Index
-│
-├── agents/                           # Autonomous Agent Sub-Skills & Execution Protocols
-│   ├── orchestrator.md               # Multi-Agent DAGs, Fencing Leases & Reconcilers
-│   ├── full-send-delivery.md         # Autonomous PR Delivery, Merge Gates & Handoff
-│   ├── multi-model-council.md        # Tri-Provider Flagship Council & Review Loops
-│   ├── blast-radius-verification.md  # Systemic Impact Analysis & Dark Blast Radius
-│   ├── hillclimbing-optimization.md  # 7-Question Benchmark Audit & Hypothesis Ledgers
-│   ├── poteto-discipline.md          # Minimal Diff, Surgical Engineering & Evidence
-│   ├── tdd-reproduction.md           # Reproduction-First TDD & Defect Isolation
-│   ├── arena-evaluator.md            # Multi-Solution Arena Scoring & Trade-offs
-│   ├── ralph-reconciler-loop.md      # The Ralph Loop & Non-Stop Reconciler
-│   ├── sol-loop.md                   # Single-Model Adversarial Review Loop & Sol Protocol
-│   ├── formal-verification-statecharts.md # TLA+ Invariant Checking & Statecharts
-│   └── model-capability-orchestration.md # Dynamic Model Discovery & Workload Orchestration
-│
-├── frameworks/
-│   ├── frontend/                     # Next.js, React, Vue/Nuxt, SvelteKit, Tailwind
-│   ├── backend/                      # FastAPI, NestJS, Django, Express, Spring, Go/Rust, .NET
-│   ├── erp/                          # Odoo 17/18, Frappe & ERPNext v15/v16
-│   └── mobile/                       # React Native Expo, Flutter, Android AOSP
-│
-├── sections/
-│   ├── backend/                      # API Design, Microservices vs Monolith, Caching, Queues
-│   ├── frontend/                     # State Management, Accessibility (A11y), Performance
-│   ├── database/                     # PostgreSQL Mastery, Migrations, NoSQL, Pooling
-│   ├── erp-enterprise/               # Core Accounting Ledger, Inventory & Supply Chain
-│   ├── systems-kernel/               # Linux Kernel Drivers, Device Tree & eBPF
-│   ├── devops-infrastructure/        # Docker Containers, Kubernetes, Terraform, Observability
-│   └── testing-qa/                   # Test Pyramid, Contract Testing, E2E Playwright
-│
-├── languages/                        # TypeScript, Python, Go, Rust, Java, C/C++, SQL
-├── workflows/                        # PR Babysitting, Modernize/Takeover, Git, SemVer, Incidents, Anti-Slop
-├── scripts/                          # Headless PR Watcher & Event Engine (pr-wait.py)
-├── pipelines/                        # GitHub Actions, GitLab CI, Security Scanning, Deployments
-└── scaffolding/                      # Starter Configs (.editorconfig, tsconfig, Docker, etc.)
+- **Progressive-Disclosure Standards Entrypoints**: [`SKILL.md`](SKILL.md) (`agentskills.io` v2.0 frontmatter), [`AGENTS.md`](AGENTS.md) (universal cross-tool standard), and [`CLAUDE.md`](CLAUDE.md) (declarative `.claude/settings.json` Exit-Code-2 harness hooks).
+- **23-Archetype Deterministic Router**: [`ROUTING.md`](ROUTING.md) maps every engineering task to an exact 3–5 file reading list, invariant rules, prohibited actions, and terminal verification commands.
+- **235 Universal Engineering Laws**: [`RULES.md`](RULES.md) (`R-001` through `R-235`) spanning code hygiene, typing, testing, database migrations, security, ERP/accounting ledgers, Linux kernel/AOSP, multi-agent orchestration, MCP/A2A, and post-quantum readiness.
+- **2026 Production Security Baseline**: [`security.md`](security.md) covering OWASP Top 10:2025, OWASP Agentic ASI01–ASI10 & AST10, NIST SP 800-63B-4 (July 2025), and NIST FIPS 203/204/205 PQC.
+- **Executable Guardrails & Self-Validation**:
+  - [`scripts/ci-gate.sh`](scripts/ci-gate.sh) — Pre-commit (`--staged`) and CI quality gate scanner.
+  - [`scripts/validate-skill.py`](scripts/validate-skill.py) — Deterministic repository auditor (links, rule citations, frontmatter, config syntax, and `index.json` parity).
+  - [`scripts/pr-wait.py`](scripts/pr-wait.py) — Event-driven GitHub PR & review-bot watcher with REST rate-limit fallback (R-206).
+- **Comprehensive Modular Library**:
+  - [`agents/`](agents/) — Orchestrator DAGs, MCP/A2A interoperability, dynamic model discovery, tri-provider councils, Sol loop, Ralph loop, TLA+ formal verification, blast-radius proof, hillclimbing, TDD reproduction, Poteto discipline, Arena evaluator, full-send delivery.
+  - [`frameworks/`](frameworks/) — Next.js 16, React 19.2, Vue/Nuxt, SvelteKit, Tailwind v4, FastAPI, NestJS, Django, Express, Spring Boot, Go Gin/Rust Axum, .NET, Odoo, ERPNext, React Native Expo, Flutter, Android AOSP.
+  - [`sections/`](sections/) — Backend, Frontend, Database (PostgreSQL 18), DevOps/SRE, Testing/QA, AI/ML & LLM Integration, Enterprise ERP/Ledger, Systems & Kernel Drivers.
+  - [`languages/`](languages/) — TypeScript 6/7 (`tsgo`), Python 3.14, Go 1.25+, Rust 2024, Java 21+, C23/C++23, SQL.
+  - [`workflows/`](workflows/), [`pipelines/`](pipelines/), and [`scaffolding/`](scaffolding/).
+
+---
+
+## ⚡ Quick Verification Commands
+
+```bash
+# 1. Audit skill repository integrity (links, rules, frontmatter, configs, index.json)
+python3 scripts/validate-skill.py
+
+# 2. Run automated unit tests for bundled scripts
+python3 -m unittest discover -s scripts -p "test_*.py" -v
+
+# 3. Run the DevSkill CI quality gate on your project (or staged changes)
+./scripts/ci-gate.sh --staged
 ```
 
 ---
 
 ## 🛠️ Usage by AI Agents
 
-AI agents loading `devskill` as a skill should:
-1. First read [`SKILL.md`](file:///home/agy/.t3/userdata/attachments/devskill/SKILL.md) and [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json).
-2. Adhere unconditionally to [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) and [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md).
-3. Select appropriate technical stacks via [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md).
-4. Fetch specific domain guides on-demand without loading unnecessary context.
+1. Start at [`AGENTS.md`](AGENTS.md) or [`SKILL.md`](SKILL.md) (progressive disclosure).
+2. Classify the task in [`ROUTING.md`](ROUTING.md) or look up tags/archetypes in [`index.json`](index.json).
+3. Enforce [`RULES.md`](RULES.md) and [`security.md`](security.md) unconditionally.
+4. Load only the 3–5 prescribed domain guides for your archetype.
+5. Verify with real CLI execution (Exit Code `0`) and score against [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) (≥ 95/100 total, ≥ 9.0/10 per category).

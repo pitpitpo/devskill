@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Bash(rm -rf /:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(sudo:*)",
+      "Read(/etc/**)",
+      "Read(~/.ssh/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c 'import json,re,sys; cmd=json.load(sys.stdin).get(\"tool_input\",{}).get(\"command\",\"\"); bad=r\"(rm\\s+-rf\\s+/|git\\s+push\\s+(-f|--force)\\b|gh\\s+pr\\s+merge\\s+.*--admin|sudo\\s+|npm\\s+install\\s+-g\\b|DROP\\s+DATABASE)\"; sys.exit(2) if re.search(bad, cmd, re.I) else sys.exit(0)'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c 'import json,subprocess,sys; p=json.load(sys.stdin).get(\"tool_input\",{}).get(\"file_path\",\"\"); subprocess.run([\"ruff\",\"format\",p], check=False) if p.endswith(\".py\") else None'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -x ./scripts/ci-gate.sh ]; then ./scripts/ci-gate.sh || exit 2; fi'"
+          }
+        ]
+      }
+    ]
+  }
+}

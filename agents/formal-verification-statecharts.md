@@ -16,7 +16,7 @@
 | **Skill Name** | `agents/formal-verification-statecharts.md` |
 | **Capability Archetypes** | TLA+ Specification, Formal Invariant Model Checking, Shortest-Path Counterexample Isolation, Statechart Visualization |
 | **Trigger Phrases** | `"formal verification"`, `"model check this race"`, `"prove this invariant"`, `"tla+"`, `"statechart"`, `"verify state machine"` |
-| **Governing Rules** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) (R-003 Zero Assumptions, R-188 Goroutine/Task Ownership, R-199 Reconciler Desired-State, R-217 Formal Verification Invariants) |
+| **Governing Rules** | [`RULES.md`](../RULES.md) (R-003 Zero Assumptions, R-188 Goroutine/Task Ownership, R-199 Reconciler Desired-State, R-217 Formal Verification Invariants) |
 | **Prerequisites** | Java runtime (JRE 17+), TLA+ tools (`tlc.jar` or CLI wrapper), Python/TypeScript runtime for trace parsing |
 
 Unit and integration tests only verify the execution paths that an engineer or AI agent thought to write. In distributed systems, concurrent protocols, financial ledgers, and complex state machines, race conditions hide in non-deterministic thread interleavings and network re-orderings that traditional tests almost never hit.

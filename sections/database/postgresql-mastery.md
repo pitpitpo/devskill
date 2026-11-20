@@ -104,13 +104,7 @@ autovacuum_vacuum_cost_delay = 2ms
 
 ---
 
-
----
-
-
----
-
-## 2. PostgreSQL Storage Engine & Process Architecture
+## 6. Process Architecture (Postmaster & Background Workers)
 
 ```
                   ┌────────────────────────────────────────────────────────┐
@@ -143,20 +137,39 @@ autovacuum_vacuum_cost_delay = 2ms
                   └────────────────────┘               └────────────────────┘
 ```
 
-## 5. Common Pitfalls & Anti-Patterns
+---
+
+## 7. PostgreSQL 18 Production Upgrades (2026 Baseline)
+
+New production deployments should target **PostgreSQL 18** and leverage its engine-level throughput and ergonomics improvements:
+
+- **Asynchronous I/O (`io_method`)**: PostgreSQL 18 introduces an asynchronous I/O subsystem (`io_method = 'worker'` default; `'io_uring'` on modern Linux kernels) accelerating sequential scans, bitmap heap scans, and `VACUUM` by up to 2–3× on high-IOPS NVMe storage. Benchmark `io_uring` under your kernel seccomp policy before enabling in containers.
+- **Native Time-Ordered `uuidv7()`**: Prefer `DEFAULT uuidv7()` over random `gen_random_uuid()` (UUIDv4) for distributed primary keys. UUIDv7 preserves B-tree leaf locality, dramatically reducing page splits, index bloat, and WAL write amplification while keeping global uniqueness.
+- **`VIRTUAL` Generated Columns by Default**: Generated columns compute on read without inflating heap storage unless `STORED` is explicitly requested (`col TYPE GENERATED ALWAYS AS (...) VIRTUAL`).
+- **B-Tree Skip Scan**: Multi-column B-tree indexes `(tenant_id, status, created_at)` can now satisfy predicates omitting low-cardinality leading columns via skip scans—still verify with `EXPLAIN (ANALYZE, BUFFERS)` rather than assuming optimal selectivity.
+- **Native OAuth 2.0 Authentication & `OLD`/`NEW` in `RETURNING`**: Integrate short-lived federated OAuth 2.0 tokens directly in `pg_hba.conf` (eliminating static DB passwords), and use `RETURNING OLD.balance, NEW.balance` in atomic ledger updates for tamper-evident audit trails.
+- **Upgrades Preserving Planner Statistics**: `pg_upgrade` in PostgreSQL 18 retains planner statistics, preventing post-upgrade query plan regressions before `ANALYZE` finishes.
+
+---
+
+## 8. Common Pitfalls & Anti-Patterns
 
 | Anti-Pattern | Root Cause | Production Consequence | Remediated Standard |
 | :--- | :--- | :--- | :--- |
 | **Unindexed Foreign Keys** | Creating `REFERENCES` without index | Full table scans during cascades and child lookups; table lockups | Explicitly index all foreign key columns |
+| **Random UUIDv4 Primary Keys** | Inserting non-monotonic UUIDv4 into huge B-Trees | Random page splits, poor buffer cache hit ratio, severe WAL bloat | Use native PostgreSQL 18 `uuidv7()` or `BIGINT GENERATED ALWAYS AS IDENTITY` |
 | **Massive Offset Pagination** | `OFFSET 500000 LIMIT 20` | Database scans 500,020 rows, thrashing memory and CPU | Use Keyset (cursor) pagination: `WHERE id > :last_id ORDER BY id LIMIT 20` |
-| **DDL Table Locking in Peak Hours** | Running `ALTER TABLE ADD COLUMN ... DEFAULT ...` or non-concurrent index | Exclusive table lock freezes all web requests | Use `CREATE INDEX CONCURRENTLY` and safe migration protocols |
+| **DDL Table Locking in Peak Hours** | Running `ALTER TABLE ADD COLUMN ...` with volatile defaults or non-concurrent index | Exclusive table lock freezes all web requests | Use `CREATE INDEX CONCURRENTLY`, lock timeouts (`lock_timeout = '3s'`), and expand/contract migrations |
 | **Idle in Transaction Connections** | Unclosed transactions held by application threads | Prevents autovacuum from cleaning dead tuples; leads to freeze risk | Set `idle_in_transaction_session_timeout = '60s'` |
 
-## 6. Verification Checklist & Production Audit
+---
+
+## 9. Verification Checklist & Production Audit
 
 - [ ] All foreign keys have explicit supporting B-Tree indexes.
+- [ ] Primary keys use monotonic `BIGINT` identity or native `uuidv7()` (never unindexed random UUIDv4 on high-write tables).
 - [ ] Large tables with append-only timeseries data use BRIN indexes or range partitioning.
 - [ ] No `SELECT *` appears in latency-sensitive application queries.
 - [ ] Autovacuum scale factors are calibrated to prevent table and index bloat.
 - [ ] `EXPLAIN (ANALYZE, BUFFERS)` verifies that critical queries achieve $> 99\%$ shared buffer hits.
-- [ ] Table alterations on live production systems use `CREATE INDEX CONCURRENTLY`.
+- [ ] Table alterations on live production systems use `CREATE INDEX CONCURRENTLY` and strict `lock_timeout`.

@@ -197,4 +197,4 @@ Line 45: Potential null dereference when `user.profile` is undefined. Add non-nu
 
 ---
 
-*See also*: [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md) for surgical diff standards and [`workflows/code-review-standards.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/code-review-standards.md) for PR review checklists.
+*See also*: [`agents/poteto-discipline.md`](../agents/poteto-discipline.md) for surgical diff standards and [`workflows/code-review-standards.md`](code-review-standards.md) for PR review checklists.

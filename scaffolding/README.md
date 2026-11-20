@@ -4,12 +4,15 @@ This directory provides plug-and-play production configurations and architectura
 
 ## Subdirectories
 
-- [`configs/`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/configs/):
-  - [`.editorconfig`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/configs/.editorconfig): Universal cross-editor formatting baseline.
-  - [`tsconfig.base.json`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/configs/tsconfig.base.json): Enterprise TypeScript strict configuration.
-  - [`ruff.toml`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/configs/ruff.toml): Ultra-fast Python linter and formatter config.
-  - [`docker-compose.yml`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/configs/docker-compose.yml): Production-parity local dev environment (PostgreSQL, Redis, Mailpit).
-  - [`.github-ci-template.yml`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/configs/.github-ci-template.yml): Universal starter GitHub Actions workflow.
-- [`templates/`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/templates/):
-  - [`fullstack-nextjs-fastapi.md`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/templates/fullstack-nextjs-fastapi.md): Fullstack Next.js + FastAPI blueprint.
-  - [`enterprise-modular-monolith.md`](file:///home/agy/.t3/userdata/attachments/devskill/scaffolding/templates/enterprise-modular-monolith.md): Enterprise Modular Monolith pattern.
+- [`configs/`](configs/):
+  - [`.editorconfig`](configs/.editorconfig): Universal cross-editor formatting baseline.
+  - [`.claude-settings.json`](configs/.claude-settings.json): Declarative Claude Code deterministic hooks (`PreToolUse`, `PostToolUse`, `Stop` using Exit Code `2` blocking).
+  - [`tsconfig.base.json`](configs/tsconfig.base.json): Enterprise TypeScript 6/7 (`tsgo`) strict configuration.
+  - [`ruff.toml`](configs/ruff.toml): Ultra-fast Python 3.13/3.14 linter and formatter config.
+  - [`docker-compose.yml`](configs/docker-compose.yml): Production-parity local dev environment (PostgreSQL 18, Redis 8, Mailpit, MinIO, Adminer).
+  - [`.github-ci-template.yml`](configs/.github-ci-template.yml): Universal starter GitHub Actions workflow (Node 24, Python 3.13, Go 1.25, DevSkill CI Gate, Trivy, Gitleaks).
+- [`templates/`](templates/):
+  - [`api-microservice.md`](templates/api-microservice.md): Production API microservice blueprint.
+  - [`enterprise-modular-monolith.md`](templates/enterprise-modular-monolith.md): Enterprise Modular Monolith pattern.
+  - [`fullstack-nextjs-fastapi.md`](templates/fullstack-nextjs-fastapi.md): Fullstack Next.js + FastAPI blueprint.
+  - [`saas-multi-tenant.md`](templates/saas-multi-tenant.md): Multi-tenant SaaS architecture blueprint with RLS isolation.

@@ -1,7 +1,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # docker-compose.yml — Production-Like Local Development Environment
 # ──────────────────────────────────────────────────────────────────────────────
-# Stack: PostgreSQL 16 · Redis 7 · Mailpit · MinIO (S3) · Adminer
+# Stack: PostgreSQL 18 · Redis 8 (or Valkey 8) · Mailpit · MinIO (S3) · Adminer
 #
 # Usage:
 #   docker compose up -d                     # Start all services
@@ -26,9 +26,9 @@ name: devskill-local-env
 # ── Services ─────────────────────────────────────────────────────────────────
 services:
 
-  # ── PostgreSQL 16 ────────────────────────────────────────────────────────
+  # ── PostgreSQL 18 ────────────────────────────────────────────────────────
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: local-postgres
     restart: unless-stopped
     environment:
@@ -40,7 +40,8 @@ services:
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # PostgreSQL 18 official image mounts the parent directory for clean major upgrades
+      - postgres_data:/var/lib/postgresql
       # Mount init scripts — any .sql/.sh files here run on first start
       # - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     # Shared memory for parallel queries & hash joins
@@ -73,9 +74,9 @@ services:
     networks:
       - backend
 
-  # ── Redis 7 ──────────────────────────────────────────────────────────────
+  # ── Redis 8 (drop-in alternative: valkey/valkey:8-alpine) ───────────────
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: local-redis
     restart: unless-stopped
     command: >

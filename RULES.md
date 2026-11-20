@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-18 (Rules R-001 through R-219 Active)
+> **Last Updated**: 2026-11-19 (Rules R-001 through R-235 Active)
 
 ---
 
@@ -13,7 +13,7 @@
 2. [Scope Discipline & Minimal Changes (R-015 to R-026)](#2-scope-discipline--minimal-changes)
 3. [Code Quality, Typing & Architecture (R-027 to R-045)](#3-code-quality-typing--architecture)
 4. [Error Handling & Resilience (R-046 to R-059)](#4-error-handling--resilience)
-5. [Security & Privacy (OWASP, NIST, RFCs) (R-060 to R-083)](#5-security--privacy)
+5. [Security & Privacy (OWASP 2025, NIST, RFCs) (R-060 to R-083)](#5-security--privacy-owasp-2025-nist-rfcs)
 6. [Testing & Quality Assurance (R-084 to R-102)](#6-testing--quality-assurance)
 7. [Data Integrity, Persistence & Migrations (R-103 to R-116)](#7-data-integrity-persistence--migrations)
 8. [Supply Chain & Dependency Hygiene (R-117 to R-128)](#8-supply-chain--dependency-hygiene)
@@ -24,7 +24,10 @@
 13. [Agent Safety, Tool Sandboxing & Ethics (R-171 to R-180)](#13-agent-safety-tool-sandboxing--ethics)
 14. [Agent Discipline, Deterministic Execution & Multi-Agent Orchestration (R-181 to R-200)](#14-agent-discipline-deterministic-execution--multi-agent-orchestration)
 15. [Autonomous PR Delivery, Model Councils & Review Gates (R-201 to R-219)](#15-autonomous-pr-delivery-model-councils--review-gates)
-16. [Automated CI Gate Scan Patterns](#16-automated-ci-gate-scan-patterns)
+16. [Enterprise ERP, Accounting Ledger & Supply Chain Invariants (R-220 to R-223)](#16-enterprise-erp-accounting-ledger--supply-chain-invariants)
+17. [Systems Programming, Linux Kernel & AOSP Invariants (R-224 to R-227)](#17-systems-programming-linux-kernel--aosp-invariants)
+18. [Agentic AI Security, MCP/A2A, NIST 800-63B-4 & Post-Quantum Crypto-Agility (R-228 to R-235)](#18-agentic-ai-security-mcpa2a-nist-800-63b-4--post-quantum-crypto-agility)
+19. [Automated CI Gate Scan Patterns](#19-automated-ci-gate-scan-patterns)
 
 ---
 
@@ -107,32 +110,32 @@
 
 ---
 
-## 5. Security & Privacy (OWASP, NIST, RFCs)
+## 5. Security & Privacy (OWASP 2025, NIST, RFCs)
 
-- **R-060 [Boundary Schema Validation]**: Every inbound external data point (HTTP body, query parameters, headers, webhooks, environment variables) MUST be validated against strict runtime schemas (Zod, Pydantic, TypeBox) (OWASP A03:2021).
-- **R-061 [100% Parameterized Database Queries]**: Dynamic string concatenation, template string interpolation, or raw formatting into SQL, NoSQL, LDAP, or shell commands is strictly banned. Use prepared statements and parameterized queries exclusively (OWASP A03:2021).
-- **R-062 [Defense-in-Depth Authentication]**: Authentication MUST be verified on every protected route and service interface. Never trust network perimeter location alone; implement Zero Trust (NIST SP 800-207).
-- **R-063 [Granular Authorization & IDOR Prevention]**: Object access MUST verify that the authenticated identity owns or has explicit permission for the requested entity key (`tenant_id`, `user_id`). Insecure Direct Object References (IDOR) are critical security flaws (OWASP A01:2021).
-- **R-064 [Zero Secrets in Source Control]**: Passwords, API tokens, encryption keys, certificates, and private credentials MUST NOT be committed to git repositories. Enforce scanning via Gitleaks, Trufflehog, or Trivy (OWASP A02:2021).
-- **R-065 [Modern Password Hashing Standards]**: Passwords MUST be hashed using Argon2id (RFC 9106, memory-hard: 64MB, iterations: 3, parallelism: 4) or bcrypt (cost factor ≥ 12). MD5, SHA-1, SHA-256, and plain DES are strictly banned for password storage (NIST SP 800-63B).
-- **R-066 [Approved Cryptographic Ciphers]**: Symmetric encryption MUST use authenticated ciphers: AES-256-GCM or ChaCha20-Poly1305. Asymmetric operations MUST use Ed25519 or RSA-3072+. ECB mode and DES/3DES are strictly prohibited (NIST SP 800-175B).
-- **R-067 [Principle of Least Privilege]**: Application processes, database connections, and IAM roles MUST run with the bare minimum capabilities required. The application DB user MUST NOT possess `DROP`, `ALTER`, or superuser privileges in production.
-- **R-068 [Rate Limiting & Abuse Prevention]**: Public authentication, registration, password reset, and sensitive endpoints MUST be protected with distributed rate limiters (Token Bucket / Leaky Bucket via Redis) (OWASP A04:2021).
-- **R-069 [Context-Aware Output Encoding]**: Untrusted user-supplied data rendered into HTML, attributes, JavaScript, or CSS contexts MUST be contextually encoded or sanitized with DOMPurify to eliminate Cross-Site Scripting (XSS) (OWASP A03:2021).
-- **R-070 [Strict Content Security Policy (CSP)]**: Web applications MUST serve a strict Content Security Policy header (`Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'`) forbidding `unsafe-inline` and `unsafe-eval` (W3C CSP Level 3).
-- **R-071 [Mandatory HTTP Security Headers]**: All HTTP responses MUST include security headers: `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy` (OWASP Secure Headers Project).
-- **R-072 [Anti-CSRF Protections]**: State-changing endpoints using cookie-based authentication MUST enforce Anti-CSRF double-submit cookies or SameSite=Strict/Lax policies (RFC 6265bis, OWASP A01:2021).
-- **R-073 [SSRF Prevention]**: All user-provided URLs intended for server fetching MUST be validated against an explicit whitelist and checked to prevent requests to loopback addresses (`127.0.0.1`), private networks (RFC 1918), and cloud metadata endpoints (`169.254.169.254`) (OWASP A10:2021).
+- **R-060 [Boundary Schema Validation]**: Every inbound external data point (HTTP body, query parameters, headers, webhooks, environment variables) MUST be validated against strict runtime schemas (Zod, Pydantic, Valibot, TypeBox) (OWASP A05:2025).
+- **R-061 [100% Parameterized Database Queries]**: Dynamic string concatenation, template string interpolation, or raw formatting into SQL, NoSQL, LDAP, or shell commands is strictly banned. Use prepared statements and parameterized queries exclusively (OWASP A05:2025).
+- **R-062 [Defense-in-Depth Authentication]**: Authentication MUST be verified on every protected route and service interface. Never trust network perimeter location alone; implement Zero Trust (NIST SP 800-207, OWASP A07:2025).
+- **R-063 [Granular Authorization & IDOR Prevention]**: Object access MUST verify that the authenticated identity owns or has explicit permission for the requested entity key (`tenant_id`, `user_id`). Insecure Direct Object References (IDOR) are critical security flaws (OWASP A01:2025).
+- **R-064 [Zero Secrets in Source Control]**: Passwords, API tokens, encryption keys, certificates, and private credentials MUST NOT be committed to git repositories. Enforce scanning via Gitleaks, Trufflehog, or Trivy (OWASP A02:2025 / A04:2025).
+- **R-065 [Modern Password Hashing Standards]**: Passwords MUST be hashed using Argon2id (RFC 9106, memory-hard: 64MB, iterations: 3, parallelism: 4) or bcrypt (cost factor ≥ 12). MD5, SHA-1, SHA-256, and plain DES are strictly banned for password storage (NIST SP 800-63B-4, OWASP A04:2025).
+- **R-066 [Approved Cryptographic Ciphers]**: Symmetric encryption MUST use authenticated ciphers: AES-256-GCM or ChaCha20-Poly1305. Asymmetric operations MUST use Ed25519, ECDSA P-256+, or RSA-3072+ alongside post-quantum hybrid readiness per R-231. ECB mode and DES/3DES are strictly prohibited (NIST SP 800-175B, OWASP A04:2025).
+- **R-067 [Principle of Least Privilege]**: Application processes, database connections, and IAM roles MUST run with the bare minimum capabilities required. The application DB user MUST NOT possess `DROP`, `ALTER`, or superuser privileges in production (OWASP A01:2025).
+- **R-068 [Rate Limiting & Abuse Prevention]**: Public authentication, registration, password reset, and sensitive endpoints MUST be protected with distributed rate limiters (Token Bucket / Leaky Bucket via Redis) (OWASP A06:2025 / A07:2025).
+- **R-069 [Context-Aware Output Encoding]**: Untrusted user-supplied data rendered into HTML, attributes, JavaScript, or CSS contexts MUST be contextually encoded or sanitized with DOMPurify to eliminate Cross-Site Scripting (XSS) (OWASP A05:2025).
+- **R-070 [Strict Content Security Policy (CSP)]**: Web applications MUST serve a strict Content Security Policy header (`Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`) forbidding `unsafe-inline` and `unsafe-eval` (W3C CSP Level 3, OWASP A02:2025).
+- **R-071 [Mandatory HTTP Security Headers]**: All HTTP responses MUST include security headers: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy` (OWASP A02:2025).
+- **R-072 [Anti-CSRF Protections]**: State-changing endpoints using cookie-based authentication MUST enforce Anti-CSRF double-submit cookies or SameSite=Strict/Lax policies (RFC 6265bis, OWASP A01:2025).
+- **R-073 [SSRF Prevention]**: All user-provided URLs intended for server fetching MUST be validated against an explicit allowlist, resolve DNS before connecting, and reject loopback (`127.0.0.0/8`, `::1`), RFC 1918 private networks, and cloud metadata endpoints (`169.254.169.254`) (OWASP A01:2025).
 - **R-074 [Secure File Upload Validation]**: File uploads MUST validate magic byte signatures (not just MIME strings or file extensions), enforce strict file size ceilings, generate randomized UUID filenames, and be stored in private object buckets (S3/GCS) with public execution disabled.
-- **R-075 [Multi-Tenant Data Isolation]**: Multi-tenant architectures MUST enforce strict tenant segregation via PostgreSQL Row-Level Security (RLS) or mandatory tenant identifier filters (`WHERE tenant_id = :current_tenant`) on every database query.
-- **R-076 [Timing Attack Defense]**: Secret comparisons (hashes, API tokens, HMAC signatures, CSRF tokens) MUST execute in constant time using `crypto.timingSafeEqual` or `hmac.compare_digest` to prevent side-channel timing attacks.
+- **R-075 [Multi-Tenant Data Isolation]**: Multi-tenant architectures MUST enforce strict tenant segregation via PostgreSQL Row-Level Security (RLS) or mandatory tenant identifier filters (`WHERE tenant_id = :current_tenant`) on every database query (OWASP A01:2025).
+- **R-076 [Timing Attack Defense]**: Secret comparisons (hashes, API tokens, HMAC signatures, CSRF tokens) MUST execute in constant time using `crypto.timingSafeEqual` or `hmac.compare_digest` after checking equal byte lengths to prevent side-channel timing attacks.
 - **R-077 [PII Data Protection & Privacy]**: Personally Identifiable Information (PII) MUST be encrypted at rest and masked in logs. Data architectures MUST provide functional mechanisms for user data export and cryptographic deletion (GDPR Article 17, CCPA).
-- **R-078 [Prompt Injection Defense]**: In LLM applications, user inputs MUST be isolated within structured delimiters, validated before tool execution, and treated as untrusted text. System prompts MUST NEVER be exposed via client responses (OWASP Top 10 for LLMs).
-- **R-079 [Strict CORS Configuration]**: Cross-Origin Resource Sharing (CORS) MUST NOT return `Access-Control-Allow-Origin: *` when credentials (`Access-Control-Allow-Credentials: true`) are enabled. Whitelists MUST be explicitly verified against known domain origins (RFC 6454).
+- **R-078 [Prompt Injection Defense]**: In LLM and agentic applications, user inputs and retrieved tool outputs MUST be isolated within structured delimiters, validated before tool execution, and treated as untrusted data. System prompts MUST NEVER be exposed via client responses (OWASP Top 10 for LLMs / ASI01).
+- **R-079 [Strict CORS Configuration]**: Cross-Origin Resource Sharing (CORS) MUST NOT return `Access-Control-Allow-Origin: *` when credentials (`Access-Control-Allow-Credentials: true`) are enabled. Allowlists MUST be explicitly verified against known domain origins (RFC 6454, OWASP A02:2025).
 - **R-080 [Secure Cookie Configuration]**: All session and authentication cookies MUST be issued with `Secure`, `HttpOnly`, and `SameSite=Lax` or `Strict` attributes.
-- **R-081 [Safe Deserialization]**: Applications MUST NOT deserialize untrusted data using unsafe methods (`pickle.loads`, `yaml.load`, `eval()`, Java raw deserialization). Use JSON or Protobuf exclusively (OWASP A08:2021).
+- **R-081 [Safe Deserialization]**: Applications MUST NOT deserialize untrusted data using unsafe methods (`pickle.loads`, `yaml.load`, `eval()`, Java raw deserialization). Use JSON or Protobuf exclusively (OWASP A08:2025).
 - **R-082 [Cryptographically Secure Randomness]**: Nonces, salt tokens, passwords, and session identifiers MUST be generated using cryptographically secure pseudorandom number generators (`crypto.randomBytes`, `secrets.token_hex`, `os.urandom`). Never use `Math.random()` or `rand()`.
-- **R-083 [Immutable Security Audit Logging]**: High-privilege events (logins, authorization failures, permission modifications, data export requests, administrative updates) MUST be written to an append-only, tamper-proof audit log.
+- **R-083 [Immutable Security Audit Logging]**: High-privilege events (logins, authorization failures, permission modifications, data export requests, administrative updates) MUST be written to an append-only, tamper-proof audit log (OWASP A09:2025).
 
 ---
 
@@ -230,7 +233,7 @@
 - **R-148 [Low Cardinality Metric Labels]**: Metric labels MUST have bounded cardinality. Never use user IDs, email addresses, order IDs, or raw URLs as metric label keys, as this causes timeseries database memory exhaustion.
 - **R-149 [Unified Correlation Across Telemetry]**: Logs, metrics, and traces MUST share identical correlation identifiers (`trace_id`, `span_id`) to allow instant cross-navigation in observability platforms.
 - **R-150 [Actionable, Symptom-Based Alerting]**: Production alerts MUST be based on user-impacting symptoms (e.g., error rate > 1%, p99 latency > 1000ms) tied to Service Level Objectives (SLOs), not transient machine spikes.
-- **R-151 [Single Error Logging Boundary]**: Log exceptions once where they are handled. Logging an exception and then re-throwing it causes duplicate log spam at every stack frame.
+- **R-151 [OpenTelemetry Semantic Conventions & GenAI Telemetry]**: Instrumented spans, metrics, and LLM/agent tool invocations MUST adhere to OpenTelemetry Semantic Conventions (including `gen_ai.*` attributes for model, token usage, latency, and tool calls) with sensitive prompt/PII payloads redacted by default.
 - **R-152 [Tamper-Proof Administrative Audit Log]**: User management, permission alterations, financial transactions, and compliance data exports MUST be written to an immutable, append-only audit trail.
 
 ---
@@ -289,15 +292,15 @@
 - **R-187 [Full Jitter Exponential Backoff & Circuit Breakers]**: Outbound RPC and HTTP calls to external or downstream microservices MUST incorporate exponential backoff with full jitter and circuit breakers to prevent thundering-herd cascades during partial outages.
 - **R-188 [Goroutine & Async Task Lifecycle Ownership]**: Every spawned goroutine, worker thread, or asynchronous task MUST have an explicit parent context or cancellation channel and be tracked via `sync.WaitGroup` or `errgroup.Group`. Unmonitored orphan tasks and context detachment are prohibited.
 - **R-189 [Nominal Branding & Boundary Validation Invariants]**: Domain primitives (e.g., `UserId`, `AccountId`, `EmailAddress`) MUST use nominal type branding (`Brand<T, B>`) or newtypes to prevent primitive obsession. External inputs MUST be validated at ingress using strict schema parsers (Zod, Pydantic).
-- **R-190 [Deterministic Routing Matrix Compliance]**: Autonomous agents MUST consult [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md) to ingest the exact prescribed file list for their task archetype before generating or modifying any code.
-- **R-191 [Orchestrator Role Isolation]**: Lead Orchestrator agents MUST coordinate, partition, budget, and reconcile execution per [`agents/orchestrator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/orchestrator.md). Orchestrators MUST NOT directly implement low-level source code in multi-step workflows; implementation belongs to specialized child subagents.
-- **R-192 [Pointer-Based Context Handoff]**: Orchestrators MUST hand off file paths, artifact URIs, and structured summary pointers (`file:///...`) to subagents. Orchestrators MUST NOT dump raw multi-megabyte conversation transcripts into child prompts, avoiding context window bloat and reasoning degradation.
+- **R-190 [Deterministic Routing Matrix Compliance]**: Autonomous agents MUST consult [`ROUTING.md`](ROUTING.md) to ingest the exact prescribed file list for their task archetype before generating or modifying any code.
+- **R-191 [Orchestrator Role Isolation]**: Lead Orchestrator agents MUST coordinate, partition, budget, and reconcile execution per [`agents/orchestrator.md`](agents/orchestrator.md). Orchestrators MUST NOT directly implement low-level source code in multi-step workflows; implementation belongs to specialized child subagents.
+- **R-192 [Pointer-Based Context Handoff]**: Orchestrators MUST hand off repository-relative file paths, artifact references, and structured summary pointers (e.g., `_coordination/artifacts/task-b.json`) to subagents. Orchestrators MUST NOT dump raw multi-megabyte conversation transcripts into child prompts, avoiding context window bloat and reasoning degradation.
 - **R-193 [Martin Kleppmann Fencing Tokens]**: Distributed task leases, file locks, and state-writing subagents MUST carry strictly monotonically increasing epoch tokens. Any write attempt carrying a stale token ($token < current$) MUST be rejected by storage layers to prevent split-brain overwrites.
 - **R-194 [Saga Compensating Rollbacks]**: Multi-agent workflows executing mutating operations across distinct subsystems MUST define inverse compensation actions. If an intermediate task fails, preceding completed tasks MUST be compensated in reverse order to restore consistency.
 - **R-195 [Acyclic Graph Validation & Cycle Ceilings]**: Orchestrators MUST validate execution DAGs for cycles prior to dispatch. If an iterative feedback loop (e.g., Code-Review-Revise) is required, the orchestrator MUST enforce a hard ceiling of $\le 3$ iterations.
 - **R-196 [Unresponsive Subagent & Zombie Reaping]**: Every subagent invocation MUST specify a hard timeout ($T_{\text{timeout}}$). Orchestrators MUST monitor child task health and terminate stalled workers before reclaiming resources.
 - **R-197 [Bounded Worker Concurrency]**: Parallel subagent dispatch MUST be bounded by an explicit semaphore pool ($K \le 4$ default). Unbounded parallel fan-out that exhausts LLM rate limits or creates git merge collisions is prohibited.
-- **R-198 [Adversarial Debate for High-Stakes Decisions]**: Breaking schema modifications, technology selections, or architectural migrations MUST undergo adversarial debate between a Proposer and a Reviewer, arbitrated via [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md).
+- **R-198 [Adversarial Debate for High-Stakes Decisions]**: Breaking schema modifications, technology selections, or architectural migrations MUST undergo adversarial debate between a Proposer and a Reviewer, arbitrated via [`agents/arena-evaluator.md`](agents/arena-evaluator.md).
 - **R-199 [Reconciler Desired-State Convergence]**: System modifications MUST follow level-triggered reconciler semantics, driving observed state to desired state idempotently with full-jitter exponential backoff.
 - **R-200 [Cryptographic Human-in-the-Loop Boundaries]**: Destructive operations (production deployments, database drop/truncate, external credential generation) MUST pause and require explicit confirmation tokens before execution.
 - **R-201 [Autonomous PR Lifecycle & Full-Send Merge Gate]**: End-to-end autonomous execution ("full-send") MUST satisfy the 5-point Merge Gate on the latest commit (100% direct proof observed, CI green, bot findings addressed, no human change requests, branch up to date & mergeable). Agents MUST NOT merge if any gate criterion fails or bypass branch protection via `--admin`.
@@ -322,9 +325,40 @@
 
 ---
 
-## 16. Automated CI Gate Scan Patterns
+## 16. Enterprise ERP, Accounting Ledger & Supply Chain Invariants
 
-Add this script to your CI pipeline (e.g., GitHub Actions, GitLab CI, pre-commit) to enforce non-negotiable coding hygiene rules at commit and merge time.
+- **R-220 [Exact Fixed-Point Decimal Arithmetic for Currency]**: Monetary amounts, tax rates, exchange conversions, and ledger line totals MUST use exact fixed-point decimal representations (`Decimal`, `BigDecimal`, or integer minor units) with explicit banker's/regulatory rounding rules. IEEE-754 binary floating-point types (`float`/`double`) are strictly prohibited for currency.
+- **R-221 [Double-Entry General Ledger Balance Invariant]**: Every posted accounting journal entry MUST satisfy $\sum \text{Debit} \equiv \sum \text{Credit}$ per currency/reporting ledger within an atomic database transaction before commit.
+- **R-222 [Append-Only Immutable Posted Ledger Entries]**: Posted financial journals (`account.move`, `GL Entry`, `ledger_entries`) MUST be strictly append-only. Direct SQL `UPDATE` or `DELETE` on posted financial rows is forbidden; corrections MUST be recorded as linked reversal/credit-note entries.
+- **R-223 [Perpetual Inventory FIFO Cost Layer Queue Invariant]**: Perpetual inventory systems MUST maintain atomic, ordered cost layers (FIFO/Weighted Average) synchronized with general ledger stock valuation accounts and reject negative stock quantities unless explicitly authorized by tenant policy.
+
+---
+
+## 17. Systems Programming, Linux Kernel & AOSP Invariants
+
+- **R-224 [RAII & Bounded Systems Memory Safety]**: C++23/systems code MUST enforce RAII ownership (`std::unique_ptr`, `std::span`, `std::expected`) and bounds-checked buffers; C23/kernel code MUST release every allocation on all error unwind paths (`goto err_*` / `__free` cleanup) and pass ASan/UBSan/KASAN cleanly.
+- **R-225 [Atomic Context No-Sleep Invariant]**: Linux kernel code executing inside spinlocks, RCU read-side critical sections, or interrupt service routines (ISRs) MUST NOT invoke sleeping or blocking calls (`mutex_lock`, `msleep`, `kmalloc(..., GFP_KERNEL)`, `copy_from_user`).
+- **R-226 [Kernel-User Boundary Copy Verification]**: Kernel modules and drivers MUST NEVER dereference user-space pointers directly; all user-space transfers MUST use `copy_from_user` / `copy_to_user` with explicit length validation and verified return counts.
+- **R-227 [AOSP Treble Stability & SELinux `neverallow` Compliance]**: Cross-partition Android AOSP interfaces (`/system` ↔ `/vendor`) MUST use `@VintfStability` Stable AIDL HALs, and SELinux policy additions MUST preserve enforcing mode with zero upstream `neverallow` violations.
+
+---
+
+## 18. Agentic AI Security, MCP/A2A, NIST 800-63B-4 & Post-Quantum Crypto-Agility
+
+- **R-228 [OWASP Agentic AI Least Agency & Tool Sandboxing]**: Autonomous agents and tool servers MUST enforce Least Agency (OWASP ASI01–ASI10 / AST10): expose minimal typed domain tools rather than raw shell/SQL primitives, quarantine untrusted tool outputs as data, and execute dynamic code strictly inside ephemeral non-root network-isolated sandboxes.
+- **R-229 [Stateless MCP Streamable HTTP & OAuth 2.1 RFC 8707 Scoping]**: Remote production MCP servers MUST use stateless Streamable HTTP transport and authenticate callers via OAuth 2.1 with RFC 8707 Resource Indicators verifying token audience (`aud`) and least-privilege scopes. Ambient token passthrough is prohibited.
+- **R-230 [NIST SP 800-63B-4 Authentication Policy Compliance]**: Password-based authentication MUST enforce NIST SP 800-63B-4 (2025): ≥ 15-character minimum for single-factor passwords (≥ 8 with MFA), ≥ 64-character support including spaces/Unicode, zero arbitrary composition rules, zero forced periodic rotation absent compromise, mandatory breached-password blocklist checks, paste support, and phishing-resistant MFA (WebAuthn/Passkeys) for AAL2+.
+- **R-231 [Post-Quantum Crypto-Agility & Hybrid TLS Readiness]**: Cryptographic layers MUST remain algorithm-agile (tracked via CBOM) and enable hybrid post-quantum key exchange (`X25519MLKEM768` per NIST FIPS 203 ML-KEM) on TLS 1.3 edges while planning migration pathways for FIPS 204 (ML-DSA) and FIPS 205 (SLH-DSA) signatures (NISTIR 8547).
+- **R-232 [Fail-Closed Exceptional Condition Handling]**: In accordance with OWASP A10:2025, unexpected exceptions, timeouts, policy-engine outages, or parse failures MUST fail closed (deny access, abort mutation, preserve prior state) and never silently fall back to permissive defaults.
+- **R-233 [Deterministic Agent Harness Hooks]**: Autonomous coding sessions MUST backstop prose guidelines (`AGENTS.md`/`CLAUDE.md`) with deterministic harness hooks (`PreToolUse`, `PostToolUse`, `Stop` using Exit Code `2` blocking semantics) to block destructive commands and enforce quality gates automatically.
+- **R-234 [Progressive Disclosure & Verified Skill Integrity]**: Agent skill libraries MUST conform to the `agentskills.io` progressive-disclosure format (`SKILL.md` frontmatter + modular references) with portable relative links and verified executable scripts; untrusted remote skills MUST be audited before execution (OWASP AST10).
+- **R-235 [AI Model & MCP Supply Chain Provenance]**: Third-party MCP servers, agent plugins, and model artifacts MUST be pinned by immutable version/digest, scanned for vulnerabilities, and isolated with explicit egress policies (OWASP A03:2025 / ASI04).
+
+---
+
+## 19. Automated CI Gate Scan Patterns
+
+Execute the bundled script [`scripts/ci-gate.sh`](scripts/ci-gate.sh) (supports `--staged` for pre-commit hooks) or embed the equivalent checks in your CI pipeline to enforce non-negotiable coding hygiene rules at commit and merge time.
 
 ```bash
 #!/usr/bin/env bash

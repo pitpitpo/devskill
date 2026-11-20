@@ -13,7 +13,7 @@
 |---|---|
 | **Skill Name** | `agent-orchestration-engine` |
 | **Applicability Scope** | Multi-Agent Coordination, Parallel Worker Management, Hierarchical Task Decomposition, Distributed Saga Transactions, Reconciler State Convergence |
-| **Prerequisites** | [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md), [`agents/poteto-discipline.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/poteto-discipline.md), [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md), [`ROUTING.md`](file:///home/agy/.t3/userdata/attachments/devskill/ROUTING.md), [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) |
+| **Prerequisites** | [`agents.md`](../agents.md), [`agents/poteto-discipline.md`](poteto-discipline.md), [`agents/arena-evaluator.md`](arena-evaluator.md), [`ROUTING.md`](../ROUTING.md), [`RULES.md`](../RULES.md) |
 | **Governing Rules** | **R-001** (Zero TODOs), **R-015** (Surgical diffs), **R-181** (Prove-it-works), **R-187** (Jittered backoff), **R-188** (Task lifecycle ownership), **R-191** to **R-200** (Orchestrator Invariants) |
 | **Version Standard** | SemVer 2.0.0 (Production Enterprise Standard) |
 | **Last Updated** | 2026-11-17 (Frontier Labs & Big Tech Synthesis) |
@@ -505,7 +505,7 @@ Never pass raw conversation transcripts or multi-megabyte source files between p
 - **Forbidden (Context Tsunami)**:
   `invoke_subagent("Here is the entire 80,000-token chat transcript and full code repo...")`
 - **Mandatory (Pointer Handoff)**:
-  `invoke_subagent("Execute Task B. Read inputs at file:///abs/path/artifact.json. Target file is file:///abs/path/src/service.ts. Report outputs to file:///abs/path/result.json.")`
+  `invoke_subagent("Execute Task B. Read inputs at _coordination/artifacts/task-b.json. Target file is src/service.ts. Report outputs to _coordination/results/task-b.json.")`
 
 ### 5.3 Blast-Radius Containment (Sandboxing Matrix)
 
@@ -520,7 +520,7 @@ Never pass raw conversation transcripts or multi-megabyte source files between p
 If a multi-agent debate or collaborative workflow requires cycles (e.g., Code $\rightarrow$ Review $\rightarrow$ Revise $\rightarrow$ Review), the orchestrator MUST enforce:
 1. **Hard Iteration Ceiling**: Maximum 3 iterations of review-revise.
 2. **Diminishing Diffs Metric**: Diffs between iterations $k$ and $k+1$ must decrease ($\Delta_{k+1} < \Delta_k$). If $\Delta$ increases, halt and escalate to human.
-3. **Arbiter Tie-Breaker**: If no consensus is reached after 3 rounds, an independent Arbiter agent computes the [`arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md) weighted score and dictates the decision.
+3. **Arbiter Tie-Breaker**: If no consensus is reached after 3 rounds, an independent Arbiter agent computes the [`arena-evaluator.md`](arena-evaluator.md) weighted score and dictates the decision.
 
 ---
 

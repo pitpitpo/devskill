@@ -1,7 +1,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # ruff.toml — Ultra-Fast Python Linter & Formatter Configuration
 # ──────────────────────────────────────────────────────────────────────────────
-# Ruff ≥ 0.8.x | Docs: https://docs.astral.sh/ruff/
+# Ruff ≥ 0.11.x | Python 3.13 / 3.14 | Docs: https://docs.astral.sh/ruff/
 #
 # Replaces: flake8, isort, pyupgrade, pep8-naming, bandit, autoflake
 # Performance: ~100x faster than flake8 (written in Rust)
@@ -13,7 +13,7 @@
 #   ruff check . --select ALL     # audit: run EVERY rule once
 # ──────────────────────────────────────────────────────────────────────────────
 
-target-version = "py312"
+target-version = "py313"
 line-length = 88
 indent-width = 4
 
@@ -109,9 +109,7 @@ ignore = [
     "D213",   # Multi-line summary second line (conflicts with D212)
 
     # ── Annotations ──────────────────────────────────────────────────────
-    "ANN101", # Missing type annotation for `self` (deprecated in Ruff)
-    "ANN102", # Missing type annotation for `cls` (deprecated in Ruff)
-    "ANN401", # `Any` type — sometimes necessary for generic wrappers
+    "ANN401", # `Any` type — occasionally necessary for low-level generic wrappers
 
     # ── Try/except ───────────────────────────────────────────────────────
     "TRY003", # Long message in exception class (too restrictive)

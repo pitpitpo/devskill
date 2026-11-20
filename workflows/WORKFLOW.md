@@ -36,7 +36,7 @@
 
 ### 1.2 Boundary & Authority Check
 - Verify write permissions and workspace sandboxing (stay strictly within the target repository root; R-173).
-- Check the **Always / Ask / Never** boundaries in [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md#5-always--ask--never-boundaries).
+- Check the **Always / Ask / Never** boundaries in [`agents.md`](../agents.md#5-always--ask--never-boundaries).
 - Determine whether the task requires any **ASK** actions (e.g., adding a new dependency, dropping columns, breaking API contracts).
 
 ### 1.3 Clarification Thresholds
@@ -50,7 +50,7 @@
 **Objective**: Gather ground-truth context from the local filesystem, package manifests, and authoritative standards to eliminate hallucinations.
 
 ### 2.1 Codebase Reconnaissance
-- Consult [`index.json`](file:///home/agy/.t3/userdata/attachments/devskill/index.json) to locate relevant modules, language guides, and architectural patterns.
+- Consult [`index.json`](../index.json) to locate relevant modules, language guides, and architectural patterns.
 - Read existing implementations in related files to observe:
   - Naming conventions, directory organization, and module boundaries.
   - Error handling patterns, custom exceptions, and logging standards.
@@ -71,15 +71,15 @@
 **Objective**: Formulate a deterministic, test-first design and risk mitigation strategy prior to making code edits.
 
 ### 3.1 Architectural Alignment
-- Consult [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) to choose the appropriate architectural pattern (Modular Monolith vs Microservices, synchronous REST vs asynchronous message queue).
+- Consult [`decisions.md`](../decisions.md) to choose the appropriate architectural pattern (Modular Monolith vs Microservices, synchronous REST vs asynchronous message queue).
 - Ensure strict separation of concerns (Transport -> Application -> Domain -> Infrastructure; R-041).
 
 ### 3.2 Interface & Contract Specification
-- Define domain models, request/response schemas, and validation rules in [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md) format before implementation.
+- Define domain models, request/response schemas, and validation rules in [`specs.md`](../specs.md) format before implementation.
 - Establish typed contracts (TypeScript interfaces, Pydantic schemas, Rust structs).
 
 ### 3.3 Threat Modeling & Security Review
-- Consult [`security.md`](file:///home/agy/.t3/userdata/attachments/devskill/security.md) for potential vulnerability vectors (OWASP Top 10):
+- Consult [`security.md`](../security.md) for potential vulnerability vectors (OWASP Top 10):
   - Will user input be parameterized?
   - Does the endpoint verify tenant ownership / IDOR authorization?
   - Are sensitive fields scrubbed from logs?
@@ -97,7 +97,7 @@
 **Objective**: Write clean, modular, strictly typed, production-grade code that satisfies the planned specifications and adheres to `RULES.md`.
 
 ### 4.1 Strict Adherence to Engineering Laws
-- Follow all rules in [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) (R-001 through R-180+):
+- Follow all rules in [`RULES.md`](../RULES.md) (R-001 through R-180+):
   - **R-001/R-002**: No `TODO`, `FIXME`, or mock data in production paths.
   - **R-033/R-034**: Strict type checks; zero `any` or type bypasses.
   - **R-046**: Zero swallowed errors; typed custom exceptions.
@@ -145,7 +145,7 @@
 **Objective**: Conduct an adversarial self-audit against the 100-point ship gate rubric.
 
 ### 6.1 Definition of Done Scorecard Audit
-- Evaluate the changes against [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md):
+- Evaluate the changes against [`DEFINITION_OF_DONE.md`](../DEFINITION_OF_DONE.md):
   - Code Quality (20 pts)
   - Testing (20 pts)
   - Security (15 pts)
@@ -171,8 +171,8 @@
 **Objective**: Ensure system documentation, API contracts, architectural records, and changelogs accurately reflect code reality.
 
 ### 7.1 Specifications & Architecture Records
-- Update [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md) if new entities, endpoints, or data models were introduced.
-- Update [`decisions.md`](file:///home/agy/.t3/userdata/attachments/devskill/decisions.md) if an architectural decision or trade-off was evaluated.
+- Update [`specs.md`](../specs.md) if new entities, endpoints, or data models were introduced.
+- Update [`decisions.md`](../decisions.md) if an architectural decision or trade-off was evaluated.
 
 ### 7.2 Self-Documenting Code & Docstrings
 - Add descriptive docstrings to public interfaces and classes explaining the *why* and any non-obvious design rationale.
@@ -192,7 +192,7 @@
 **Objective**: Deliver a comprehensive, verifiable final report to stakeholders.
 
 ### 8.1 Final Delivery Report Assembly
-- Assemble the mandatory report template defined in [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md#10-mandatory-final-report-format).
+- Assemble the mandatory report template defined in [`agents.md`](../agents.md#10-mandatory-final-report-format).
 - Include:
   1. Executive Summary & Status (COMPLETED / BLOCKED).
   2. Table of Verified File Changes (Created / Modified paths).
@@ -253,5 +253,5 @@ When a bug, test failure, or unexpected behavior is detected, engineers and agen
 
 ### Step 7: Prevent Recurrence (Post-Mortem)
 - If the bug represents a recurring failure pattern or AI agent blind spot:
-  - Add an entry to [`MISTAKES.md`](file:///home/agy/.t3/userdata/attachments/devskill/MISTAKES.md) detailing the pattern name, description, example, and automated guard.
+  - Add an entry to [`MISTAKES.md`](../MISTAKES.md) detailing the pattern name, description, example, and automated guard.
   - If appropriate, add a static analysis rule (ESLint rule, Semgrep rule, or pre-commit regex) to prevent the pattern from ever returning.

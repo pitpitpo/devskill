@@ -41,5 +41,5 @@ frameworks/erp/
 ## 3. Related Systems & Enterprise Deep Dives
 
 For cross-cutting ERP invariants, consult the dedicated enterprise sections:
-- [`../../sections/erp-enterprise/core-accounting-ledger.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/erp-enterprise/core-accounting-ledger.md) — Double-entry immutability, foreign currency revaluation, fiscal year closing, and PEPPOL/tax compliance.
-- [`../../sections/erp-enterprise/inventory-supply-chain.md`](file:///home/agy/.t3/userdata/attachments/devskill/sections/erp-enterprise/inventory-supply-chain.md) — Perpetual vs periodic inventory, FIFO valuation queues, landed costs, and batch/serial tracking.
+- [`../../sections/erp-enterprise/core-accounting-ledger.md`](../../sections/erp-enterprise/core-accounting-ledger.md) — Double-entry immutability, foreign currency revaluation, fiscal year closing, and PEPPOL/tax compliance.
+- [`../../sections/erp-enterprise/inventory-supply-chain.md`](../../sections/erp-enterprise/inventory-supply-chain.md) — Perpetual vs periodic inventory, FIFO valuation queues, landed costs, and batch/serial tracking.

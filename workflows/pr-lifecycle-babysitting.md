@@ -73,7 +73,7 @@ Agents MUST NOT implement active sleep loops (`while sleep 10; do ...`). Use one
    - The harness automatically awakens the agent when a check finishes, a review arrives, or merge conflicts occur.
    - Before ending a session (or when blocked), call `unwatch_pull_request` to unhook the notification pipeline.
 2. **In Standalone Shell Environments**:
-   - Execute [`workflows/scripts/pr-wait`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/scripts/pr-wait) with `--until ready` or `--until green`.
+   - Execute [`workflows/scripts/pr-wait`](scripts/pr-wait) with `--until ready` or `--until green`.
    - The script uses state files in `~/.local/state/pr-wait/` and OS-level file locking (`fcntl`) to guarantee only one watcher per PR.
    - Exits with code `0` on merge/readiness, code `1` on actionable failure, code `2` on bad arguments.
 
@@ -284,4 +284,4 @@ git push --force-with-lease origin feat/my-branch
 
 ---
 
-*See also*: [`agents/full-send-delivery.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/full-send-delivery.md) for full-send merge gate automation and [`agents/multi-model-council.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/multi-model-council.md) for multi-model reviews.
+*See also*: [`agents/full-send-delivery.md`](../agents/full-send-delivery.md) for full-send merge gate automation and [`agents/multi-model-council.md`](../agents/multi-model-council.md) for multi-model reviews.

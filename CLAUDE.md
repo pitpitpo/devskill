@@ -1,120 +1,145 @@
 # 🤖 Claude Code Guidelines & Configuration (`CLAUDE.md`)
 
-> **Integration Scope**: Claude Code CLI, Claude Desktop, and Anthropics Developer Tooling  
+> **Integration Scope**: Claude Code CLI, Claude Code IDE Extensions, Claude Desktop, and Anthropic Developer Tooling  
+> **Universal Sibling Standard**: [`AGENTS.md`](AGENTS.md)  
 > **Mandatory Core Imports**:
-> - [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) — Autonomous agent operating protocols, personas, boundaries, and reporting formats.
-> - [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) — Non-negotiable engineering rules (R-001 through R-180+) and CI scan patterns.
+> - [`agents.md`](agents.md) — Autonomous agent operating protocols, personas, boundaries, and reporting formats.
+> - [`RULES.md`](RULES.md) — Non-negotiable engineering rules (R-001 through R-235) and CI scan patterns.
+> - [`ROUTING.md`](ROUTING.md) — Deterministic 23-archetype task router and reading lists.
 
 ---
 
 ## 1. Core Operating Principles
 
-When Claude Code is active within this repository, it MUST adhere strictly to the protocols defined in [`agents.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents.md) and the rules in [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md):
+When Claude Code operates in a repository governed by DevSkill, it MUST adhere strictly to [`agents.md`](agents.md) and [`RULES.md`](RULES.md):
 
-1. **Anti-Hallucination & Truth Grounding**:
-   - Verify every library API, package name, and schema by reading local files or package manifests before writing code.
+1. **Anti-Hallucination & Truth Grounding (R-003, R-006)**:
+   - Verify every library API, package name, and schema by reading local manifests or installed definitions before writing code.
    - If a fact or package version cannot be confirmed, write `UNVERIFIED` and request clarification.
-2. **Zero Laziness & Complete Implementation**:
-   - Zero `TODO`, `FIXME`, or stub markers in production files (R-001).
-   - Zero mock or fake data in production paths (R-002).
-   - Emit complete file contents without truncation or `// rest of code here` comments (R-008).
-3. **Surgical Diff Discipline**:
-   - Touch only the lines and files required for the task. Never perform unsolicited refactoring or restyling (R-015, R-016).
+2. **Zero Laziness & Complete Implementation (R-001, R-002, R-008)**:
+   - Zero `TODO`, `FIXME`, `TBD`, or stub markers in production files.
+   - Zero mock or fake data in production paths.
+   - Emit complete file contents without truncation or placeholder ellipses.
+3. **Surgical Diff Discipline & Direct Proof (R-015, R-181, R-182, R-202)**:
+   - Touch only the lines and files required for the task. Never perform unsolicited refactoring or restyling.
+   - Never declare completion without executing concrete verification commands and observing Exit Code `0`.
 
 ---
 
 ## 2. Plan Mode Settings
 
-Claude Code supports iterative planning and execution. For all non-trivial tasks (defined as touching > 2 files or introducing new database schemas / API routes), Claude Code MUST operate in **Plan Mode**:
+For all non-trivial tasks (touching > 2 files, modifying database schemas, adding public API routes, or altering auth/security boundaries), Claude Code MUST operate in **Plan Mode**:
 
 ```
-[Enter Plan Mode] ──► [Phase 1: Understand & Parse] ──► [Phase 2: Research & Inspect Code]
-                                                                     │
-                                                                     ▼
-[Await User Approval] ◄── [Phase 3: Generate Plan Spec] ◄────────────┘
+[Enter Plan Mode] ──► [Phase 1: Understand & Route via ROUTING.md] ──► [Phase 2: Inspect Code]
+                                                                               │
+                                                                               ▼
+[Await User Approval] ◄── [Phase 3: Generate Concrete Plan Spec] ◄─────────────┘
          │
-         ├── APPROVED ──► [Enter Execution Mode: Phases 4-8]
+         ├── APPROVED ──► [Enter Execution Mode: Phases 4–8]
          └── REJECTED ──► [Revise Hypotheses & Plan]
 ```
 
-### Plan Mode Guidelines:
-- **Trigger**: Tasks modifying architecture, adding endpoints, altering database schemas, or refactoring modules.
-- **Artifact**: Generate a structured plan detailing:
-  1. Root cause or architectural intent.
-  2. Exact files to be created or modified.
-  3. Domain models and interface definitions adhering to [`specs.md`](file:///home/agy/.t3/userdata/attachments/devskill/specs.md).
-  4. Test plan covering Unit, Integration, and negative failure paths.
-  5. Potential risks and rollback strategies.
-- **Approval Gate**: Do not execute state-modifying tools (`write_to_file`, `replace_file_content`, database migrations) until the plan has been reviewed and approved.
+### Plan Artifact Requirements:
+1. Root cause or architectural intent (citing [`decisions.md`](decisions.md) when choosing technologies).
+2. Exact files to be created or modified.
+3. Domain models, boundary schemas, and interface contracts adhering to [`specs.md`](specs.md).
+4. Test plan covering unit, integration (real DB), and negative/boundary failure paths.
+5. Blast-radius assessment and rollback strategy.
 
 ---
 
 ## 3. Permission Boundaries
 
-Claude Code must enforce strict command and tool authorization boundaries:
-
 | Permission Level | Permitted Operations |
 |---|---|
-| **AUTO-APPROVED (Allowed)** | • Reading files, searching code, inspecting git diffs (`git status`, `git diff`).<br>• Running linters, formatters, and typecheckers (`npm run lint`, `mypy`, `ruff`).<br>• Executing test suites in local read-only containers (`npm test`, `pytest`).<br>• Writing and editing source files inside the repository directory.<br>• Creating git branches and running local non-destructive commits. |
-| **USER CONFIRMATION REQUIRED (Ask)** | • Adding new external dependencies to `package.json` or `pyproject.toml`.<br>• Applying database migrations or altering database schemas.<br>• Modifying CI/CD workflow manifests (`.github/workflows/`).<br>• Deleting files or removing obsolete functions.<br>• Git operations pushing to remote branches or altering tags. |
-| **STRICTLY FORBIDDEN (Never)** | • Destructive shell commands: `rm -rf /`, formatting drives, dropping databases (R-171).<br>• Force-pushing to protected git branches (`git push --force origin main`).<br>• Global system modifications: `sudo`, `apt install`, `npm install -g` (R-174).<br>• Reading or traversing parent host directories (`/etc`, `/root`, `~/.ssh`) (R-173).<br>• Committing plaintext secrets or API keys (R-064).<br>• Modifying tests to force a pass without changing application code (R-011, R-096). |
+| **AUTO-APPROVED (Allowed)** | • Reading files, searching code, inspecting git diffs (`git status`, `git diff`).<br>• Running linters, formatters, typecheckers (`ruff`, `eslint`, `tsc`/`tsgo`, `mypy`).<br>• Executing local test suites (`npm test`, `pytest`, `go test`, `python3 -m unittest`).<br>• Writing and editing source files inside the repository workspace.<br>• Creating local branches and atomic Conventional Commits. |
+| **USER CONFIRMATION REQUIRED (Ask)** | • Adding new external dependencies to `package.json`, `pyproject.toml`, `Cargo.toml`, or `go.mod`.<br>• Applying database migrations or altering production schemas.<br>• Modifying CI/CD workflow manifests (`.github/workflows/`).<br>• Deleting files or deprecating public APIs.<br>• Pushing to remote branches, tagging releases, or modifying MCP server configs. |
+| **STRICTLY FORBIDDEN (Never)** | • Destructive shell commands: `rm -rf /`, formatting drives, `DROP DATABASE` (R-171).<br>• Force-pushing without lease (`git push --force`) or bypassing branch protection (`gh pr merge --admin`) (R-201, R-207).<br>• Global host modifications: `sudo`, `apt install`, `npm install -g` (R-174).<br>• Reading host directories outside workspace (`/etc`, `/root`, `~/.ssh`) (R-173).<br>• Committing plaintext secrets or API keys (R-064).<br>• Weakening or deleting failing tests to force green (R-011, R-096). |
 
 ---
 
-## 4. Hook Configurations
+## 4. Declarative Harness Hooks (`.claude/settings.json`) — R-233
 
-Integrate Claude Code with local git hooks and development scripts to ensure automated enforcement before code reaches review.
+Prose rules in `CLAUDE.md` can drift under long context windows; **Claude Code Hooks** enforce hard, deterministic guardrails at the harness boundary. Copy [`scaffolding/configs/.claude-settings.json`](scaffolding/configs/.claude-settings.json) into `.claude/settings.json` (team-shared) or `~/.claude/settings.json` (global):
 
-### 4.1 Pre-Commit Hook (`.husky/pre-commit` or `.git/hooks/pre-commit`)
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c 'import json,re,sys; cmd=json.load(sys.stdin).get(\"tool_input\",{}).get(\"command\",\"\"); bad=r\"(rm\\s+-rf\\s+/|git\\s+push\\s+(-f|--force)\\b|gh\\s+pr\\s+merge\\s+.*--admin|sudo\\s+|npm\\s+install\\s+-g\\b|DROP\\s+DATABASE)\"; sys.exit(2) if re.search(bad, cmd, re.I) else sys.exit(0)'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c 'import json,subprocess,sys; p=json.load(sys.stdin).get(\"tool_input\",{}).get(\"file_path\",\"\"); subprocess.run([\"ruff\",\"format\",p], check=False) if p.endswith(\".py\") else None'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -x ./scripts/ci-gate.sh ]; then ./scripts/ci-gate.sh || exit 2; fi'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Critical Exit-Code Semantics for Claude Code Hooks
+- **Exit `0`**: Allow tool execution / allow agent turn to finish.
+- **Exit `2`**: **Block execution deterministically**. On `PreToolUse`, blocks the tool call and feeds `stderr` back to the model for self-correction. On `Stop`, rejects turn completion and forces the agent back into the verification loop.
+- **Never rely on Exit `1` for security blocking** — non-2 errors are treated as non-blocking hook failures. Inspect active bindings inside any session with `/hooks`.
+
+---
+
+## 5. Git Pre-Commit & Post-Edit Verification Hooks
+
+### 5.1 Pre-Commit Hook (`.husky/pre-commit` or `.git/hooks/pre-commit`)
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> [Claude Code Hook] Running pre-commit validation..."
+echo "==> [DevSkill Pre-Commit] Running staged quality gate..."
 
-# 1. Block forbidden patterns (TODO, mock data, any types, swallowed errors)
-bash /home/agy/.t3/userdata/attachments/devskill/RULES.md
+# 1. Run executable DevSkill CI gate scan on staged files
+./scripts/ci-gate.sh --staged
 
-# 2. Run static linter and typecheck
-npm run lint
-npm run typecheck
-
-# 3. Secret scan
-if command -v gitleaks &> /dev/null; then
+# 2. Run secret scanner if installed
+if command -v gitleaks >/dev/null 2>&1; then
   gitleaks protect --staged --verbose
 fi
 
-echo "✅ Pre-commit hook completed cleanly."
+echo "Pre-commit checks passed."
 ```
 
-### 4.2 Post-Edit Verification Hook
-After Claude Code completes editing or writing code files, it must automatically execute the relevant localized test runner:
-```bash
-# For TypeScript / Node.js
-npm test -- --findRelatedTests <modified-file>
-
-# For Python
-pytest -v <test-file-corresponding-to-edit>
-```
-
-### 4.3 Definition of Done Ship Gate Check
-Before generating the final delivery report, Claude Code MUST execute the full project verification command:
-```bash
-make verify
-# OR
-npm run verify
-```
-Confirm exit code 0 and self-assess against [`DEFINITION_OF_DONE.md`](file:///home/agy/.t3/userdata/attachments/devskill/DEFINITION_OF_DONE.md) (Threshold: Every category ≥ 9/10 relative, Total ≥ 95/100).
+### 5.2 Definition of Done Ship Gate Check
+Before generating the final delivery report, execute the full project verification suite (`make verify` / `npm run verify` / `python3 scripts/validate-skill.py`) and self-assess against [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) (**Every category ≥ 9.0/10 relative, Total ≥ 95/100**).
 
 ---
 
-## 5. Standard Project Commands
+## 6. Standard Project Commands
 
-Claude Code should reference these standardized commands for build, test, and verification workflows:
-
-- **Install Dependencies**: `npm ci` / `poetry install --no-root` (Frozen immutable installs; R-118)
-- **Lint & Format**: `npm run lint` / `ruff check .`
-- **Typecheck**: `npm run typecheck` / `mypy --strict .`
-- **Run Unit Tests**: `npm test` / `pytest -v tests/unit/`
-- **Run Integration Tests**: `npm run test:integration` / `pytest -v tests/integration/`
-- **One-Step Full Gate**: `make verify` / `npm run verify`
+- **Install Dependencies (Frozen)**: `npm ci --ignore-scripts` / `uv sync --frozen` / `cargo fetch --locked` (R-118, R-119)
+- **Lint & Format**: `npm run lint` / `ruff check . && ruff format --check .`
+- **Typecheck**: `npx tsc --noEmit` (or `tsgo --noEmit` on TS 7+) / `mypy --strict .`
+- **Run Unit Tests**: `npm test` / `pytest -v tests/unit/` / `go test -race ./...`
+- **Run DevSkill Integrity Audit**: `python3 scripts/validate-skill.py && python3 -m unittest discover -s scripts -p "test_*.py" -v`
+- **One-Step Quality Gate**: `./scripts/ci-gate.sh`

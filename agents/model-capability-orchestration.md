@@ -16,7 +16,7 @@
 | **Skill Name** | `agents/model-capability-orchestration.md` |
 | **Capability Archetypes** | Dynamic Model Discovery, Workload Specialization, Multi-Provider Delegation, Production Commit Attribution |
 | **Trigger Phrases** | `"model discovery"`, `"orchestrate models"`, `"assign by strength"`, `"check available models"`, `"multi-model orchestration"` |
-| **Governing Rules** | [`RULES.md`](file:///home/agy/.t3/userdata/attachments/devskill/RULES.md) (R-171 Sandboxing, R-181 Tool Verification, R-203 Tri-Model Council, R-208 Contributor Credit, R-219 Dynamic Model Discovery & Optimal Assignment) |
+| **Governing Rules** | [`RULES.md`](../RULES.md) (R-171 Sandboxing, R-181 Tool Verification, R-203 Tri-Model Council, R-208 Contributor Credit, R-219 Dynamic Model Discovery & Optimal Assignment) |
 | **Prerequisites** | MCP orchestrator tools (`orchestrator_capabilities`, `delegate_task`) or multi-provider subagent APIs |
 
 In enterprise engineering and autonomous multi-agent environments, hardcoding a single AI model or assuming universal model availability is an anti-pattern that leads to task failures, rate-limit stalls, and suboptimal code generation. Different frontier foundation models possess starkly distinct empirical strengths: some excel at formal mathematical reasoning and concurrency proofs, others at large-scale multi-file refactoring and UI aesthetics, and others at multi-million-token repository ingestion and rapid test iteration.

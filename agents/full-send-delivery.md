@@ -62,8 +62,8 @@ When a developer triggers `"full send"`, they explicitly grant the agent full au
 
 1. **Finish the Change**: Solve the root defect or requested feature with the minimal viable diff. If on the default branch (`main`), immediately switch to a feature branch (`feat/...` or `fix/...`).
 2. **Prove It Directly**: Collect irrefutable execution evidence. Mocked tests alone DO NOT constitute proof.
-3. **Multi-Model Feedback**: Invoke an adversarial review round (via [`agents/multi-model-council.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/multi-model-council.md) or [`agents/arena-evaluator.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/arena-evaluator.md)).
-4. **Rebase & File PR**: Fetch `origin/main`, rebase cleanly with `git rebase origin/main`, and open a problem-first pull request via [`workflows/pr-lifecycle-babysitting.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/pr-lifecycle-babysitting.md).
+3. **Multi-Model Feedback**: Invoke an adversarial review round (via [`agents/multi-model-council.md`](multi-model-council.md) or [`agents/arena-evaluator.md`](arena-evaluator.md)).
+4. **Rebase & File PR**: Fetch `origin/main`, rebase cleanly with `git rebase origin/main`, and open a problem-first pull request via [`workflows/pr-lifecycle-babysitting.md`](../workflows/pr-lifecycle-babysitting.md).
 5. **Event-Driven Babysitting**: Monitor CI jobs and review bots (Greptile, Macroscope, CodeRabbit). Fix genuine defects; dismiss false positives with written citations.
 6. **Evaluate the Merge Gate**: Enforce the 5 non-negotiable merge criteria.
 7. **Merge or Handoff**: In `"full send"`, execute the merge through branch protection. In `"full stop"`, remove watchers, disengage auto-merge, and present the completion card.
@@ -262,4 +262,4 @@ workflows/scripts/pr-wait 142 --until ready
 
 ---
 
-*See also*: [`agents/multi-model-council.md`](file:///home/agy/.t3/userdata/attachments/devskill/agents/multi-model-council.md) for adversarial consensus and [`workflows/pr-lifecycle-babysitting.md`](file:///home/agy/.t3/userdata/attachments/devskill/workflows/pr-lifecycle-babysitting.md) for PR monitoring.
+*See also*: [`agents/multi-model-council.md`](multi-model-council.md) for adversarial consensus and [`workflows/pr-lifecycle-babysitting.md`](../workflows/pr-lifecycle-babysitting.md) for PR monitoring.
