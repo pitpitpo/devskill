@@ -2,7 +2,9 @@
 
 > **Standard**: Open `AGENTS.md` Specification (Linux Foundation Agentic AI Foundation / AAIF)  
 > **Applies To**: Claude Code, OpenAI Codex, Cursor, GitHub Copilot, Gemini CLI, and all autonomous coding agents operating in this repository or consuming `devskill`.  
-> **Skill Entrypoint**: [SKILL.md](SKILL.md) | **Detailed Agent Protocols**: [agents.md](agents.md)
+> **Skill Entrypoint**: [SKILL.md](SKILL.md) | **URL-Only Bootstrap**: [BOOTSTRAP.md](BOOTSTRAP.md) | **Detailed Agent Protocols**: [agents.md](agents.md)
+
+> **⚡ Given Only a URL to This Skill?** Follow [BOOTSTRAP.md](BOOTSTRAP.md) first: shallow-clone to `/tmp/devskill-ref` (if shell/git is available) or resolve `<RAW_BASE>/` via HTTP, then follow the progressive-disclosure read order below (max 3–5 domain guides; never commit DevSkill files into the user's project).
 
 ---
 

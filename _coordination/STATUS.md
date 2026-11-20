@@ -14,7 +14,7 @@
 
 | Domain | Status | Key Artifacts Verified |
 |---|---|---|
-| Core Entrypoints & Governance | COMPLETED | `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `RULES.md` (R-001–R-272), `ROUTING.md` (30 archetypes), `MISTAKES.md` (#1–#36), `specs.md`, `DEFINITION_OF_DONE.md`, `decisions.md` |
+| Core Entrypoints & Governance | COMPLETED | `BOOTSTRAP.md`, `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `RULES.md` (R-001–R-272), `ROUTING.md` (30 archetypes), `MISTAKES.md` (#1–#36), `specs.md`, `DEFINITION_OF_DONE.md`, `decisions.md` |
 | Zero-Missed-Requirements & Agentic Harness Governance | COMPLETED | `agents/zero-missed-requirements.md`, `agents/agentic-sdlc-harness-architecture.md`, `scripts/req-ledger.py`, `scaffolding/configs/.claude-settings.json` (Exit-Code-2 Stop hook), `RULES.md` (R-261–R-272), `ROUTING.md` (Archetypes 29–30) |
 | Unified Agent Stacks & Forensics | COMPLETED | `agents/unified-agent-stacks.md` (`pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`, `spec-kit`, `Beads`/`Gas Town`), `agents/code-forensics-interrogation.md`, `agents/mcp-a2a-protocols.md`, `agents/*.md` |
 | Software Engineering Canon | COMPLETED | `sections/architecture-foundations/software-design-craft.md`, `distributed-systems-reliability.md`, `evolutionary-delivery-architecture.md` (16 foundational SE books distilled) |

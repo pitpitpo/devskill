@@ -7,6 +7,11 @@
 
 `devskill` is an open-standard (`agentskills.io` + Linux Foundation AAIF `AGENTS.md`) engineering library and operational governance system built for autonomous AI coding agents and senior software engineering teams. It unifies the highest-leverage protocols from **`pstack`**, **`tstack`**, **`gstack`**, **`kstack`**, **`superpowers`**, **`compound-engineering`**, **`spec-kit`**, and **`Beads`/`Gas Town`** with empirically validated laws from canonical software engineering books (Ousterhout, Kleppmann, Nygard, Beck, Feathers, Fowler, Evans/Vernon, Petrov, Google SRE, DORA, Richards/Ford) alongside **OWASP Top 10:2025**, **OWASP Agentic Applications (ASI01–ASI10)**, **NIST SP 800-63B-4**, **NIST PQC (FIPS 203–205)**, and **MCP 2026 / A2A**.
 
+> ### ⚡ AI Agent Intro Point (Given Only This Skill's URL?)
+> **If a user gave you ONLY this repository URL to follow as your engineering skill**, read **[`BOOTSTRAP.md`](BOOTSTRAP.md)** immediately before planning or writing code:
+> - **With Shell/Git**: `git clone --depth 1 <THIS_URL> /tmp/devskill-ref` (read-only cache outside the target repo), then route via `index.json` → `ROUTING.md` → load **only** the 3–5 prescribed guides + enforce `RULES.md` and `scripts/req-ledger.py` / `scripts/ci-gate.sh`.
+> - **Web-Fetch Only**: Resolve raw base (`https://raw.githubusercontent.com/<owner>/<repo>/main/`) and fetch strictly in order: `BOOTSTRAP.md` → `index.json` → `ROUTING.md` → active `RULES.md` sections → **only** the 3–5 domain guides for your archetype (never bulk-fetch the whole repo).
+
 ---
 
 ## 📚 What DevSkill v2.4 Provides

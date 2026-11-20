@@ -3,9 +3,10 @@
 > **Integration Scope**: Claude Code CLI, Claude Code IDE Extensions, Claude Desktop, and Anthropic Developer Tooling  
 > **Universal Sibling Standard**: [`AGENTS.md`](AGENTS.md)  
 > **Mandatory Core Imports**:
+> - [`BOOTSTRAP.md`](BOOTSTRAP.md) — URL-only agent intro point and remote activation protocol.
 > - [`agents.md`](agents.md) — Autonomous agent operating protocols, personas, boundaries, and reporting formats.
-> - [`RULES.md`](RULES.md) — Non-negotiable engineering rules (R-001 through R-235) and CI scan patterns.
-> - [`ROUTING.md`](ROUTING.md) — Deterministic 23-archetype task router and reading lists.
+> - [`RULES.md`](RULES.md) — Non-negotiable engineering rules (R-001 through R-272) and CI scan patterns.
+> - [`ROUTING.md`](ROUTING.md) — Deterministic 30-archetype task router and reading lists.
 
 ---
 

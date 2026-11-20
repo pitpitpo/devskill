@@ -22,7 +22,9 @@ metadata:
 
 # DevSkill: Autonomous Industry-Grade Engineering Library
 
-`devskill` is the foundational knowledge and operational protocol repository for AI agents and engineering teams shipping enterprise-grade software. It uses **progressive disclosure** (`AGENTS.md` → `ROUTING.md` → `index.json` → targeted domain guides) so agents ingest only the exact rules, threat models, and blueprints needed for the active task without bloating context windows.
+`devskill` is the foundational knowledge and operational protocol repository for AI agents and engineering teams shipping enterprise-grade software. It uses **progressive disclosure** (`BOOTSTRAP.md` → `AGENTS.md` → `ROUTING.md` → `index.json` → targeted domain guides) so agents ingest only the exact rules, threat models, and blueprints needed for the active task without bloating context windows.
+
+> **⚡ URL-Only Activation**: If the user provided you **only the URL** of this skill, follow **[`BOOTSTRAP.md`](BOOTSTRAP.md)** first (shallow-clone to `/tmp/devskill-ref` if shell/git is available, or fetch `<RAW_BASE>/index.json` → `<RAW_BASE>/ROUTING.md` → only the 3–5 prescribed guides via HTTP—never scrape all files and never commit DevSkill into the user's repo).
 
 ---
 
@@ -75,6 +77,7 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 
 | Section | Location | Description |
 |---|---|---|
+| **URL-Only Agent Bootstrap** | [`BOOTSTRAP.md`](BOOTSTRAP.md) | Intro point for agents given only this skill's URL (git shallow-cache & raw-HTTP 4-hop protocol) |
 | **Universal Agent Entrypoint** | [`AGENTS.md`](AGENTS.md) | Concise cross-tool `AGENTS.md` open standard (AAIF) |
 | **Claude Code Harness Config** | [`CLAUDE.md`](CLAUDE.md) | Claude Code Plan Mode, permissions, and `settings.json` Exit-Code-2 hooks |
 | **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 30-archetype routing matrix prescribing exact reading lists and test commands |

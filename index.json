@@ -5,8 +5,8 @@
   "spec_standard": "agentskills.io + AAIF AGENTS.md",
   "description": "Production-grade software engineering standards, OWASP 2025 & Agentic AI security, deterministic agent routing, MCP/A2A protocols, framework/language guides, and CI gates.",
   "stats": {
-    "total_documents": 117,
-    "total_lines": 44238,
+    "total_documents": 118,
+    "total_lines": 44312,
     "total_rules": 272,
     "rule_range": "R-001..R-272",
     "total_archetypes": 30,
@@ -18,7 +18,7 @@
       {
         "path": "AGENTS.md",
         "title": "AGENTS.md — Universal Repository Instructions for AI Coding Agents",
-        "lines": 53,
+        "lines": 55,
         "tags": [
           "agents",
           "universal",
@@ -39,9 +39,22 @@
         ]
       },
       {
+        "path": "BOOTSTRAP.md",
+        "title": "⚡ Agent Intro Point: URL-Only Bootstrap Protocol (`BOOTSTRAP.md`)",
+        "lines": 63,
+        "tags": [
+          "bootstrap",
+          "agent",
+          "intro",
+          "point",
+          "url-only",
+          "protocol"
+        ]
+      },
+      {
         "path": "CLAUDE.md",
         "title": "🤖 Claude Code Guidelines & Configuration (`CLAUDE.md`)",
-        "lines": 145,
+        "lines": 146,
         "tags": [
           "claude",
           "code",
@@ -115,7 +128,7 @@
       {
         "path": "README.md",
         "title": "🚀 DevSkill v2.4: Autonomous Industry-Grade Engineering Library",
-        "lines": 57,
+        "lines": 62,
         "tags": [
           "devskill",
           "v2",
@@ -149,7 +162,7 @@
       {
         "path": "SKILL.md",
         "title": "DevSkill: Autonomous Industry-Grade Engineering Library",
-        "lines": 108,
+        "lines": 111,
         "tags": [
           "skill",
           "devskill",
