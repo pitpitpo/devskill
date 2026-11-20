@@ -5,11 +5,11 @@
   "spec_standard": "agentskills.io + AAIF AGENTS.md",
   "description": "Production-grade software engineering standards, OWASP 2025 & Agentic AI security, deterministic agent routing, MCP/A2A protocols, framework/language guides, and CI gates.",
   "stats": {
-    "total_documents": 122,
-    "total_lines": 46259,
-    "total_rules": 274,
-    "rule_range": "R-001..R-274",
-    "total_archetypes": 31,
+    "total_documents": 125,
+    "total_lines": 46930,
+    "total_rules": 277,
+    "rule_range": "R-001..R-277",
+    "total_archetypes": 33,
     "total_configs": 6,
     "total_scripts": 6
   },
@@ -142,7 +142,7 @@
       {
         "path": "ROUTING.md",
         "title": "🧭 Deterministic Agent Routing Matrix (`ROUTING.md`)",
-        "lines": 464,
+        "lines": 490,
         "tags": [
           "routing",
           "deterministic",
@@ -153,7 +153,7 @@
       {
         "path": "RULES.md",
         "title": "📜 Universal Engineering Rules (`RULES.md`)",
-        "lines": 505,
+        "lines": 514,
         "tags": [
           "rules",
           "universal",
@@ -209,7 +209,7 @@
       {
         "path": "specs.md",
         "title": "📐 DevSkill Technical Specification (`specs.md`)",
-        "lines": 247,
+        "lines": 250,
         "tags": [
           "specs",
           "devskill",
@@ -263,6 +263,21 @@
         ]
       },
       {
+        "path": "agents/browser-qa-dogfooding.md",
+        "title": "🌐 Autonomous Browser Dogfooding, Visual QA & Screenshot Auditing (`agents/browser-qa-dogfooding.md`)",
+        "lines": 217,
+        "tags": [
+          "agents",
+          "browser",
+          "qa",
+          "dogfooding",
+          "autonomous",
+          "visual",
+          "screenshot",
+          "auditing"
+        ]
+      },
+      {
         "path": "agents/code-forensics-interrogation.md",
         "title": "🔎 Pre-Code Forensics, Interrogation & Architecture Settling (`code-forensics-interrogation.md`)",
         "lines": 146,
@@ -275,6 +290,21 @@
           "architecture",
           "settling",
           "code-forensics-interrogation"
+        ]
+      },
+      {
+        "path": "agents/compound-engineering-knowledge.md",
+        "title": "🧠 Compound Engineering & Solution Knowledge Base Architecture (`agents/compound-engineering-knowledge.md`)",
+        "lines": 236,
+        "tags": [
+          "agents",
+          "compound",
+          "engineering",
+          "knowledge",
+          "solution",
+          "base",
+          "architecture",
+          "compound-engineering-knowledge"
         ]
       },
       {
@@ -403,6 +433,21 @@
           "non-stop",
           "protocol",
           "ralph-reconciler-loop"
+        ]
+      },
+      {
+        "path": "agents/skill-creator-evaluator.md",
+        "title": "🛠️ Agent Skill Creator, Progressive Disclosure & Evaluation Benchmarking (`agents/skill-creator-evaluator.md`)",
+        "lines": 180,
+        "tags": [
+          "agents",
+          "skill",
+          "creator",
+          "evaluator",
+          "agent",
+          "progressive",
+          "disclosure",
+          "evaluation"
         ]
       },
       {
@@ -2204,6 +2249,38 @@
         "R-251",
         "R-273",
         "R-274"
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Live Browser Dogfooding, Visual QA & Screenshot Regression Auditing",
+      "files": [
+        "agents/browser-qa-dogfooding.md",
+        "FRONTEND.md",
+        "sections/testing-qa/e2e-playwright.md",
+        "RULES.md"
+      ],
+      "rules": [
+        "R-131",
+        "R-202",
+        "R-251",
+        "R-275"
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Agent Skill Engineering, Progressive Disclosure & Evaluation Benchmarks",
+      "files": [
+        "agents/skill-creator-evaluator.md",
+        "agents/compound-engineering-knowledge.md",
+        "specs.md",
+        "RULES.md"
+      ],
+      "rules": [
+        "R-181",
+        "R-190",
+        "R-276",
+        "R-277"
       ]
     }
   ],

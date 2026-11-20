@@ -80,8 +80,8 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 | **URL-Only Agent Bootstrap** | [`BOOTSTRAP.md`](BOOTSTRAP.md) | Intro point for agents given only this skill's URL (git shallow-cache & raw-HTTP 4-hop protocol) |
 | **Universal Agent Entrypoint** | [`AGENTS.md`](AGENTS.md) | Concise cross-tool `AGENTS.md` open standard (AAIF) |
 | **Claude Code Harness Config** | [`CLAUDE.md`](CLAUDE.md) | Claude Code Plan Mode, permissions, and `settings.json` Exit-Code-2 hooks |
-| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 31-archetype routing matrix prescribing exact reading lists and test commands |
-| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, desktop, TUI, ERP, kernel, completeness, and agentic harness governance (R-001–R-274) |
+| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 33-archetype routing matrix prescribing exact reading lists and test commands |
+| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, desktop, TUI, ERP, kernel, completeness, and agentic harness governance (R-001–R-277) |
 | **Zero-Missed-Requirements** | [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md) | 6-layer anti-omission, SatisFix & Context Rot defense (`req-ledger.py` frozen SHA-256 JSON ledger, recitation, deviation audit, fail-closed gate) |
 | **Agentic SDLC Harness Blueprint** | [`agents/agentic-sdlc-harness-architecture.md`](agents/agentic-sdlc-harness-architecture.md) | 5-layer production architecture, deterministic control planes, MAST & Static Claim Plane, neuro-symbolic oracles, microVM isolation, TNR SRE, FinOps |
 | **Universal Frontend Master** | [`FRONTEND.md`](FRONTEND.md) | Universal frontend constitution across ALL surfaces: Web (React/Vue/Svelte/Angular/Solid), Mobile (SwiftUI/Compose/Flutter/Expo), Desktop (Tauri v2/Electron 33+), and Terminal UIs (Ratatui/Bubble Tea/Textual) |

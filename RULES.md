@@ -32,7 +32,8 @@
 21. [Zero-Missed-Requirements, Context Engineering & Long-Horizon Completeness (R-261 to R-266)](#21-zero-missed-requirements-context-engineering--long-horizon-completeness)
 22. [Production Agentic Harness Engineering, Verification Oracles & Zero-Trust Governance (R-267 to R-272)](#22-production-agentic-harness-engineering-verification-oracles--zero-trust-governance)
 23. [Desktop & Terminal Frontend Engineering Invariants (R-273 to R-274)](#23-desktop--terminal-frontend-engineering-invariants)
-24. [Automated CI Gate Scan Patterns](#24-automated-ci-gate-scan-patterns)
+24. [Autonomous Dogfooding, Skill Engineering & Knowledge Compounding (R-275 to R-277)](#24-autonomous-dogfooding-skill-engineering--knowledge-compounding)
+25. [Automated CI Gate Scan Patterns](#25-automated-ci-gate-scan-patterns)
 
 ---
 
@@ -425,7 +426,15 @@
 
 ---
 
-## 24. Automated CI Gate Scan Patterns
+## 24. Autonomous Dogfooding, Skill Engineering & Knowledge Compounding
+
+- **R-275 [Autonomous Browser Dogfooding & Visual QA Verification]**: Frontend and full-stack feature PRs MUST NOT be shipped on mocked unit tests alone; agents MUST run live browser/headless verification (`/qa` + `/browse`), inspect console/network error streams, test mobile/desktop breakpoints (320px, 390px, 768px, 1280px), and convert every discovered bug into a permanent automated Playwright regression spec (see [`agents/browser-qa-dogfooding.md`](agents/browser-qa-dogfooding.md)).
+- **R-276 [Standardized Agent Skill Authoring, Progressive Disclosure & Eval Benchmarks]**: All authoring or extensions of Agent Skills MUST adhere to the `agentskills.io` + AAIF `AGENTS.md` open standard, enforce strict YAML frontmatter (`name`, `description`), cap root instruction files to < 500 lines via progressive disclosure (partitioning deep references into `references/`), and validate against automated grading criteria/evals before publishing (see [`agents/skill-creator-evaluator.md`](agents/skill-creator-evaluator.md)).
+- **R-277 [Modular Solution Compounding & Institutional Memory Architecture]**: Non-trivial defect remediations, subtle performance optimizations, and infrastructure workarounds MUST generate or update a standardized solution document in `docs/solutions/` (or `MISTAKES.md`) containing problem signature, root cause, verified fix diff, and anti-recurrence CI or architectural assertions (see [`agents/compound-engineering-knowledge.md`](agents/compound-engineering-knowledge.md)).
+
+---
+
+## 25. Automated CI Gate Scan Patterns
 
 Execute the bundled script [`scripts/ci-gate.sh`](scripts/ci-gate.sh) (supports `--staged` for pre-commit hooks) or embed the equivalent checks in your CI pipeline to enforce non-negotiable coding hygiene rules at commit and merge time.
 

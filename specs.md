@@ -90,7 +90,10 @@ devskill/
 │   ├── ralph-reconciler-loop.md      # The Ralph Loop, Fresh-Context Iteration & Non-Stop Reconciler
 │   ├── sol-loop.md                   # Adversarial Single-Model Review Loop & Sol Protocol
 │   ├── formal-verification-statecharts.md # Formal Verification, Statecharts & TLA+ Invariant Checking
-│   └── model-capability-orchestration.md  # Dynamic Model Discovery, Capability Profiling & Routing
+│   ├── model-capability-orchestration.md  # Dynamic Model Discovery, Capability Profiling & Routing
+│   ├── browser-qa-dogfooding.md      # Autonomous Browser Dogfooding, Visual QA & Playwright Synthesis
+│   ├── skill-creator-evaluator.md    # Agent Skill Engineering, Progressive Disclosure & Eval Benchmarks
+│   └── compound-engineering-knowledge.md # Institutional Memory Compounding, Solution Docs & ADRs
 │
 ├── frameworks/                       # Framework-Specific Deep Mastery Guides
 │   ├── README.md                     # Directory index and framework selection guidance

@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 31 categories below.
+1. **Identify the Task Archetype** from the 33 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -452,6 +452,32 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-060** (Principle of least privilege), **R-064** (Zero hardcoded secrets; OS keyring/Keychain only), **R-251** (Semantic design tokens & UI craft), **R-273** (Desktop client security, IPC isolation & capability scoping), **R-274** (Terminal UI event loop, render diffing & terminal hygiene) |
 | **Prohibited Actions** | ❌ Enabling `nodeIntegration: true` or disabling `contextIsolation` / `sandbox` in Electron.<br>❌ Using wildcard permissions (`"permissions": ["*"]`) in Tauri v2 capabilities.<br>❌ Blocking UI/event threads with synchronous file/CPU operations.<br>❌ Leaving terminal in raw mode upon panic or crash without an un-raw restoration hook.<br>❌ Rendering unsanitized external strings containing raw ANSI escape sequences. |
 | **Mandatory Verification** | 1. Static Gate: `cargo clippy --all-targets -- -D warnings` (Tauri/Ratatui), `tsc --noEmit` (Electron), or `go vet` (Bubble Tea) exits `0`.<br>2. Security & Capability Audit: Confirm strict capability scoping in `capabilities/*.json` or hardened Electron webPreferences.<br>3. Frame & Idle Efficiency: Verify 60 FPS rendering and < 1% idle CPU in TUI/desktop monitor.<br>4. Teardown & Lifecycle Test: Verify clean exit and cooked-mode terminal restoration across `SIGINT` / panic. |
+
+---
+
+### Archetype 32: Live Browser Dogfooding, Visual QA & Screenshot Regression Auditing
+
+*Conducting end-to-end browser dogfooding, visual QA, screenshot regression audits, and synthesizing automated Playwright regression specs.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/browser-qa-dogfooding.md`](agents/browser-qa-dogfooding.md) *(Dogfooding loop, console/network taps, multi-viewport audit, regression synthesis)*<br>2. [`FRONTEND.md`](FRONTEND.md) *(Universal Frontend Constitution & Core Web Vitals)*<br>3. [`sections/testing-qa/e2e-playwright.md`](sections/testing-qa/e2e-playwright.md) *(Playwright selectors, test fixtures, trace debugging)*<br>4. [`RULES.md`](RULES.md) *(Section 24: R-275; Section 9: R-129–R-141; R-202, R-251)* |
+| **Key Invariant Rules** | **R-131** (Core Web Vitals budgets), **R-202** (Real execution over conversational claims), **R-251** (Design tokens & zero-slop UI craft), **R-275** (Autonomous browser dogfooding & visual QA verification) |
+| **Prohibited Actions** | ❌ Declaring frontend work complete based solely on unit/component tests in jsdom.<br>❌ Ignoring 4xx/5xx network errors, asset 404s, or browser console exceptions.<br>❌ Testing exclusively on desktop screens without mobile viewport (320px/390px) verification.<br>❌ Using arbitrary sleep timeouts (`waitForTimeout`) instead of deterministic state assertions. |
+| **Mandatory Verification** | 1. Real Browser Traversal: Core user journey executed in real browser/headless context.<br>2. Telemetry Cleanliness: Zero uncaught exceptions in console stream and zero failed network requests.<br>3. Viewport & Layout Audit: Desktop (1280px) and Mobile (390px) screenshots captured with zero horizontal overflow.<br>4. Regression Synthesis: Discovered bugs codified into a passing Playwright `.spec.ts` test. |
+
+---
+
+### Archetype 33: Agent Skill Engineering, Progressive Disclosure & Evaluation Benchmarks
+
+*Authoring, evaluating, benchmark testing, and validating Agent Skills according to agentskills.io and AAIF AGENTS.md standards.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/skill-creator-evaluator.md`](agents/skill-creator-evaluator.md) *(agentskills.io format, YAML frontmatter, progressive disclosure, eval runners)*<br>2. [`agents/compound-engineering-knowledge.md`](agents/compound-engineering-knowledge.md) *(Institutional memory compounding, docs/solutions/ schema)*<br>3. [`specs.md`](specs.md) *(7-section document standard, repository taxonomy)*<br>4. [`RULES.md`](RULES.md) *(Section 24: R-276, R-277; Section 14: R-181, R-190)* |
+| **Key Invariant Rules** | **R-181** (Zero conversational slop in prompt rules), **R-190** (Deterministic routing matrix compliance), **R-276** (Standardized agent skill authoring & progressive disclosure), **R-277** (Modular solution compounding & institutional memory architecture) |
+| **Prohibited Actions** | ❌ Authoring skills with conversational fluff, pleasantries, or generic advice.<br>❌ Exceeding 500 lines in root `SKILL.md` (must offload deep references to `references/`).<br>❌ Publishing skills without deterministic test cases, evaluation benchmarks, or lint gates.<br>❌ Omitting explicit failure modes, negative constraints, and verification checklists. |
+| **Mandatory Verification** | 1. Syntax & Frontmatter: Valid YAML frontmatter with `name` and `description` verified.<br>2. Token & Line Audit: Root `SKILL.md` is strictly under 500 lines.<br>3. Repository Quality Gate: `python3 scripts/validate-skill.py` passes with exit code `0`.<br>4. Eval Benchmark: Behavioral eval suite exits code `0` against rubrics. |
 
 ---
 
