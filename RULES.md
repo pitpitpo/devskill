@@ -31,7 +31,8 @@
 20. [Universal Frontend Craft & Framework-Specific Invariants (R-251 to R-260)](#20-universal-frontend-craft--framework-specific-invariants)
 21. [Zero-Missed-Requirements, Context Engineering & Long-Horizon Completeness (R-261 to R-266)](#21-zero-missed-requirements-context-engineering--long-horizon-completeness)
 22. [Production Agentic Harness Engineering, Verification Oracles & Zero-Trust Governance (R-267 to R-272)](#22-production-agentic-harness-engineering-verification-oracles--zero-trust-governance)
-23. [Automated CI Gate Scan Patterns](#23-automated-ci-gate-scan-patterns)
+23. [Desktop & Terminal Frontend Engineering Invariants (R-273 to R-274)](#23-desktop--terminal-frontend-engineering-invariants)
+24. [Automated CI Gate Scan Patterns](#24-automated-ci-gate-scan-patterns)
 
 ---
 
@@ -417,7 +418,14 @@
 
 ---
 
-## 23. Automated CI Gate Scan Patterns
+## 23. Desktop & Terminal Frontend Engineering Invariants
+
+- **R-273 [Desktop Client Security, IPC Isolation & Capability Scoping]**: Tauri v2 desktop apps MUST define explicit, least-privilege JSON capability permissions (prohibiting wildcards `*`), validate all parameters passed to `#[tauri::command]`, and scope file/shell access; Electron 33+ apps MUST enforce `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`, and expose strictly typed, audited APIs via `contextBridge.exposeInMainWorld()` (see [`frameworks/desktop/tauri.md`](frameworks/desktop/tauri.md) & [`frameworks/desktop/electron.md`](frameworks/desktop/electron.md)).
+- **R-274 [Terminal UI (TUI) Event Loop, Render Diffing & Terminal Hygiene]**: TUI applications (Ratatui, Bubble Tea, Textual) MUST run non-blocking event loops with timeouts (idle CPU < 1%), render to alternate screen buffers with double-buffered cell diffing to prevent flicker, handle terminal resizing (`SIGWINCH`) without clipping or panicking, register panic hooks and signal handlers to restore cooked mode and cursor visibility on exit, and sanitize all external inputs against ANSI escape code injection (see [`frameworks/tui/terminal-ui.md`](frameworks/tui/terminal-ui.md)).
+
+---
+
+## 24. Automated CI Gate Scan Patterns
 
 Execute the bundled script [`scripts/ci-gate.sh`](scripts/ci-gate.sh) (supports `--staged` for pre-commit hooks) or embed the equivalent checks in your CI pipeline to enforce non-negotiable coding hygiene rules at commit and merge time.
 

@@ -11,7 +11,7 @@
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 30 categories below.
+1. **Identify the Task Archetype** from the 31 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -80,7 +80,7 @@ Regardless of archetype, every agent session MUST adhere to:
 
 ### Archetype 3: Frontend UI Component, Screen or Form
 
-*Building or modifying user interfaces in React, Next.js, Vue, or mobile frameworks.*
+*Building or modifying user interfaces across Web (React, Next.js, Vue, Svelte, Angular), Mobile (Flutter, React Native/Expo, SwiftUI, Compose), Desktop (Tauri, Electron), or Terminal UI (Ratatui, Bubble Tea, Textual).*
 
 | Dimension | Specification |
 |---|---|
@@ -441,7 +441,20 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Mandatory Verification** | 1. Control-Plane Enforcement: Deterministic phase gates, turn/retry caps, and worktree/Claim-Plane locks verified in non-LLM code.<br>2. Isolation & Egress Audit: Local OS sandbox (`srt`) or Firecracker/Kata v4.3+ microVM verified with default-deny egress and zero in-sandbox credentials.<br>3. Neuro-Symbolic Gate: 100% pass-to-pass regressions + mutation/PBT tests + SAST (`CodeQL`/`Semgrep`) pass cleanly.<br>4. Governance & FinOps: Tiered model routing active, Living Spec + audit logs persisted, and human merge explainability enforced. |
 
 ---
- 
+
+### Archetype 31: Desktop & Terminal Frontend Engineering (Tauri v2, Electron 33+, Ratatui, Bubble Tea, Textual)
+
+*Building production cross-platform desktop applications (Tauri v2, Electron 33+) or high-performance Terminal User Interfaces (Ratatui, Bubble Tea, Textual).*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`FRONTEND.md`](FRONTEND.md) *(Universal Multi-Surface Frontend Constitution & Rendering Spectrum)*<br>2. Target Desktop/TUI guide: [`frameworks/desktop/tauri.md`](frameworks/desktop/tauri.md), [`frameworks/desktop/electron.md`](frameworks/desktop/electron.md), or [`frameworks/tui/terminal-ui.md`](frameworks/tui/terminal-ui.md)<br>3. [`RULES.md`](RULES.md) *(Section 23: R-273, R-274; Section 5: R-060, R-064; Section 20: R-251)*<br>4. [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) |
+| **Key Invariant Rules** | **R-060** (Principle of least privilege), **R-064** (Zero hardcoded secrets; OS keyring/Keychain only), **R-251** (Semantic design tokens & UI craft), **R-273** (Desktop client security, IPC isolation & capability scoping), **R-274** (Terminal UI event loop, render diffing & terminal hygiene) |
+| **Prohibited Actions** | ❌ Enabling `nodeIntegration: true` or disabling `contextIsolation` / `sandbox` in Electron.<br>❌ Using wildcard permissions (`"permissions": ["*"]`) in Tauri v2 capabilities.<br>❌ Blocking UI/event threads with synchronous file/CPU operations.<br>❌ Leaving terminal in raw mode upon panic or crash without an un-raw restoration hook.<br>❌ Rendering unsanitized external strings containing raw ANSI escape sequences. |
+| **Mandatory Verification** | 1. Static Gate: `cargo clippy --all-targets -- -D warnings` (Tauri/Ratatui), `tsc --noEmit` (Electron), or `go vet` (Bubble Tea) exits `0`.<br>2. Security & Capability Audit: Confirm strict capability scoping in `capabilities/*.json` or hardened Electron webPreferences.<br>3. Frame & Idle Efficiency: Verify 60 FPS rendering and < 1% idle CPU in TUI/desktop monitor.<br>4. Teardown & Lifecycle Test: Verify clean exit and cooked-mode terminal restoration across `SIGINT` / panic. |
+
+---
+
 ## 4. Conflict Resolution Protocol
 
 If two guides or rules appear to conflict in a specific context:

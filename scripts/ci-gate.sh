@@ -27,7 +27,7 @@ EXCLUDE_PATHS=(
     ':!**/__mocks__/**'
     ':!*.test.*'
     ':!*.spec.*'
-    ':!test_*.py'
+    ':!**/test_*.py'
     ':!*_test.go'
     ':!*.md'
     ':!docs'

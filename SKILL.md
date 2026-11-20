@@ -80,11 +80,11 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 | **URL-Only Agent Bootstrap** | [`BOOTSTRAP.md`](BOOTSTRAP.md) | Intro point for agents given only this skill's URL (git shallow-cache & raw-HTTP 4-hop protocol) |
 | **Universal Agent Entrypoint** | [`AGENTS.md`](AGENTS.md) | Concise cross-tool `AGENTS.md` open standard (AAIF) |
 | **Claude Code Harness Config** | [`CLAUDE.md`](CLAUDE.md) | Claude Code Plan Mode, permissions, and `settings.json` Exit-Code-2 hooks |
-| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 30-archetype routing matrix prescribing exact reading lists and test commands |
-| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, ERP, kernel, completeness, and agentic harness governance (R-001–R-272) |
+| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 31-archetype routing matrix prescribing exact reading lists and test commands |
+| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, desktop, TUI, ERP, kernel, completeness, and agentic harness governance (R-001–R-274) |
 | **Zero-Missed-Requirements** | [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md) | 6-layer anti-omission, SatisFix & Context Rot defense (`req-ledger.py` frozen SHA-256 JSON ledger, recitation, deviation audit, fail-closed gate) |
 | **Agentic SDLC Harness Blueprint** | [`agents/agentic-sdlc-harness-architecture.md`](agents/agentic-sdlc-harness-architecture.md) | 5-layer production architecture, deterministic control planes, MAST & Static Claim Plane, neuro-symbolic oracles, microVM isolation, TNR SRE, FinOps |
-| **Universal Frontend Master** | [`FRONTEND.md`](FRONTEND.md) | Framework-agnostic frontend constitution (framework matrix, OKLCH design tokens, modern CSS, CWV, WCAG 2.2 AA, CSP) |
+| **Universal Frontend Master** | [`FRONTEND.md`](FRONTEND.md) | Universal frontend constitution across ALL surfaces: Web (React/Vue/Svelte/Angular/Solid), Mobile (SwiftUI/Compose/Flutter/Expo), Desktop (Tauri v2/Electron 33+), and Terminal UIs (Ratatui/Bubble Tea/Textual) |
 | **Security Standards** | [`security.md`](security.md) | OWASP Top 10:2025, Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC |
 | **Unified Agent Stacks** | [`agents/unified-agent-stacks.md`](agents/unified-agent-stacks.md) & [`agents/`](agents/) | Synthesizes `pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`, `spec-kit`, `Beads`/`Gas Town`, MCP/A2A, councils, TLA+ |
 | **SE Foundations Canon** | [`sections/architecture-foundations/`](sections/architecture-foundations/) | Distilled laws from Ousterhout, Kleppmann, Nygard, Beck, Feathers, Fowler, Evans/Vernon, Petrov, Google SRE, DORA, Team Topologies |
@@ -92,7 +92,7 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 | **Fast Semantic Index** | [`index.json`](index.json) | Machine-readable catalog with tags, archetypes, line counts, and rule summaries |
 | **Repository Specification** | [`specs.md`](specs.md) | System taxonomy, document anatomy, and governance rules |
 | **Definition of Done** | [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) | 100-point Dual-Threshold Ship Gate rubric |
-| **Frameworks** | [`frameworks/`](frameworks/) | React 19.2, Next.js 16, Vue 3.5/Nuxt 4, Svelte 5/SvelteKit 2, Angular 19/20, Astro 5, SolidJS, Tailwind v4, FastAPI, NestJS, Django, Spring Boot, Go/Rust, .NET, Odoo 18/19, ERPNext v15/v16, Flutter 3.35+, RN/Expo SDK 54, Android Kotlin/Compose, iOS SwiftUI, AOSP |
+| **Frameworks** | [`frameworks/`](frameworks/) | Web (React 19.2, Next.js 16, Vue 3.5/Nuxt 4, Svelte 5/SvelteKit 2, Angular 19/20, Astro 5, SolidJS, Tailwind v4), Desktop (Tauri v2, Electron 33+), TUI (Ratatui, Bubble Tea, Textual), Mobile (Flutter 3.35+, RN/Expo SDK 54, Android Compose, iOS SwiftUI, AOSP), Backend (FastAPI, NestJS, Django, Spring Boot, Go/Rust, .NET), ERP (Odoo 18/19, ERPNext) |
 | **Sections** | [`sections/`](sections/) | Architecture Foundations, Design Systems & UI Craft, Backend, Frontend, Database (PG 18), DevOps/kstack, QA, AI/ML, ERP/Ledger, Systems/Kernel |
 | **Languages** | [`languages/`](languages/) | TypeScript 6/7 (`tsgo`), Python 3.14, Go 1.25+, Rust 2024, Java 21+, C23/C++23, SQL |
 | **Workflows** | [`workflows/`](workflows/) | 8-phase lifecycle, PR babysitting, modernization/takeover, Git, SemVer, Incidents, Anti-Slop |

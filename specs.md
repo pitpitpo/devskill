@@ -99,7 +99,15 @@ devskill/
 │   │   ├── react.md                  # React 19 / 19.2 Core, <Activity />, useEffectEvent, Compiler
 │   │   ├── vue-nuxt.md               # Vue 3 Composition API, Nuxt Hybrid SSR, Pinia, Nitro
 │   │   ├── sveltekit.md              # Svelte 5 Runes, SvelteKit Form Actions, Loaders, Adapters
-│   │   └── tailwindcss.md            # Tailwind CSS v3/v4, Design Tokens, Dark Mode, Architecture
+│   │   ├── angular.md                # Angular 19/20 Signals-First, Zoneless, httpResource, @defer
+│   │   ├── astro.md                  # Astro 5 Zero-JS Content Layer API, Server Islands, ClientRouter
+│   │   ├── solidjs.md                # SolidJS / SolidStart Fine-Grained Signals without VDOM
+│   │   └── tailwindcss.md            # Tailwind CSS v4, Oxide Engine, CSS-First @theme OKLCH Tokens
+│   ├── desktop/
+│   │   ├── tauri.md                  # Tauri v2 Desktop, Rust Core, Capabilities, Scoped IPC & System Tray
+│   │   └── electron.md               # Electron 33+ Hardened Desktop, contextIsolation, sandbox, contextBridge
+│   ├── tui/
+│   │   └── terminal-ui.md            # Modern Terminal UIs: Ratatui (Rust), Bubble Tea (Go), Textual (Python)
 │   ├── backend/
 │   │   ├── fastapi.md                # Python FastAPI, Pydantic v2, AsyncIO, DI, Uvicorn
 │   │   ├── nestjs.md                 # Enterprise NestJS, Modular Hexagonal Architecture, Guards, CQRS
@@ -115,6 +123,8 @@ devskill/
 │   └── mobile/
 │       ├── react-native-expo.md      # Expo Router, Native Modules, Hermes Engine, Performance Tuning
 │       ├── flutter.md                # Dart/Flutter 3+, Riverpod/Bloc, Platform Channels, Impeller
+│       ├── ios-swiftui.md            # Native iOS Swift 6 Concurrency, SwiftUI, @Observable, Keychain
+│       ├── android-kotlin-compose.md # Native Android Kotlin 2, Jetpack Compose, StateFlow, Room
 │       └── android-aosp.md           # Android 14/15/16 AOSP, Project Treble, Stable AIDL HAL & SELinux
 │
 ├── sections/                         # Domain-Specific Cross-Cutting Architectural Layers

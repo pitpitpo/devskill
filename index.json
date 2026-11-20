@@ -5,11 +5,11 @@
   "spec_standard": "agentskills.io + AAIF AGENTS.md",
   "description": "Production-grade software engineering standards, OWASP 2025 & Agentic AI security, deterministic agent routing, MCP/A2A protocols, framework/language guides, and CI gates.",
   "stats": {
-    "total_documents": 118,
-    "total_lines": 44312,
-    "total_rules": 272,
-    "rule_range": "R-001..R-272",
-    "total_archetypes": 30,
+    "total_documents": 122,
+    "total_lines": 46259,
+    "total_rules": 274,
+    "rule_range": "R-001..R-274",
+    "total_archetypes": 31,
     "total_configs": 6,
     "total_scripts": 6
   },
@@ -87,13 +87,14 @@
       },
       {
         "path": "FRONTEND.md",
-        "title": "FRONTEND.md — Universal Frontend Engineering & Design Craft Master Skill",
-        "lines": 198,
+        "title": "FRONTEND.md — Universal Multi-Surface Frontend Engineering & Client Craft Master Skill",
+        "lines": 333,
         "tags": [
           "frontend",
           "universal",
+          "multi-surface",
           "engineering",
-          "design",
+          "client",
           "craft",
           "master",
           "skill"
@@ -141,7 +142,7 @@
       {
         "path": "ROUTING.md",
         "title": "🧭 Deterministic Agent Routing Matrix (`ROUTING.md`)",
-        "lines": 451,
+        "lines": 464,
         "tags": [
           "routing",
           "deterministic",
@@ -152,7 +153,7 @@
       {
         "path": "RULES.md",
         "title": "📜 Universal Engineering Rules (`RULES.md`)",
-        "lines": 497,
+        "lines": 505,
         "tags": [
           "rules",
           "universal",
@@ -208,7 +209,7 @@
       {
         "path": "specs.md",
         "title": "📐 DevSkill Technical Specification (`specs.md`)",
-        "lines": 237,
+        "lines": 247,
         "tags": [
           "specs",
           "devskill",
@@ -609,7 +610,7 @@
       {
         "path": "frameworks/README.md",
         "title": "🚀 Frameworks Directory (`frameworks/`)",
-        "lines": 37,
+        "lines": 44,
         "tags": [
           "frameworks",
           "directory"
@@ -697,6 +698,30 @@
           "backend",
           "spring",
           "boot"
+        ]
+      },
+      {
+        "path": "frameworks/desktop/electron.md",
+        "title": "⚡ Electron 33+ Production Desktop Architecture (`frameworks/desktop/electron.md`)",
+        "lines": 260,
+        "tags": [
+          "frameworks",
+          "desktop",
+          "electron",
+          "33+",
+          "architecture"
+        ]
+      },
+      {
+        "path": "frameworks/desktop/tauri.md",
+        "title": "🦀 Tauri v2 Production Desktop Architecture (`frameworks/desktop/tauri.md`)",
+        "lines": 243,
+        "tags": [
+          "frameworks",
+          "desktop",
+          "tauri",
+          "v2",
+          "architecture"
         ]
       },
       {
@@ -914,6 +939,21 @@
           "expo",
           "81+",
           "new",
+          "architecture"
+        ]
+      },
+      {
+        "path": "frameworks/tui/terminal-ui.md",
+        "title": "📟 Terminal User Interfaces (TUI) Master Architecture (`frameworks/tui/terminal-ui.md`)",
+        "lines": 319,
+        "tags": [
+          "frameworks",
+          "tui",
+          "terminal",
+          "ui",
+          "user",
+          "interfaces",
+          "master",
           "architecture"
         ]
       }
@@ -1306,6 +1346,17 @@
           "valuation",
           "erp-enterprise",
           "inventory-supply-chain"
+        ]
+      },
+      {
+        "path": "sections/frontend/accessibility-a11y.md",
+        "title": "Accessibility (a11y) — Production Guide",
+        "lines": 952,
+        "tags": [
+          "sections",
+          "frontend",
+          "accessibility",
+          "a11y"
         ]
       },
       {
@@ -2134,6 +2185,25 @@
         "R-270",
         "R-271",
         "R-272"
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Desktop & Terminal Frontend Engineering (Tauri v2, Electron 33+, Ratatui, Bubble Tea, Textual)",
+      "files": [
+        "FRONTEND.md",
+        "frameworks/desktop/tauri.md",
+        "frameworks/desktop/electron.md",
+        "frameworks/tui/terminal-ui.md",
+        "RULES.md",
+        "DEFINITION_OF_DONE.md"
+      ],
+      "rules": [
+        "R-060",
+        "R-064",
+        "R-251",
+        "R-273",
+        "R-274"
       ]
     }
   ],
