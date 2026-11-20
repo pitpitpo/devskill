@@ -41,6 +41,10 @@
           {
             "type": "command",
             "command": "bash -c 'if [ -x ./scripts/ci-gate.sh ]; then ./scripts/ci-gate.sh || exit 2; fi'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -f .devskill/requirements.json ] && [ -f ./scripts/req-ledger.py ]; then python3 ./scripts/req-ledger.py gate .devskill/requirements.json --require-frozen || exit 2; fi'"
           }
         ]
       }

@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import json
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -282,6 +283,282 @@ class TestCiGateScript(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             res = subprocess.run(["bash", str(self.GATE)], cwd=tmpdir, capture_output=True, text=True)
             self.assertEqual(res.returncode, 2)
+
+
+class TestReqLedgerScript(unittest.TestCase):
+    SCRIPT = REPO_ROOT / "scripts" / "req-ledger.py"
+
+    def _run(self, *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, str(self.SCRIPT), *args],
+            capture_output=True,
+            text=True,
+        )
+
+    def test_full_lifecycle_recitation_and_fail_closed_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ledger = str(Path(tmpdir) / ".devskill" / "requirements.json")
+
+            res_init = self._run("init", ledger, "--title", "Webhook Hardening")
+            self.assertEqual(res_init.returncode, 0, res_init.stderr)
+
+            self.assertEqual(
+                self._run(
+                    "add",
+                    ledger,
+                    "--id",
+                    "REQ-001",
+                    "--category",
+                    "api",
+                    "--type",
+                    "functional",
+                    "--description",
+                    "Verify HMAC-SHA256 signature on raw body",
+                    "--criteria",
+                    "Invalid signature returns 400",
+                ).returncode,
+                0,
+            )
+            self.assertEqual(
+                self._run(
+                    "add",
+                    ledger,
+                    "--id",
+                    "REQ-002",
+                    "--category",
+                    "security",
+                    "--type",
+                    "negative",
+                    "--protected",
+                    "--description",
+                    "MUST NOT log raw customer PII or webhook secrets",
+                    "--criteria",
+                    "Zero secret or email substrings in test logs",
+                ).returncode,
+                0,
+            )
+            self.assertEqual(
+                self._run(
+                    "add",
+                    ledger,
+                    "--id",
+                    "REQ-003",
+                    "--category",
+                    "reliability",
+                    "--type",
+                    "edge_case",
+                    "--description",
+                    "Duplicate event.id delivery is idempotent",
+                    "--criteria",
+                    "Second POST returns 200 without duplicate ledger rows",
+                ).returncode,
+                0,
+            )
+            self.assertEqual(
+                self._run(
+                    "add",
+                    ledger,
+                    "--id",
+                    "REQ-004",
+                    "--category",
+                    "ux",
+                    "--type",
+                    "non_functional",
+                    "--description",
+                    "Optional latency metric dashboard link",
+                    "--criteria",
+                    "Optional link renders cleanly",
+                    "--optional",
+                ).returncode,
+                0,
+            )
+
+            # Gate rejects unfrozen ledger when --require-frozen is specified
+            res_unfrozen = self._run("gate", ledger, "--require-frozen")
+            self.assertEqual(res_unfrozen.returncode, 1)
+            self.assertIn("NOT frozen", res_unfrozen.stderr)
+
+            # Freeze specification
+            res_freeze = self._run("freeze", ledger)
+            self.assertEqual(res_freeze.returncode, 0, res_freeze.stderr)
+
+            # Recitation pins negative constraints before next item
+            res_recite = self._run("recite", ledger)
+            self.assertEqual(res_recite.returncode, 0, res_recite.stderr)
+            self.assertIn("[ACTIVE NEGATIVE CONSTRAINTS - NEVER VIOLATE]:", res_recite.stdout)
+            self.assertLess(
+                res_recite.stdout.index("REQ-002"),
+                res_recite.stdout.index("[NEXT REQUIREMENT TO COMPLETE]:"),
+            )
+
+            # Audit-prompt emits SatisFix Objective-Aligned Deviation Elicitation and USER-PROTECTED marker
+            res_audit = self._run("audit-prompt", ledger)
+            self.assertEqual(res_audit.returncode, 0, res_audit.stderr)
+            self.assertIn("SATISFIX DEVIATION CHECK", res_audit.stdout)
+            self.assertIn("USER-PROTECTED", res_audit.stdout)
+
+            # Verify all 3 required items (leave optional REQ-004 open)
+            for rid in ("REQ-001", "REQ-002", "REQ-003"):
+                res_v = self._run(
+                    "verify",
+                    ledger,
+                    "--id",
+                    rid,
+                    "--files",
+                    "src/webhook.py,tests/test_webhook.py",
+                    "--command",
+                    "pytest tests/test_webhook.py",
+                    "--exit-code",
+                    "0",
+                    "--evidence",
+                    f"{rid} verified with 3/3 assertions passing",
+                )
+                self.assertEqual(res_v.returncode, 0, res_v.stderr)
+
+            # Gate passes once 100% required items have valid proof
+            res_gate = self._run("gate", ledger, "--require-frozen")
+            self.assertEqual(res_gate.returncode, 0, res_gate.stderr)
+            self.assertIn("3/3 required verified", res_gate.stdout)
+
+    def test_verify_rejects_nonzero_exit_code_and_blank_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ledger = str(Path(tmpdir) / "reqs.json")
+            self._run("init", ledger, "--title", "Proof Enforcement")
+            self._run(
+                "add",
+                ledger,
+                "--id",
+                "REQ-001",
+                "--category",
+                "core",
+                "--type",
+                "functional",
+                "--description",
+                "Reject invalid tokens",
+                "--criteria",
+                "401 returned",
+            )
+            self._run("freeze", ledger)
+
+            res_bad_code = self._run(
+                "verify",
+                ledger,
+                "--id",
+                "REQ-001",
+                "--command",
+                "pytest",
+                "--exit-code",
+                "1",
+                "--evidence",
+                "1 failed",
+            )
+            self.assertEqual(res_bad_code.returncode, 1)
+            self.assertIn("REFUSED", res_bad_code.stderr)
+
+            res_blank_ev = self._run(
+                "verify",
+                ledger,
+                "--id",
+                "REQ-001",
+                "--command",
+                "pytest",
+                "--exit-code",
+                "0",
+                "--evidence",
+                "   ",
+            )
+            self.assertEqual(res_blank_ev.returncode, 1)
+            self.assertIn("non-empty --evidence", res_blank_ev.stderr)
+
+            # Gate must still fail closed because REQ-001 remains passes=false
+            res_gate = self._run("gate", ledger, "--require-frozen")
+            self.assertEqual(res_gate.returncode, 1)
+            self.assertIn("[UNVERIFIED FUNCTIONAL] REQ-001", res_gate.stderr)
+
+    def test_tamper_detection_and_audited_amendment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ledger_path = Path(tmpdir) / "reqs.json"
+            ledger = str(ledger_path)
+            self._run("init", ledger, "--title", "Anti-Tamper Test")
+            self._run(
+                "add",
+                ledger,
+                "--id",
+                "REQ-001",
+                "--category",
+                "auth",
+                "--type",
+                "functional",
+                "--description",
+                "Enforce tenant isolation on all queries",
+                "--criteria",
+                "Cross-tenant query returns 403",
+            )
+            self._run("freeze", ledger)
+
+            # Adding without --amend --reason is refused while frozen
+            res_unamended = self._run(
+                "add",
+                ledger,
+                "--id",
+                "REQ-002",
+                "--category",
+                "auth",
+                "--type",
+                "negative",
+                "--description",
+                "MUST NOT expose stack traces",
+                "--criteria",
+                "RFC 9457 error payload only",
+            )
+            self.assertEqual(res_unamended.returncode, 1)
+            self.assertIn("FROZEN", res_unamended.stderr)
+
+            # Authorized amendment succeeds and records audit trail
+            res_amended = self._run(
+                "add",
+                ledger,
+                "--id",
+                "REQ-002",
+                "--category",
+                "auth",
+                "--type",
+                "negative",
+                "--description",
+                "MUST NOT expose stack traces",
+                "--criteria",
+                "RFC 9457 error payload only",
+                "--amend",
+                "--reason",
+                "User requested strict RFC 9457 error scrubbing",
+            )
+            self.assertEqual(res_amended.returncode, 0, res_amended.stderr)
+            payload = json.loads(ledger_path.read_text(encoding="utf-8"))
+            self.assertEqual(len(payload["amendments"]), 1)
+            self.assertEqual(payload["amendments"][0]["action"], "add:REQ-002")
+
+            # Mutating description directly on disk triggers SPEC TAMPERING DETECTED
+            payload["requirements"][0]["description"] = "Weakened requirement"
+            ledger_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+            res_tampered_gate = self._run("gate", ledger, "--require-frozen")
+            self.assertEqual(res_tampered_gate.returncode, 1)
+            self.assertIn("SPEC TAMPERING DETECTED", res_tampered_gate.stderr)
+
+            res_tampered_verify = self._run(
+                "verify",
+                ledger,
+                "--id",
+                "REQ-001",
+                "--command",
+                "pytest",
+                "--exit-code",
+                "0",
+                "--evidence",
+                "passed",
+            )
+            self.assertEqual(res_tampered_verify.returncode, 1)
+            self.assertIn("SPEC TAMPERING DETECTED", res_tampered_verify.stderr)
 
 
 class TestDevSkillRepositoryIntegrity(unittest.TestCase):

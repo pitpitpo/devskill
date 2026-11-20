@@ -4,7 +4,7 @@
 > **Applicability**: All Autonomous AI Agents, Coding Assistants, and Software Engineers across all repositories, programming languages, and runtime environments.  
 > **Enforcement**: Automated CI/CD pipelines, Pre-commit hooks, Static Analysis (AST), Runtime assertions, and Mandatory Code Review gates.  
 > **Specification Standard**: RFC 2119 Key Words (`MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `MAY`).  
-> **Last Updated**: 2026-11-19 (Rules R-001 through R-260 Active)
+> **Last Updated**: 2026-11-20 (Rules R-001 through R-272 Active)
 
 ---
 
@@ -29,7 +29,9 @@
 18. [Agentic AI Security, MCP/A2A, NIST 800-63B-4 & Post-Quantum Crypto-Agility (R-228 to R-235)](#18-agentic-ai-security-mcpa2a-nist-800-63b-4--post-quantum-crypto-agility)
 19. [Canonical Software Engineering Laws & Unified Agent Stack Invariants (R-236 to R-250)](#19-canonical-software-engineering-laws--unified-agent-stack-invariants)
 20. [Universal Frontend Craft & Framework-Specific Invariants (R-251 to R-260)](#20-universal-frontend-craft--framework-specific-invariants)
-21. [Automated CI Gate Scan Patterns](#21-automated-ci-gate-scan-patterns)
+21. [Zero-Missed-Requirements, Context Engineering & Long-Horizon Completeness (R-261 to R-266)](#21-zero-missed-requirements-context-engineering--long-horizon-completeness)
+22. [Production Agentic Harness Engineering, Verification Oracles & Zero-Trust Governance (R-267 to R-272)](#22-production-agentic-harness-engineering-verification-oracles--zero-trust-governance)
+23. [Automated CI Gate Scan Patterns](#23-automated-ci-gate-scan-patterns)
 
 ---
 
@@ -393,7 +395,29 @@
 
 ---
 
-## 21. Automated CI Gate Scan Patterns
+## 21. Zero-Missed-Requirements, Context Engineering & Long-Horizon Completeness
+
+- **R-261 [Frozen Atomic JSON Requirement Ledger]**: Any engineering task containing ≥ 4 distinct requirements, spanning multiple subsystems, or carrying strict negative constraints ("MUST NOT do X", "preserve Y") MUST extract every explicit, implicit, edge-case, and negative requirement into a machine-readable JSON ledger (`passes: false` by default) and seal its canonical SHA-256 `spec_hash` via [`scripts/req-ledger.py`](scripts/req-ledger.py) (`init` → `add` → `freeze`) BEFORE writing code. Editing or deleting frozen criteria without an explicit, human-authorized `--amend --reason` audit entry is strictly forbidden (see [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md)).
+- **R-262 [Single-Slice Incremental Execution]**: Complex multi-requirement tasks MUST be implemented incrementally—one cohesive requirement slice at a time with targeted verification and atomic commits—rather than attempting monolithic single-pass generation that drops secondary details and edge cases.
+- **R-263 [Attention Recitation & Context Rot Hygiene]**: Across multi-turn sessions, agents MUST run `req-ledger.py recite` at milestone boundaries (every 5–8 tool calls) to pull open `negative` constraints and the next `REQ-*` into the recency window, restrict DevSkill reads to the 3–5 files prescribed by [`ROUTING.md`](ROUTING.md), offload verbose logs (> 150 lines) to disk, and isolate noisy exploration in fresh-context subagents.
+- **R-264 [Proof-Bound Default-FAIL Completion Gate]**: Requirements remain `passes: false` until verified via `req-ledger.py verify` with concrete touched files, exact executed command, `exit_code == 0`, and non-empty observed output. When an active requirement ledger exists, the agent MUST NOT declare completion until `python3 scripts/req-ledger.py gate <ledger.json> --require-frozen` exits with code `0`.
+- **R-265 [Fresh-Context Read-Only Evaluator Audit]**: Before completing a complex multi-requirement task, an independent read-only review pass (fresh context window, zero write tools) MUST verify every frozen `REQ-001..REQ-NNN`—especially `negative` and `edge_case` items—directly against `git diff` and real execution logs (Spec Compliance before Code Quality, complementing **R-248**).
+- **R-266 [Objective-Aligned Deviation Elicitation Against Specification Satisficing]**: Before declaring any multi-requirement task complete, the verification pass MUST run non-judgmental objective-aligned elicitation (`python3 scripts/req-ledger.py audit-prompt <ledger.json>`) enumerating every place the implementation diverged from, simplified, or approximated any frozen requirement—catching rationalized shortcuts (`SatisFix`) invisible to generic self-review.
+
+---
+
+## 22. Production Agentic Harness Engineering, Verification Oracles & Zero-Trust Governance
+
+- **R-267 [Deterministic Non-LLM Control Plane Over Probabilistic Agents]**: Authorization, phase-state transitions, turn/token ceilings, static pre-write file-scope admission (`Claim Plane` / isolated Git worktrees), command/path blocklists, and CI retry caps (1–2 loops max) MUST be enforced in deterministic non-LLM code—never delegated solely to prompt instructions or another LLM (`Rel(AI)Build` axiom; see [`agents/agentic-sdlc-harness-architecture.md`](agents/agentic-sdlc-harness-architecture.md)).
+- **R-268 [Minimal Single-Agent & Read-Parallel Topology Over Swarms]**: Default to a single-agent loop grounded in live lexical/AST/LSP code intelligence (`ripgrep`, Tree-sitter, LSP) and exact `str_replace`/AST edits rather than static codebase vector RAG or uncoordinated multi-agent swarms; confine subagents to read-parallel exploration, tool encapsulation (e.g., interactive debugging), or worktree/Claim-Plane-isolated scopes, avoiding > 4 sequential handoffs and concurrent shared-filesystem writers.
+- **R-269 [Mutation-Hardened, Property-Based & Hybrid Security Verification]**: Never merge agent-authored code solely on LLM-authored coverage tests or functional pass rates; pair 100% pass-to-pass regression preservation (`SWE-Maintain`) with mutation-guided test hardening (`ACH`), property-based testing (`Hypothesis`), hybrid deterministic SAST (`CodeQL`/`Semgrep`) + LLM security verification, and deterministic proof-bypass checks (`sorry`/`admit`/`axiom`/`assume()`/`unsafe`) when using formal verifiers.
+- **R-270 [Zero-Trust Agent Sandboxing, Host-Proxy Secrets & Rule-File Review]**: Unattended or untrusted agent execution MUST run inside hardware-virtualized microVMs (Firecracker / Kata v4.3+) or hardened OS sandboxes locally (`srt`/Seatbelt/bubblewrap+Landlock) with default-deny egress, host-side proxy credential injection (zero standing secrets inside sandbox memory), SPIFFE/WIMSE non-human workload identities, private package proxies with install scripts disabled (anti-slopsquatting), and mandatory peer security review of `.mcp.json`, `AGENTS.md`, `CLAUDE.md`, and `SKILL.md` diffs.
+- **R-271 [Read-Only Live Operations & Transactional No-Regression (TNR)]**: Autonomous SRE/AIOps agents MUST be confined to read-only telemetry investigation (`Obs-MCP`) and human-approved runbooks by default; any automated production write remediation MUST enforce Transactional No-Regression (`STRATUS`: every mutation paired with a deterministic undo operator) and dual live-traffic health/safety gates.
+- **R-272 [Token Portfolio FinOps & Human Merge Explainability]**: Production agent deployments MUST route routine/scoped tasks to fast or open-weight models while reserving frontier reasoning for architecture/security, track unit cost per shipped feature rather than raw token volume, and enforce human merge accountability (every reviewer approving agent-authored code MUST be able to explain and debug it without the agent present to counter skill atrophy).
+
+---
+
+## 23. Automated CI Gate Scan Patterns
 
 Execute the bundled script [`scripts/ci-gate.sh`](scripts/ci-gate.sh) (supports `--staged` for pre-commit hooks) or embed the equivalent checks in your CI pipeline to enforce non-negotiable coding hygiene rules at commit and merge time.
 

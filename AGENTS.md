@@ -10,10 +10,11 @@
 
 Load ONLY the files needed for your task archetype — do not dump the entire repository into context:
 
-1. **Classify the task** using [ROUTING.md](ROUTING.md) (28 task archetypes → exact 3–5 file reading list + required verification commands).
-2. **Enforce non-negotiable invariants** from [RULES.md](RULES.md) (R-001 through R-260) and [security.md](security.md) (OWASP Top 10:2025, OWASP Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC).
+1. **Classify the task** using [ROUTING.md](ROUTING.md) (30 task archetypes → exact 3–5 file reading list + required verification commands).
+2. **Enforce non-negotiable invariants** from [RULES.md](RULES.md) (R-001 through R-272) and [security.md](security.md) (OWASP Top 10:2025, OWASP Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC).
 3. **Locate domain guides fast** via [index.json](index.json) (machine-readable catalog with tags, archetypes, and exact paths).
-4. **Apply unified agent stack discipline** from [agents/unified-agent-stacks.md](agents/unified-agent-stacks.md) (`pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`), [agents/code-forensics-interrogation.md](agents/code-forensics-interrogation.md), and [agents.md](agents.md) (Always/Ask/Never boundaries, 3-strike escalation).
+4. **Prevent requirement omission & Context Rot** using [agents/zero-missed-requirements.md](agents/zero-missed-requirements.md), [agents/agentic-sdlc-harness-architecture.md](agents/agentic-sdlc-harness-architecture.md), and `scripts/req-ledger.py` whenever a task has ≥ 4 requirements or strict negative constraints (R-261–R-272).
+5. **Apply unified agent stack discipline** from [agents/unified-agent-stacks.md](agents/unified-agent-stacks.md) (`pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`), [agents/code-forensics-interrogation.md](agents/code-forensics-interrogation.md), and [agents.md](agents.md) (Always/Ask/Never boundaries, 3-strike escalation).
 
 ---
 
@@ -25,6 +26,7 @@ Load ONLY the files needed for your task archetype — do not dump the entire re
 - **Strict Static Typing & Boundary Validation**: Ban `any` / `@ts-ignore` / `# type: ignore` (R-034). Validate every external boundary with Zod, Pydantic, or strict schemas (R-060).
 - **Security by Default**: Parameterized queries only (R-061), tenant-scoped AuthZ / zero IDOR (R-063), zero secrets in git (R-064), fail-closed error handling (OWASP A10:2025 / R-232), and least-agency tool permissions (OWASP ASI02/ASI03 / R-228).
 - **Surgical Diffs**: Modify only lines required for the task (R-015, R-182). Never weaken or delete tests to force green (R-011, R-096).
+- **Zero-Missed-Requirements Ledger**: For tasks with ≥ 4 requirements or negative constraints, freeze every requirement in JSON (`req-ledger.py freeze`), recite open constraints at milestones, audit from a fresh read-only context, and pass `req-ledger.py gate --require-frozen` before completion (R-261–R-265).
 
 ---
 
@@ -37,6 +39,9 @@ Load ONLY the files needed for your task archetype — do not dump the entire re
 | **Run DevSkill Script Unit Tests** | `python3 -m unittest discover -s scripts -p "test_*.py" -v` |
 | **Run CI Quality Gate Scan (Repo)** | `./scripts/ci-gate.sh` |
 | **Run CI Quality Gate Scan (Staged)** | `./scripts/ci-gate.sh --staged` |
+| **Recite Open Requirements & Negative Rules** | `python3 scripts/req-ledger.py recite .devskill/requirements.json` |
+| **Emit SatisFix Deviation & Fresh Audit Prompt** | `python3 scripts/req-ledger.py audit-prompt .devskill/requirements.json` |
+| **Enforce Fail-Closed Requirement Ship Gate** | `python3 scripts/req-ledger.py gate .devskill/requirements.json --require-frozen` |
 | **Watch a GitHub PR (Event-Driven)** | `python3 scripts/pr-wait.py <pr-num> --until ready` |
 
 ---

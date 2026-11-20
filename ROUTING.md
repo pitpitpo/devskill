@@ -4,14 +4,14 @@
 > **Status**: Mandatory / Non-Negotiable Core Protocol  
 > **Target Audience**: Autonomous AI Agents, LLM Orchestrator Engines, Engineering Leads  
 > **Objective**: Eliminate token bloat, prevent rule omissions, and guarantee deterministic task execution by prescribing the exact file reading lists and verification pipelines for every software task archetype.  
-> **Last Updated**: 2026-11-19
+> **Last Updated**: 2026-11-20
 
 ---
 
 ## 1. How to Use This Matrix
 
 When an autonomous agent receives an engineering instruction:
-1. **Identify the Task Archetype** from the 28 categories below.
+1. **Identify the Task Archetype** from the 30 categories below.
 2. **Ingest ONLY the Prescribed Files** in the strict sequential order listed under **Mandatory Reading List**. Do not waste context reading unrelated subsystems.
 3. **Enforce the Mandatory Invariants** associated with that archetype.
 4. **Execute the Verification Commands** and embed the resulting **`prove-it-works` Evidence Block** in the final delivery.
@@ -44,6 +44,7 @@ When an autonomous agent receives an engineering instruction:
 Regardless of archetype, every agent session MUST adhere to:
 - [`RULES.md`](RULES.md) (Universal Invariants: R-001 No TODOs, R-002 No Mock Data, R-034 No Any, R-064 No Secrets)
 - [`agents/poteto-discipline.md`](agents/poteto-discipline.md) (Minimal surgical diffs, no conversational slop, concrete CLI execution proof)
+- [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md) *(Mandatory whenever a task has ≥ 4 requirements, spans multiple subsystems, or specifies strict negative constraints — R-261–R-265)*
 
 ---
 
@@ -412,6 +413,32 @@ Regardless of archetype, every agent session MUST adhere to:
 | **Key Invariant Rules** | **R-064** (Zero hardcoded keys; Keychain/KeyStore only), **R-256** (Flutter Impeller, Riverpod 3 `Ref.mounted` & `Isolate.run`), **R-257** (React Native New Architecture, Reanimated UI-thread & FlashList), **R-258** (Swift 6 `@MainActor`/Sendable & Kotlin `collectAsStateWithLifecycle`) |
 | **Prohibited Actions** | ❌ Storing auth tokens or database encryption keys in `SharedPreferences`, `UserDefaults`, or `AsyncStorage`.<br>❌ Blocking the UI thread with heavy JSON parsing, image processing, or JS-thread animations.<br>❌ Using unbounded `ScrollView`/`Column` for large lists or ignoring async lifecycle cancellation (`Ref.mounted`, `.task`, `collectAsStateWithLifecycle`).<br>❌ Shipping release binaries without obfuscation/R8/symbol uploads or running `expo-doctor` / `flutter analyze`. |
 | **Mandatory Verification** | 1. Static Gate: `flutter analyze` / `npx expo-doctor && tsc --noEmit` / `./gradlew lint` / `xcodebuild` Swift 6 clean (Exit `0`).<br>2. Automated Tests: Unit + Widget/Component + Golden/Snapshot + E2E (Maestro / Integration / XCUITest) pass.<br>3. Frame & Startup Profile: 60/120fps verified in release/profile build with zero frame drops > 16ms.<br>4. Security Audit: Confirm zero plaintext credentials on device storage and valid Universal/App Links. |
+
+---
+
+### Archetype 29: Complex Multi-Requirement Delivery, Long-Horizon Execution & Context Engineering
+
+*Executing complex, detail-dense, or multi-session tasks (≥ 4 requirements, cross-cutting constraints, strict negative rules) without silent requirement omission, Context Rot, checklist tampering, or premature happy-path completion.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md) *(6-Layer Anti-Omission Architecture, frozen JSON ledger, SatisFix deviation check, attention recitation, context hygiene)*<br>2. [`agents/unified-agent-stacks.md`](agents/unified-agent-stacks.md) *(Two-stage review, worktree isolation, compound engineering)*<br>3. [`MISTAKES.md`](MISTAKES.md) *(Failure modes #31–#36: Silent Omission, Premature Victory, Checklist Tampering, Specification Satisficing)*<br>4. [`RULES.md`](RULES.md) *(Section 21: R-261 to R-266; R-248 Two-Stage Review)*<br>5. Target domain/framework guide for the implementation slice |
+| **Key Invariant Rules** | **R-248** (Two-stage review: spec compliance before code quality), **R-261** (Frozen atomic JSON requirement ledger with SHA-256 `spec_hash`), **R-262** (Single-slice incremental execution), **R-263** (Attention recitation & Context Rot hygiene), **R-264** (Proof-bound Default-FAIL completion gate), **R-265** (Fresh-context read-only evaluator audit), **R-266** (Objective-aligned deviation elicitation against specification satisficing) |
+| **Prohibited Actions** | ❌ Holding ≥ 4 requirements solely in chat prose or mutable Markdown checkboxes.<br>❌ Editing, weakening, or deleting frozen requirements without `--amend --reason`.<br>❌ Flipping `passes: true` without concrete command, `exit_code == 0`, and non-empty observed evidence.<br>❌ Flooding context with > 150-line raw logs or loading > 5 unrelated DevSkill guides.<br>❌ Declaring completion while `req-ledger.py gate --require-frozen` exits non-zero. |
+| **Mandatory Verification** | 1. Frozen Spec Contract: `python3 scripts/req-ledger.py status .devskill/requirements.json --json` shows `frozen: true` and `integrity_errors: []`.<br>2. Milestone Recitation: `python3 scripts/req-ledger.py recite .devskill/requirements.json` confirms all `negative` constraints respected.<br>3. SatisFix & Fresh-Context Audit: Run `python3 scripts/req-ledger.py audit-prompt .devskill/requirements.json` and verify every `REQ-001..REQ-NNN` against `git diff` and execution logs.<br>4. Mechanical Gate: `python3 scripts/req-ledger.py gate .devskill/requirements.json --require-frozen` exits `0`. |
+
+---
+
+### Archetype 30: Production Agentic Harness Engineering, Zero-Trust Containment & SDLC Governance
+
+*Designing, deploying, or auditing production AI coding harnesses, deterministic blueprint factories, neuro-symbolic verification stacks, microVM/sandbox containment, autonomous SRE safety bounds, and token portfolio FinOps.*
+
+| Dimension | Specification |
+|---|---|
+| **Mandatory Reading List (In Order)** | 1. [`agents/agentic-sdlc-harness-architecture.md`](agents/agentic-sdlc-harness-architecture.md) *(5-layer architecture, Factored POMDP, Twin Absence, MAST & Static Claim Plane, 5-tier verification, microVMs, TNR SRE, FinOps)*<br>2. [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md) *(Living Specs, protected blocks, SatisFix, structural compaction)*<br>3. [`agents/mcp-a2a-protocols.md`](agents/mcp-a2a-protocols.md) *(MCP Policy Gateway, OAuth 2.1 + RFC 8707, A2A)*<br>4. [`security.md`](security.md) *(OWASP Top 10:2025 + Agentic ASI01–ASI10 + supply chain)*<br>5. [`RULES.md`](RULES.md) *(Section 22: R-267 to R-272; R-228, R-229)* |
+| **Key Invariant Rules** | **R-228** (OWASP Agentic least agency), **R-229** (MCP OAuth 2.1 + RFC 8707), **R-267** (Deterministic non-LLM control plane), **R-268** (Minimal single-agent & read-parallel topology over swarms), **R-269** (Mutation/PBT/hybrid SAST & regression preservation), **R-270** (MicroVM/OS sandboxing, host-proxy secrets, SPIFFE/WIMSE, rule-file peer review), **R-271** (Read-only SRE & Transactional No-Regression), **R-272** (Token portfolio FinOps & human merge explainability) |
+| **Prohibited Actions** | ❌ Enforcing authorization, scope locks, or retry caps solely via LLM prompts.<br>❌ Deploying uncoordinated peer-agent swarms, > 4 sequential handoffs, or concurrent shared-filesystem writers.<br>❌ Placing standing API/DB/Git secrets inside agent sandbox memory or skipping peer review on `.mcp.json` / `AGENTS.md` / `SKILL.md` diffs.<br>❌ Granting AI SRE agents unsupervised production write authority without deterministic undo operators (`TNR`).<br>❌ Relying solely on LLM-generated coverage tests or functional checks without regression/mutation/SAST gates. |
+| **Mandatory Verification** | 1. Control-Plane Enforcement: Deterministic phase gates, turn/retry caps, and worktree/Claim-Plane locks verified in non-LLM code.<br>2. Isolation & Egress Audit: Local OS sandbox (`srt`) or Firecracker/Kata v4.3+ microVM verified with default-deny egress and zero in-sandbox credentials.<br>3. Neuro-Symbolic Gate: 100% pass-to-pass regressions + mutation/PBT tests + SAST (`CodeQL`/`Semgrep`) pass cleanly.<br>4. Governance & FinOps: Tiered model routing active, Living Spec + audit logs persisted, and human merge explainability enforced. |
 
 ---
  

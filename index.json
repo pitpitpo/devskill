@@ -1,24 +1,24 @@
 {
   "name": "devskill",
-  "version": "2.2.0",
-  "updated": "2026-11-19",
+  "version": "2.4.0",
+  "updated": "2026-11-20",
   "spec_standard": "agentskills.io + AAIF AGENTS.md",
   "description": "Production-grade software engineering standards, OWASP 2025 & Agentic AI security, deterministic agent routing, MCP/A2A protocols, framework/language guides, and CI gates.",
   "stats": {
-    "total_documents": 115,
-    "total_lines": 43776,
-    "total_rules": 260,
-    "rule_range": "R-001..R-260",
-    "total_archetypes": 28,
+    "total_documents": 117,
+    "total_lines": 44238,
+    "total_rules": 272,
+    "rule_range": "R-001..R-272",
+    "total_archetypes": 30,
     "total_configs": 6,
-    "total_scripts": 5
+    "total_scripts": 6
   },
   "modules": {
     "core": [
       {
         "path": "AGENTS.md",
         "title": "AGENTS.md — Universal Repository Instructions for AI Coding Agents",
-        "lines": 48,
+        "lines": 53,
         "tags": [
           "agents",
           "universal",
@@ -89,7 +89,7 @@
       {
         "path": "MISTAKES.md",
         "title": "⚠️ Living Error Log & AI Failure Catalog (`MISTAKES.md`)",
-        "lines": 398,
+        "lines": 440,
         "tags": [
           "mistakes",
           "living",
@@ -114,8 +114,8 @@
       },
       {
         "path": "README.md",
-        "title": "🚀 DevSkill v2.2: Autonomous Industry-Grade Engineering Library",
-        "lines": 55,
+        "title": "🚀 DevSkill v2.4: Autonomous Industry-Grade Engineering Library",
+        "lines": 57,
         "tags": [
           "devskill",
           "v2",
@@ -128,7 +128,7 @@
       {
         "path": "ROUTING.md",
         "title": "🧭 Deterministic Agent Routing Matrix (`ROUTING.md`)",
-        "lines": 424,
+        "lines": 451,
         "tags": [
           "routing",
           "deterministic",
@@ -139,7 +139,7 @@
       {
         "path": "RULES.md",
         "title": "📜 Universal Engineering Rules (`RULES.md`)",
-        "lines": 473,
+        "lines": 497,
         "tags": [
           "rules",
           "universal",
@@ -149,7 +149,7 @@
       {
         "path": "SKILL.md",
         "title": "DevSkill: Autonomous Industry-Grade Engineering Library",
-        "lines": 104,
+        "lines": 108,
         "tags": [
           "skill",
           "devskill",
@@ -205,6 +205,21 @@
       }
     ],
     "agents": [
+      {
+        "path": "agents/agentic-sdlc-harness-architecture.md",
+        "title": "🏗️ Production Agentic SDLC Architecture, Harness Engineering & Zero-Trust Runtime Governance (`agents/agentic-sdlc-harness-architecture.md`)",
+        "lines": 163,
+        "tags": [
+          "agents",
+          "agentic",
+          "sdlc",
+          "harness",
+          "architecture",
+          "engineering",
+          "zero-trust",
+          "runtime"
+        ]
+      },
       {
         "path": "agents/arena-evaluator.md",
         "title": "🏛️ Architecture Arena & Multi-Solution Evaluator (`arena-evaluator.md`)",
@@ -418,6 +433,21 @@
           "coding",
           "harness",
           "architecture"
+        ]
+      },
+      {
+        "path": "agents/zero-missed-requirements.md",
+        "title": "🛡️ Zero-Missed-Requirements, Context Engineering & Long-Horizon Completeness (`agents/zero-missed-requirements.md`)",
+        "lines": 194,
+        "tags": [
+          "agents",
+          "zero",
+          "missed",
+          "requirements",
+          "zero-missed-requirements",
+          "context",
+          "engineering",
+          "long-horizon"
         ]
       }
     ],
@@ -1528,7 +1558,7 @@
       {
         "path": "_coordination/STATUS.md",
         "title": "DevSkill Governance & Audit Status (`_coordination/STATUS.md`)",
-        "lines": 24,
+        "lines": 25,
         "tags": [
           "coordination",
           "status",
@@ -2052,12 +2082,52 @@
         "R-257",
         "R-258"
       ]
+    },
+    {
+      "id": 29,
+      "name": "Complex Multi-Requirement Delivery, Long-Horizon Execution & Context Engineering",
+      "files": [
+        "agents/zero-missed-requirements.md",
+        "agents/unified-agent-stacks.md",
+        "MISTAKES.md",
+        "RULES.md"
+      ],
+      "rules": [
+        "R-248",
+        "R-261",
+        "R-262",
+        "R-263",
+        "R-264",
+        "R-265",
+        "R-266"
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Production Agentic Harness Engineering, Zero-Trust Containment & SDLC Governance",
+      "files": [
+        "agents/agentic-sdlc-harness-architecture.md",
+        "agents/zero-missed-requirements.md",
+        "agents/mcp-a2a-protocols.md",
+        "security.md",
+        "RULES.md"
+      ],
+      "rules": [
+        "R-228",
+        "R-229",
+        "R-267",
+        "R-268",
+        "R-269",
+        "R-270",
+        "R-271",
+        "R-272"
+      ]
     }
   ],
   "scaffolding_configs": [
     {
       "path": "scaffolding/configs/.claude-settings.json",
-      "lines": 49
+      "lines": 53
     },
     {
       "path": "scaffolding/configs/.editorconfig",
@@ -2090,8 +2160,12 @@
       "lines": 593
     },
     {
+      "path": "scripts/req-ledger.py",
+      "lines": 481
+    },
+    {
       "path": "scripts/test_devskill.py",
-      "lines": 294
+      "lines": 571
     },
     {
       "path": "scripts/validate-skill.py",

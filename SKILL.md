@@ -13,11 +13,11 @@ compatibility: >-
   and agentskills.io-compliant harnesses. Optional helper scripts require Python 3.10+,
   Git 2.40+, Bash, and GitHub CLI (gh) for PR watching.
 metadata:
-  version: "2.2.0"
+  version: "2.4.0"
   category: "software-engineering"
   author: "DevSkill Core Architecture Team"
-  updated: "2026-11-19"
-  standards: "OWASP-2025,OWASP-ASI-2026,NIST-800-63B-4,NIST-PQC-FIPS-203-205,WCAG-2.2-AA,RFC-9457,MCP-2026,A2A,SE-CANON,UNIFIED-STACKS,FRONTEND-UNIVERSAL"
+  updated: "2026-11-20"
+  standards: "OWASP-2025,OWASP-ASI-2026,NIST-800-63B-4,NIST-PQC-FIPS-203-205,WCAG-2.2-AA,RFC-9457,MCP-2026,A2A,SE-CANON,UNIFIED-STACKS,FRONTEND-UNIVERSAL,ZERO-OMISSION-RTM,AGENTIC-HARNESS-2026"
 ---
 
 # DevSkill: Autonomous Industry-Grade Engineering Library
@@ -34,12 +34,13 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 [Agent Activated]
        │
        ▼
-1. Classify Task Archetype via ROUTING.md (28 archetypes) or query index.json
+1. Classify Task Archetype via ROUTING.md (30 archetypes) or query index.json
        │
        ▼
 2. Load & Enforce Core Constraints:
-   ├── RULES.md       (Non-negotiable engineering law: R-001 through R-260)
+   ├── RULES.md       (Non-negotiable engineering law: R-001 through R-272)
    ├── security.md    (OWASP Top 10:2025, OWASP Agentic ASI01–ASI10, NIST 800-63B-4, PQC)
+   ├── agents/zero-missed-requirements.md (Freeze JSON ledger via req-ledger.py when >= 4 requirements)
    └── AGENTS.md / agents.md (Execution safety, Always/Ask/Never boundaries, 3-strike triage)
        │
        ▼
@@ -63,6 +64,7 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
        ▼
 6. Verify & Audit (Exit Code 0 Required):
    ├── ./scripts/ci-gate.sh & project test/typecheck/lint suite
+   ├── python3 scripts/req-ledger.py gate .devskill/requirements.json --require-frozen (when ledger active)
    ├── python3 scripts/validate-skill.py (when modifying skill artifacts)
    └── Score against DEFINITION_OF_DONE.md (>= 95/100 total, >= 9.0/10 per category)
 ```
@@ -75,8 +77,10 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 |---|---|---|
 | **Universal Agent Entrypoint** | [`AGENTS.md`](AGENTS.md) | Concise cross-tool `AGENTS.md` open standard (AAIF) |
 | **Claude Code Harness Config** | [`CLAUDE.md`](CLAUDE.md) | Claude Code Plan Mode, permissions, and `settings.json` Exit-Code-2 hooks |
-| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 28-archetype routing matrix prescribing exact reading lists and test commands |
-| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, ERP, kernel, and agents (R-001–R-260) |
+| **Deterministic Routing** | [`ROUTING.md`](ROUTING.md) | 30-archetype routing matrix prescribing exact reading lists and test commands |
+| **Engineering Rules** | [`RULES.md`](RULES.md) | Universal laws of architecture, security, SE canon, frontend, mobile, ERP, kernel, completeness, and agentic harness governance (R-001–R-272) |
+| **Zero-Missed-Requirements** | [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md) | 6-layer anti-omission, SatisFix & Context Rot defense (`req-ledger.py` frozen SHA-256 JSON ledger, recitation, deviation audit, fail-closed gate) |
+| **Agentic SDLC Harness Blueprint** | [`agents/agentic-sdlc-harness-architecture.md`](agents/agentic-sdlc-harness-architecture.md) | 5-layer production architecture, deterministic control planes, MAST & Static Claim Plane, neuro-symbolic oracles, microVM isolation, TNR SRE, FinOps |
 | **Universal Frontend Master** | [`FRONTEND.md`](FRONTEND.md) | Framework-agnostic frontend constitution (framework matrix, OKLCH design tokens, modern CSS, CWV, WCAG 2.2 AA, CSP) |
 | **Security Standards** | [`security.md`](security.md) | OWASP Top 10:2025, Agentic ASI01–ASI10, NIST SP 800-63B-4, NIST PQC |
 | **Unified Agent Stacks** | [`agents/unified-agent-stacks.md`](agents/unified-agent-stacks.md) & [`agents/`](agents/) | Synthesizes `pstack`, `tstack`, `gstack`, `kstack`, `superpowers`, `compound-engineering`, `spec-kit`, `Beads`/`Gas Town`, MCP/A2A, councils, TLA+ |
@@ -91,7 +95,7 @@ When tasked with designing, architecting, implementing, auditing, or refactoring
 | **Workflows** | [`workflows/`](workflows/) | 8-phase lifecycle, PR babysitting, modernization/takeover, Git, SemVer, Incidents, Anti-Slop |
 | **Pipelines** | [`pipelines/`](pipelines/) | GitHub Actions, GitLab CI, SAST/DAST/SCA, and progressive deployments |
 | **Scaffolding** | [`scaffolding/`](scaffolding/) | Production configs (`.claude-settings.json`, `tsconfig`, `ruff`, Docker Compose, CI) & templates |
-| **Executable Scripts** | [`scripts/`](scripts/) | `ci-gate.sh`, `validate-skill.py`, `pr-wait.py`, and automated unit tests |
+| **Executable Scripts** | [`scripts/`](scripts/) | `req-ledger.py`, `ci-gate.sh`, `validate-skill.py`, `pr-wait.py`, and automated unit tests |
 
 ---
 

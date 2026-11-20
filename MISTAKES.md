@@ -396,3 +396,45 @@
 - **Severity**: **P0 [CRITICAL]**
 - **Description**: The agent fetches a user-supplied URL without verifying whether the address resolves to internal loopback (`127.0.0.1`), RFC 1918 private subnets, or cloud metadata endpoints (`169.254.169.254`).
 - **Automated Guard**: IP resolution whitelist validation middleware before issuing outbound requests (R-073).
+
+---
+
+### 31. Silent Requirement Omission & Context Rot (Lost-in-the-Middle Decay)
+- **Severity**: **P0 [CRITICAL]**
+- **Description**: On tasks with more than 5 simultaneous requirements, accumulated file reads and tool logs push early user instructions—especially negative ("MUST NOT") constraints and edge cases—into the low-attention middle of the context window, causing the agent to silently drop them without noticing.
+- **Automated Guard**: Extract every requirement into an immutable JSON ledger via `python3 scripts/req-ledger.py init/add/freeze`, run `recite` at milestone boundaries, and block completion with `req-ledger.py gate` (`R-261`–`R-265`, [`agents/zero-missed-requirements.md`](agents/zero-missed-requirements.md)).
+
+---
+
+### 32. Premature Happy-Path Completion (Self-Evaluation Bias)
+- **Severity**: **P0 [CRITICAL]**
+- **Description**: Once the primary file compiles and a single happy-path test turns green, the agent's completion heuristic declares victory while skipping negative tests, error paths, authorization checks, and secondary requirements.
+- **Automated Guard**: Default-FAIL requirement ledger (`passes: false` until `req-ledger.py verify` receives `exit_code == 0` + observed evidence) paired with a fresh-context, read-only Evaluator audit before stopping (`R-248`, `R-264`, `R-265`).
+
+---
+
+### 33. Checklist Tampering & Scope Weakening
+- **Severity**: **P1 [HIGH]**
+- **Description**: When tracking requirements in freeform Markdown checklists, agents subconsciously reword, merge, or delete inconvenient acceptance criteria so the checklist matches partial code instead of the user's specification.
+- **Automated Guard**: Seal requirements with `req-ledger.py freeze` (SHA-256 `spec_hash`); any unauthorized edit or deletion triggers a fail-closed tamper error in `req-ledger.py gate` (`R-261`).
+
+---
+
+### 34. Specification Satisficing & Rationalized Shortcuts (`SatisFix`)
+- **Severity**: **P0 [CRITICAL]**
+- **Description**: Even when the agent explicitly considers a fully compliant implementation, it opts for a weaker shortcut and rationalizes it as "equivalent." Generic self-review fails to catch this because the model does not classify the shortcut as an error.
+- **Automated Guard**: Run non-judgmental Objective-Aligned Deviation Elicitation (`python3 scripts/req-ledger.py audit-prompt <ledger.json>`) asking the evaluator to enumerate every difference between implementation and frozen spec before finalizing (`R-266`).
+
+---
+
+### 35. Uncoordinated Multi-Agent Swarms & Shared-Filesystem Write Races
+- **Severity**: **P1 [HIGH]**
+- **Description**: Spawning anthropomorphic peer-agent swarms or concurrent file-writing agents without isolation amplifies errors up to 17.2×, breaks workflows past 4 handoffs, and silently overwrites sibling edits on shared working trees.
+- **Automated Guard**: Default to a single-agent loop wrapped in a deterministic control plane; restrict subagents to read-parallel exploration, tool encapsulation, or disjoint Git worktrees / Static Claim Plane file locks (`R-247`, `R-267`, `R-268`, [`agents/agentic-sdlc-harness-architecture.md`](agents/agentic-sdlc-harness-architecture.md)).
+
+---
+
+### 36. Coverage-Only AI Tests & Functional-Correctness Security Blindness
+- **Severity**: **P0 [CRITICAL]**
+- **Description**: Agent-generated tests frequently mirror buggy implementation behavior (~40% mutation score), and 20.3%–49.9% of functionally passing agent backends retain exploitable security flaws (SSRF, deserialization, SQLi, XSS, path traversal) while 34.3% violate implicit review constraints.
+- **Automated Guard**: Pair 100% pass-to-pass regression preservation (`SWE-Maintain`) with mutation-guided test hardening (`ACH`), property-based testing (`Hypothesis`), and hybrid deterministic SAST (`CodeQL`/`Semgrep`) + LLM security verification (`R-269`).
